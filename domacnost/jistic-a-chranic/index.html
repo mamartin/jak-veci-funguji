@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje jistič a proudový chránič</title>
+  <meta name="description" content="Čím se liší jistič od proudového chrániče, proč jistič nezachrání člověka a k čemu je v zásuvce kolík. S modelem obvodu, ve kterém můžete udělat zkrat.">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    #circuit { display: block; width: 100%; max-width: 46rem; margin: 0 auto; }
+    /* barvy vodičů podle normy: fáze hnědá, nulák modrý, ochranný vodič zelenožlutý */
+    .w { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .w.l { stroke: #a8642f; }
+    .w.n { stroke: #3f7fd0; }
+    .w.pe { stroke: #3f9f5a; }
+    .w.pe2 { stroke: #e8d44d; stroke-dasharray: 7 7; }
+    .w.thin { stroke-width: 2.5; }
+    .dead { opacity: 0.3; }
+    .flow { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 2 14; opacity: 0.9; }
+    .leak { fill: none; stroke: var(--bad); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 3 9; }
+    .box { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+    .src { fill: var(--sunk); stroke: var(--ink-3); stroke-width: 1.4; }
+    .lever { stroke: var(--metal-line); stroke-width: 1; }
+    .lever.up { fill: var(--ok); }
+    .lever.down { fill: var(--bad); }
+    .bimetal-bg { fill: var(--sunk); stroke: var(--ink-3); stroke-width: 1; }
+    .bimetal { fill: var(--hot); }
+    .coil { fill: none; stroke: var(--ink-2); stroke-width: 2; }
+    .coil.hit { stroke: var(--bad); stroke-width: 3; }
+    .ring { fill: none; stroke: var(--ink-2); stroke-width: 5; }
+    .ring.hit { stroke: var(--bad); }
+    .app { fill: var(--sunk); stroke: var(--ink-3); stroke-width: 1.6; cursor: pointer; }
+    .app.on { fill: var(--cat); stroke: var(--ink); }
+    .app.bad { stroke: var(--bad); stroke-width: 3; }
+    .man { fill: none; stroke: var(--ink); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+    .man.hurt { stroke: var(--bad); }
+    .man-head { fill: var(--surface); stroke: var(--ink); stroke-width: 3; }
+    .man-head.hurt { stroke: var(--bad); }
+    .short { stroke: var(--bad); stroke-width: 5; stroke-linecap: round; }
+    .ground { stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
+    .t { fill: var(--ink-2); font: 500 11.5px var(--font-mono); }
+    .t.strong { fill: var(--ink); font-weight: 600; }
+    .t.mid { text-anchor: middle; }
+    .t.warn { fill: var(--bad); font-weight: 600; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .flow, .leak { animation: run var(--dur, 0.8s) linear infinite; }
+      .flow.back { animation-direction: reverse; }
+      @keyframes run { to { stroke-dashoffset: -32; } }
+    }
+    @media (max-width: 46rem) {
+      .t { font-size: 19px; }
+    }
+  </style>
+</head>
+<body data-cat="domacnost">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Domácnost</a><span aria-hidden="true">/</span><span>Jistič a chránič</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Domácnost</a></p>
+      <h1 class="display">Jak funguje jistič a proudový chránič</h1>
+      <p class="lede">V rozvaděči máte dva druhy přístrojů, které vypadají skoro stejně a obojí umí vypnout proud. Hlídají ale každý něco jiného. Jistič chrání dráty ve zdi před přehřátím. Chránič chrání vás.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Jistič vypne, když obvodem teče víc proudu, než dráty snesou: pomalu při přetížení, okamžitě při zkratu.</li>
+        <li><span class="hl">Proud, který zabije člověka, je stokrát menší než ten, při kterém jistič vůbec něco pozná.</span></li>
+        <li>Chránič porovnává, kolik proudu teče do obvodu a kolik se vrací. Když se pár setin ampéru ztrácí, třeba přes něčí tělo, za zlomek sekundy vypne.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Zásuvkový obvod s jističem a chráničem</p>
+        <span class="label">Zapínejte spotřebiče, vyvolejte poruchu a sledujte, co vypne</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="circuit" viewBox="0 0 600 430" role="img" aria-label="Schéma zásuvkového obvodu: přívod, jistič, proudový chránič, čtyři spotřebiče, ochranný vodič a člověk, který se může dotknout fáze"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-apps">Spotřebiče</span>
+          <div class="seg" role="group" aria-labelledby="lbl-apps" id="app-seg">
+            <button type="button" role="checkbox" data-v="0" aria-checked="true">Konvice</button>
+            <button type="button" role="checkbox" data-v="1" aria-checked="false">Mikrovlnka</button>
+            <button type="button" role="checkbox" data-v="2" aria-checked="false">Přímotop</button>
+            <button type="button" role="checkbox" data-v="3" aria-checked="false">Pračka</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-fault">Porucha</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-fault" id="fault-seg">
+            <button type="button" role="radio" data-v="none" aria-checked="true">Žádná</button>
+            <button type="button" role="radio" data-v="short" aria-checked="false">Zkrat</button>
+            <button type="button" role="radio" data-v="touch" aria-checked="false">Dotyk fáze</button>
+            <button type="button" role="radio" data-v="case" aria-checked="false">Probitá pračka</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-rcd">Chránič</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-rcd" id="rcd-seg">
+            <button type="button" role="radio" data-v="yes" aria-checked="true">Zapojený</button>
+            <button type="button" role="radio" data-v="no" aria-checked="false">Chybí</button>
+          </div>
+        </div>
+        <button type="button" class="btn" id="reset" disabled>Nahodit znovu</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Obvodem teče</span><span class="v" id="st-i"></span></li>
+          <li><span class="n">Ztrácí se mimo obvod</span><span class="v" id="st-leak"></span></li>
+          <li><span class="n">Vypne</span><span class="v small" id="st-trip"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Jistič v modelu je typ B16, jaký bývá na zásuvkových obvodech, chránič reaguje na rozdíl 30 mA. Pomalé vypnutí bimetalem je v obrázku zrychlené, skutečná doba je napsaná vedle. Doby vypnutí jsou typické hodnoty, u skutečných přístrojů se liší kus od kusu. Odpor lidského těla se počítá 2 000 ohmů. Model je zjednodušený a neslouží jako návod k práci na elektroinstalaci.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-dva">
+      <div class="prose">
+        <h2 id="h-dva">Dva hlídači, dvě různé starosti</h2>
+        <p>Elektřina v domě může ublížit dvojím způsobem. Může zapálit dům, když dráty ve zdi vedou víc proudu, než snesou, a rozpálí se. A může zabít člověka, když proud najde cestu přes jeho tělo.</p>
+        <p>Ta dvě nebezpečí se liší velikostí proudu asi stokrát. Drát v zásuvkovém obvodu bez potíží vede šestnáct ampérů. Člověku stačí k smrti desetina ampéru. Jeden přístroj nemůže hlídat obojí, protože to, co je pro drát nic, je pro člověka konec.</p>
+        <p>Proto jsou v rozvaděči dva. Jistič hlídá, aby proudu nebylo moc. Proudový chránič hlídá, aby se žádný proud neztrácel tam, kam nemá.</p>
+      </div>
+      <aside class="note" aria-label="Jištění v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>16 A</dt><dd>je obvyklý jistič na zásuvky, pustí 3 680 wattů</dd></div>
+          <div><dt>0,01 s</dt><dd>trvá jističi vypnout zkrat</dd></div>
+          <div><dt>30 mA</dt><dd>rozdílu stačí chrániči, aby vypnul</dd></div>
+          <div><dt>asi 10 mA</dt><dd>stáhne svaly tak, že se člověk drátu nepustí</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-jistic">
+      <div class="prose">
+        <h2 id="h-jistic">Jistič: moc proudu</h2>
+        <p>Každý drát se průchodem proudu zahřívá a hřeje tím víc, čím víc proudu vede. Dvojnásobný proud znamená čtyřikrát víc tepla. Měděný drát v zásuvkovém obvodu snese trvale šestnáct ampérů. Když jich poteče pětadvacet, izolace časem změkne a zuhelnatí.</p>
+        <p>V jističi jsou dvě spouště, protože moc proudu může být dvojího druhu. První je pásek ze dvou kovů slisovaných k sobě. Proud ho zahřívá stejně jako drát ve zdi, a protože se každý z kovů teplem roztahuje jinak, pásek se ohýbá. Když se ohne dost, vypne. Reaguje schválně pomalu: krátkou špičku při rozběhu vysavače pustí, trvalé přetížení ne.</p>
+        <p>Druhá je cívka s železným jádrem. Při zkratu, kdy se fáze dotkne nuláku napřímo, vyskočí proud ze šestnácti ampérů na stovky až tisíce. Na ohřev pásku není čas. Cívka se v tu chvíli stane silným magnetem, vtáhne jádro a rozpojí kontakty za setinu sekundy.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Se dvěma spotřebiči jistič drží. Zapněte tři: vypne asi za čtvrt hodiny. Se všemi čtyřmi za necelou minutu.</p>
+        <p>Pak je vypněte, nahoďte jistič a zvolte Zkrat. Vypne okamžitě a chránič si ničeho nevšimne.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-clovek">
+      <div class="prose">
+        <h2 id="h-clovek">Proč jistič člověka nezachrání</h2>
+        <p>Když se dotknete živého drátu a stojíte přitom na zemi, proud poteče přes vás do země. Lidské tělo mu klade odpor kolem dvou tisíc ohmů, takže při 230 voltech jím projde asi 115 miliampérů. To je desetina ampéru.</p>
+        <p>Jistič na šestnáct ampérů takový proud nezaznamená. Je to pro něj totéž jako rozsvícená žárovka. Pro srdce je to ale víc než dost. Už od deseti miliampérů křeč sevře ruku tak, že se člověk nedokáže pustit. Kolem třiceti přestává stačit dech. Sto miliampérů po dobu jedné sekundy rozhodí srdeční rytmus.</p>
+        <p><span class="hl">Jistič tedy člověka před úrazem proudem neochrání.</span> Chrání dráty. Na lidi je potřeba něco, co pozná proud tisíckrát menší.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Přepněte Chránič na Chybí a zvolte Dotyk fáze. Tělem teče 115 mA a nevypne nic. Pak chránič vraťte.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-chranic">
+      <div class="prose">
+        <h2 id="h-chranic">Chránič: proud, který se ztratil</h2>
+        <p>Chránič nesleduje, kolik proudu teče. Sleduje, jestli se všechen vrací. Do spotřebiče teče proud jedním drátem, fází, a druhým, nulákem, se vrací zpátky. V pořádku je to tehdy, když jsou oba proudy přesně stejné.</p>
+        <p>Oba dráty procházejí uvnitř chrániče železným kroužkem. Každý v něm budí magnetické pole, jeden jedním směrem a druhý opačným, takže se navzájem ruší a kroužek je bez pole. Jakmile část proudu uteče jinudy, třeba přes člověka do země, vrací se nulákem míň, než kolik přiteklo fází. Pole se přestanou rušit, v kroužku se objeví zbytek a ten vybaví spoušť.</p>
+        <p>Stačí rozdíl 30 miliampérů a chránič vypne za několik setin sekundy. Ránu dostanete, ale tak krátkou, že ji srdce skoro vždycky přečká.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Se zapojeným chráničem zvolte Dotyk fáze. Vypne za tři setiny sekundy, jistič se ani nehne.</p>
+        <span class="label">Na okraj</span>
+        <p>Na chrániči je tlačítko TEST. Pustí malý proud mimo kroužek, a chránič musí vypnout. Výrobci doporučují zmáčknout ho aspoň jednou za půl roku, aby se mechanismus nezatuhl.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zeme">
+      <div class="prose">
+        <h2 id="h-zeme">Třetí drát</h2>
+        <p>V kabelu k zásuvce je ještě třetí vodič, zelenožlutý. Za normálních okolností jím neteče nic. Je spojený se zemí a na druhém konci s kovovým pláštěm pračky, trouby nebo lednice.</p>
+        <p>Když se uvnitř pračky uvolní drát a dotkne se pláště, bez třetího vodiče by byl plášť pod napětím a čekal na první ruku. S ním má proud lepší cestu: ochranným vodičem rovnou do země. Teče ho hodně, jako při zkratu, a jistič vypne. Chránič taky, protože proud se nevrací nulákem.</p>
+        <p>Pračka se tak odpojí sama, dřív než na ni někdo sáhne. Proto má zásuvka kolík a proto se nemá ulamovat ani obcházet rozdvojkou bez něj.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Zvolte Probitou pračku. Proud teče zelenožlutým vodičem do země a vypne jistič i chránič, i když se pračky nikdo nedotkl.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-neumi">
+      <div class="prose">
+        <h2 id="h-neumi">Co který neumí</h2>
+        <p>Chránič nepozná přetížení ani zkrat. Když proud teče tam a zpátky stejný, je spokojený, i kdyby ho bylo stokrát víc, než dráty snesou. Sám by dům před požárem neuchránil.</p>
+        <p>A nepomůže ani v jednom vzácném případě: když se člověk izolovaný od země dotkne zároveň fáze i nuláku. Proud pak teče přes něj, ale všechen se poctivě vrací nulákem, a chránič nevidí žádný rozdíl.</p>
+        <p>Proto se oba přístroje zapojují za sebou a v nových rozvodech je chránič pro zásuvky povinný. Prodávají se i spojené do jednoho kusu. Do rozvaděče ale patří elektrikář. Tenhle článek vysvětluje, co se v něm děje, ne jak v něm pracovat.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Než přišly jističe, dělala jejich práci tavná pojistka: tenký drátek, který se při nadměrném proudu přepálil. Fungovala spolehlivě, jen jednou. Jistič stačí nahodit.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../../technika/gps/" data-cat="technika">
+        <span class="label">Další článek · Technika</span>
+        <span class="t">Jak funguje GPS</span>
+        <p>Jak telefon zjistí, kde je, když do vesmíru nic neposílá.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const cs = (v, digits) => v.toLocaleString("cs-CZ", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------- model ---------- */
+    const VOLTS = 230, RATED = 16;                     // síť a jmenovitý proud jističe B16
+    const APPS = [{ name: "konvice", watts: 2000 }, { name: "mikrovlnka", watts: 1200 }, { name: "přímotop", watts: 2000 }, { name: "pračka", watts: 2200 }];
+    const SHORT = 920, BODY = VOLTS / 2000, CASE = 460;   // proud při zkratu, tělem a probitým pláštěm do země (ampéry)
+    const s = { on: [true, false, false, false], fault: "none", rcd: true, tripped: [], progress: 0, pending: null };
+    // co obvodem teče a co se z toho nevrací nulákem
+    function currents() {
+      const load = APPS.reduce((sum, a, i) => sum + (s.on[i] ? a.watts / VOLTS : 0), 0);
+      const leak = s.fault === "touch" ? BODY : s.fault === "case" ? CASE : 0;
+      return { total: load + leak + (s.fault === "short" ? SHORT : 0), leak };
+    }
+    // kdo vypne a za jak dlouho; null, když nikdo
+    function verdict() {
+      const { total, leak } = currents(), out = [];
+      if (s.rcd && leak >= 0.03) out.push({ by: "rcd", at: 0.03 });
+      if (total >= 4 * RATED) out.push({ by: "mcb", at: 0.01, how: "magnet" });
+      else if (total >= 1.2 * RATED) out.push({ by: "mcb", at: 35.7 / Math.pow(total / RATED - 1.13, 2.476), how: "bimetal" });
+      if (!out.length) return null;
+      out.sort((a, b) => a.at - b.at);
+      // při velkém úniku do země stihnou vypnout oba skoro naráz
+      return { ...out[0], both: out.length > 1 && out[1].at < 0.1 };
+    }
+    const span = (sec) => (sec < 1 ? `${cs(sec, 2)} s` : sec < 90 ? `${Math.round(sec)} s` : `${Math.round(sec / 60)} min`);
+
+    /* ---------- schéma ---------- */
+    // Fáze vede nahoře, nulák dole a spotřebiče visí mezi nimi, aby se dráty nekřížily.
+    const svg = $("circuit");
+    const Y = { l: 132, n: 262, pe: 366, floor: 396 }, END = { l: 572, n: 560 };
+    const MCB = { x: 104, w: 92 }, RCD = { x: 226, w: 100 };
+    const APP_X = [366, 414, 462, 510];
+    const seg = (cls, d) => el("path", { d, class: `w ${cls}` }, svg);
+    const both = (d, thin) => { seg(`pe${thin ? " thin" : ""}`, d); seg(`pe2${thin ? " thin" : ""}`, d); };
+    // přívod, uzemnění a podlaha
+    el("line", { x1: 14, y1: Y.floor, x2: 596, y2: Y.floor, class: "ground" }, svg);
+    el("text", { x: 596, y: Y.floor + 18, class: "t", style: "text-anchor:end" }, svg).textContent = "podlaha a zem";
+    both(`M43 204V${Y.floor}`, true);
+    el("rect", { x: 14, y: 104, width: 58, height: 186, rx: 4, class: "src" }, svg);
+    el("text", { x: 43, y: Y.l + 5, class: "t mid" }, svg).textContent = "fáze";
+    el("text", { x: 43, y: 202, class: "t strong mid" }, svg).textContent = "230 V";
+    el("text", { x: 43, y: Y.n + 5, class: "t mid" }, svg).textContent = "nulák";
+    // vodiče: před přístroji, mezi nimi a za nimi
+    const wires = {
+      l1: seg("l", `M72 ${Y.l}H${MCB.x}`), l2: seg("l", `M${MCB.x + MCB.w} ${Y.l}H${RCD.x}`), l3: seg("l", `M${RCD.x + RCD.w} ${Y.l}H${END.l}`),
+      n1: seg("n", `M72 ${Y.n}H${RCD.x}`), n3: seg("n", `M${RCD.x + RCD.w} ${Y.n}H${END.n}`),
+    };
+    both(`M43 ${Y.pe}H548`);
+    // ochranný vodič k plášti pračky; obloučkem přeskakuje nulák, se kterým spojený není
+    both(`M530 198H548V${Y.n - 8}a8 8 0 0 1 0 16V${Y.pe}`, true);
+    el("text", { x: 150, y: Y.pe - 10, class: "t" }, svg).textContent = "ochranný vodič";
+    // proud ve vodičích jako běžící tečky
+    const flowL = el("path", { d: `M72 ${Y.l}H${END.n}`, class: "flow" }, svg), flowN = el("path", { d: `M72 ${Y.n}H${END.n}`, class: "flow back" }, svg);
+    // spotřebiče
+    const apps = APPS.map((a, i) => {
+      const x = APP_X[i];
+      el("path", { d: `M${x} ${Y.l}V176`, class: "w l thin" }, svg);
+      el("path", { d: `M${x} 220V${Y.n}`, class: "w n thin" }, svg);
+      el("text", { x, y: i % 2 ? 106 : 120, class: "t mid" }, svg).textContent = a.name;
+      return el("rect", { x: x - 20, y: 176, width: 40, height: 44, rx: 5, class: "app" }, svg);
+    });
+    // jistič: páčka, bimetal a cívka
+    el("rect", { x: MCB.x, y: 86, width: MCB.w, height: 74, rx: 5, class: "box" }, svg);
+    el("text", { x: MCB.x + MCB.w / 2, y: 50, class: "t strong mid" }, svg).textContent = "JISTIČ";
+    const mcbLever = el("rect", { x: MCB.x + MCB.w / 2 - 9, y: 60, width: 18, height: 10, rx: 2, class: "lever up" }, svg);
+    el("rect", { x: MCB.x + 10, y: 98, width: 34, height: 9, rx: 2, class: "bimetal-bg" }, svg);
+    const bimetal = el("rect", { x: MCB.x + 10, y: 98, width: 0, height: 9, rx: 2, class: "bimetal" }, svg);
+    const coil = el("path", { d: `M${MCB.x + 54} 108q4 -14 8 0q4 -14 8 0q4 -14 8 0`, class: "coil" }, svg);
+    el("path", { d: `M${MCB.x} ${Y.l}H${MCB.x + MCB.w}`, class: "w l" }, svg);
+    const mcbT = el("text", { x: MCB.x + MCB.w / 2, y: 152, class: "t mid" }, svg);
+    // chránič: kroužek kolem obou vodičů
+    const rcdBox = el("g", {}, svg);
+    el("rect", { x: RCD.x, y: 86, width: RCD.w, height: 208, rx: 5, class: "box" }, rcdBox);
+    el("text", { x: RCD.x + RCD.w / 2, y: 50, class: "t strong mid" }, rcdBox).textContent = "CHRÁNIČ";
+    const rcdLever = el("rect", { x: RCD.x + RCD.w / 2 - 9, y: 60, width: 18, height: 10, rx: 2, class: "lever up" }, rcdBox);
+    const ring = el("ellipse", { cx: RCD.x + RCD.w / 2, cy: (Y.l + Y.n) / 2, rx: 15, ry: 82, class: "ring" }, rcdBox);
+    el("path", { d: `M${RCD.x} ${Y.l}H${RCD.x + RCD.w}`, class: "w l" }, svg);
+    el("path", { d: `M${RCD.x} ${Y.n}H${RCD.x + RCD.w}`, class: "w n" }, svg);
+    const rcdT = el("text", { x: RCD.x + RCD.w / 2, y: 314, class: "t mid" }, rcdBox);
+    const noRcd = el("text", { x: RCD.x + RCD.w / 2, y: 50, class: "t mid" }, svg);
+    noRcd.textContent = "bez chrániče";
+    // poruchy: zkrat, člověk, probitý plášť
+    const shortG = el("g", {}, svg);
+    el("line", { x1: END.n, y1: Y.l, x2: END.n, y2: Y.n, class: "short" }, shortG);
+    el("text", { x: END.n - 8, y: 248, class: "t warn", style: "text-anchor:end" }, shortG).textContent = "zkrat";
+    const manG = el("g", {}, svg), MX = 586;
+    const manBody = el("path", { d: `M${MX} 250V318M${MX} 318l-11 ${Y.floor - 318}M${MX} 318l10 ${Y.floor - 318}M${MX} 264L${END.l} 214V${Y.l + 4}`, class: "man" }, manG);
+    const manHead = el("circle", { cx: MX, cy: 238, r: 11, class: "man-head" }, manG);
+    const leakTouch = el("path", { d: `M${END.l} ${Y.l + 4}V214L${MX} 264V318l-11 ${Y.floor - 318}H43V290`, class: "leak" }, svg);
+    const leakCase = el("path", { d: `M${APP_X[3]} ${Y.l}V176M530 198H548V${Y.pe}H43V290`, class: "leak" }, svg);
+    const caseT = el("text", { x: APP_X[3], y: 240, class: "t warn mid" }, svg);
+    caseT.textContent = "probitý plášť";
+
+    /* ---------- kresba ---------- */
+    let said = "";
+    function render() {
+      const off = s.tripped.length > 0, { total, leak } = currents(), plan = verdict(), live = !off;
+      // po vypnutí je všechno za přístrojem bez napětí
+      const mcbOff = s.tripped.includes("mcb"), rcdOff = s.tripped.includes("rcd");
+      wires.l2.classList.toggle("dead", mcbOff);
+      [wires.l3, wires.n3].forEach((w) => w.classList.toggle("dead", mcbOff || rcdOff));
+      mcbLever.setAttribute("class", `lever ${mcbOff ? "down" : "up"}`); mcbLever.setAttribute("y", mcbOff ? 70 : 60);
+      rcdLever.setAttribute("class", `lever ${rcdOff ? "down" : "up"}`); rcdLever.setAttribute("y", rcdOff ? 70 : 60);
+      rcdBox.setAttribute("display", s.rcd ? "" : "none");
+      noRcd.setAttribute("display", s.rcd ? "none" : "");
+      bimetal.setAttribute("width", 34 * s.progress);
+      coil.setAttribute("class", `coil${(mcbOff || s.pending) && plan && plan.by === "mcb" && plan.how === "magnet" ? " hit" : ""}`);
+      ring.setAttribute("class", `ring${live && leak >= 0.03 ? " hit" : ""}`);
+      apps.forEach((node, i) => node.setAttribute("class", `app${s.on[i] && live ? " on" : ""}${i === 3 && s.fault === "case" ? " bad" : ""}`));
+      shortG.setAttribute("display", s.fault === "short" ? "" : "none");
+      manG.setAttribute("display", s.fault === "touch" ? "" : "none");
+      const hurt = s.fault === "touch" && live;
+      manBody.setAttribute("class", `man${hurt ? " hurt" : ""}`); manHead.setAttribute("class", `man-head${hurt ? " hurt" : ""}`);
+      leakTouch.setAttribute("display", hurt ? "" : "none");
+      leakCase.setAttribute("display", s.fault === "case" && live ? "" : "none");
+      caseT.setAttribute("display", s.fault === "case" ? "" : "none");
+      // tečky proudu: čím větší proud, tím rychleji běží
+      const flowing = live && total > 0.01;
+      [flowL, flowN].forEach((f) => { f.setAttribute("display", flowing ? "" : "none"); f.style.setProperty("--dur", `${Math.max(0.12, Math.min(1.6, 9 / (total + 1)))}s`); });
+      flowN.setAttribute("display", flowing && total - leak > 0.01 ? "" : "none");
+      mcbT.textContent = live ? `${cs(total, total < 100 ? 1 : 0)} A` : "vypnuto";
+      rcdT.textContent = live ? `rozdíl ${leak >= 1 ? `${cs(leak, 0)} A` : `${cs(leak * 1000, 0)} mA`}` : "vypnuto";
+
+      $("app-seg").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(s.on[Number(b.dataset.v)])));
+      $("reset").disabled = !off;
+      $("st-i").textContent = live ? `${cs(total, total < 100 ? 1 : 0)} A` : "0 A";
+      $("st-leak").textContent = !live ? "0 mA" : leak >= 1 ? `${cs(leak, 0)} A` : `${cs(leak * 1000, 0)} mA`;
+      const who = plan ? (plan.both ? "jistič i chránič" : plan.by === "mcb" ? "jistič" : "chránič") : "";
+      $("st-trip").textContent = off ? `vypnul ${s.tripped.length > 1 ? "jistič i chránič" : s.tripped[0] === "mcb" ? "jistič" : "chránič"}` : plan ? `${who} za ${span(plan.at)}` : "nic";
+
+      let status;
+      const ratio = total / RATED;
+      if (off) {
+        const why = s.fault === "short" ? "Zkrat pustil do obvodu skoro tisíc ampérů a cívka v jističi rozpojila kontakty za setinu sekundy."
+          : s.fault === "touch" ? "Tělem začalo téct 115 mA do země. Nulákem se jich vracelo o tolik míň a chránič to poznal za tři setiny sekundy."
+          : s.fault === "case" ? "Proud z probitého pláště tekl ochranným vodičem do země. Bylo ho dost na jistič a nulákem se nevracel, takže zareagoval i chránič."
+          : "Obvodem teklo víc, než dráty trvale snesou. Bimetalový pásek v jističi se ohřál, ohnul a vypnul.";
+        status = `<strong>Vypnuto.</strong> ${why} Dokud příčina trvá, vypne po nahození znovu.`;
+      } else if (s.fault === "touch" && !s.rcd) status = "<strong>Nevypne nic.</strong> Tělem teče 115 mA, to je smrtelně nebezpečné. Jistič si ale takového proudu nevšimne, je to pro něj jako rozsvícená žárovka. Tady by pomohl jen chránič.";
+      else if (plan && plan.how === "bimetal") status = `<strong>Přetíženo.</strong> Teče ${cs(total, 1)} A, to je ${cs(ratio, 1)}× víc, než na kolik je jistič stavěný. Bimetal se ohřívá a vypne asi za ${span(plan.at)}.`;
+      else if (plan) status = "<strong>Porucha.</strong> Za okamžik vypne.";
+      else if (ratio > 1.02) status = `<strong>Na hraně.</strong> Teče ${cs(total, 1)} A, o trochu víc než jmenovitých 16. Takové přetížení jistič vydrží hodiny a dráty taky, s tím se počítá.`;
+      else if (total < 0.01) status = "<strong>Nic nezapnuto.</strong> Obvodem neteče žádný proud.";
+      else status = `<strong>Všechno v pořádku.</strong> Fází teče ${cs(total, 1)} A a přesně tolik se vrací nulákem. Jistič má rezervu a chránič nevidí žádný rozdíl.`;
+      if (status !== said) { said = status; $("status").innerHTML = status; }
+    }
+
+    /* ---------- běh: vypnutí přijde po chvilce, aby bylo vidět, co mu předcházelo ---------- */
+    let timer = null;
+    function settle() {
+      clearInterval(timer); timer = null;
+      s.pending = null; s.progress = 0;
+      const plan = s.tripped.length ? null : verdict();
+      if (plan) {
+        const wait = calm ? 0 : plan.how === "bimetal" ? 3200 : 650, began = Date.now();
+        s.pending = plan;
+        const trip = () => { clearInterval(timer); timer = null; s.tripped = plan.both ? ["mcb", "rcd"] : [plan.by]; s.pending = null; s.progress = plan.how === "bimetal" ? 1 : 0; render(); };
+        if (!wait) trip();
+        else timer = setInterval(() => { const part = (Date.now() - began) / wait; if (plan.how === "bimetal") s.progress = Math.min(1, part); if (part >= 1) trip(); else render(); }, 60);
+      }
+      render();
+    }
+
+    /* ---------- ovládání ---------- */
+    const toggle = (i) => { s.on[i] = !s.on[i]; settle(); };
+    $("app-seg").addEventListener("click", (e) => { const b = e.target.closest("button[data-v]"); if (b) toggle(Number(b.dataset.v)); });
+    apps.forEach((node, i) => node.addEventListener("click", () => toggle(i)));
+    function bindSeg(id, apply) {
+      $(id).addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        $(id).querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+        apply(b.dataset.v);
+        settle();
+      });
+    }
+    bindSeg("fault-seg", (v) => { s.fault = v; });
+    bindSeg("rcd-seg", (v) => { s.rcd = v === "yes"; s.tripped = s.tripped.filter((x) => x !== "rcd"); });
+    $("reset").addEventListener("click", () => { s.tripped = []; settle(); });
+    settle();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>

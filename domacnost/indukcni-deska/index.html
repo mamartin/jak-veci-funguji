@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje indukční deska</title>
+  <meta name="description" content="Proč indukční deska hřeje hrnec, a ne sebe, proč na ní nefunguje hliník a kam se poděje energie u plynu. S modelem tří desek a pěti hrnců.">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .ih-stage { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+    @media (min-width: 60rem) { .ih-stage { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); } }
+    #side { justify-self: center; max-width: 20rem; }
+    /* varné sklo je černé ve světlém i tmavém režimu */
+    .glass { fill: #15181d; stroke: var(--metal-line); stroke-width: 1; }
+    .glass-hot { fill: var(--hot); }
+    .counter { fill: var(--sunk); stroke: var(--rule); stroke-width: 1; }
+    .coil { fill: #c9824f; stroke: var(--metal-line); stroke-width: 1; }
+    .ferrite { fill: var(--metal-line); }
+    .field { fill: none; stroke: var(--cat); stroke-width: 1.8; stroke-dasharray: 6 7; }
+    .spiral { fill: none; stroke: var(--hot); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .burner { fill: var(--metal-line); }
+    .flame { fill: #4f8dea; opacity: 0.85; }
+    .flame-in { fill: #b9d6ff; }
+    .escape { fill: none; stroke: var(--hot); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 3 6; }
+    .wall { fill: none; stroke-width: 9; stroke-linejoin: round; }
+    .wall-edge { fill: none; stroke: var(--metal-line); stroke-width: 1.2; }
+    .base-edge { fill: none; stroke: var(--metal-line); stroke-width: 1.2; }
+    .heat { fill: var(--hot); }
+    .water { fill: var(--cold); }
+    .water-top { stroke: var(--cold); stroke-width: 2; }
+    .bubble { fill: var(--surface); stroke: var(--cold); stroke-width: 1.4; }
+    .up { fill: none; stroke: var(--hot); stroke-width: 2.2; stroke-linecap: round; }
+    .rd-val { fill: var(--ink); font: 800 40px var(--font-display); font-stretch: 112%; font-variant-numeric: tabular-nums; text-anchor: middle; }
+    .lbl { fill: var(--ink-2); font: 500 12px var(--font-mono); }
+    .lbl.strong { fill: var(--ink); font-weight: 600; }
+    .lead { stroke: var(--ink-3); stroke-width: 1; }
+    .dish { fill: var(--sunk); stroke: var(--metal-line); stroke-width: 1.4; }
+    .eddy { fill: none; stroke: var(--hot); stroke-width: 2.4; }
+    .eddy-head { fill: var(--hot); }
+    .bar-bg { fill: var(--sunk); stroke: var(--rule); stroke-width: 1; }
+    .bar-in { fill: var(--cat); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .field { animation: flow 1.1s linear infinite; }
+      .field.back { animation-direction: reverse; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+    }
+    @media (max-width: 46rem) {
+      #hob .lbl { font-size: 17px; }
+    }
+  </style>
+</head>
+<body data-cat="domacnost">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Domácnost</a><span aria-hidden="true">/</span><span>Indukční deska</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Domácnost</a></p>
+      <h1 class="display">Jak funguje indukční deska</h1>
+      <p class="lede">Indukční deska nehřeje. Položíte na ni ruku a nic, položíte hrnec a voda se za pár minut vaří. Teplo totiž nevzniká v desce, ale přímo ve dně hrnce, a jen když je to dno ze železa.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Pod sklem je cívka. Teče jí proud, který desetitisíckrát za sekundu mění směr, a kolem cívky vzniká stejně rychle se měnící magnetické pole.</li>
+        <li><span class="hl">Měnící se pole rozproudí ve dně hrnce elektrický proud a ten dno rozpálí.</span> Hrnec je topné těleso, deska jen vysílač.</li>
+        <li>Funguje to jen v železe a magnetické oceli. Hliník a měď vedou proud až moc dobře a skoro se nezahřejí.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Tři desky a pět hrnců</p>
+        <span class="label">Vyberte desku a hrnec a zapněte</span>
+      </div>
+      <div class="fig-stage ih-stage">
+        <svg id="hob" viewBox="0 0 500 370" role="img" aria-label="Řez varnou deskou s hrncem vody: pod sklem cívka, topná spirála, nebo plynový hořák"></svg>
+        <svg id="side" viewBox="0 0 280 380" role="img" aria-label="Pohled shora na dno hrnce s vířivými proudy a podíl energie, který skončí ve vodě"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-hob">Deska</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-hob" id="hob-seg">
+            <button type="button" role="radio" data-v="ind" aria-checked="true">Indukce</button>
+            <button type="button" role="radio" data-v="cer" aria-checked="false">Sklokeramika</button>
+            <button type="button" role="radio" data-v="gas" aria-checked="false">Plyn</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-pot">Hrnec</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-pot" id="pot-seg">
+            <button type="button" role="radio" data-v="iron" aria-checked="false">Litina</button>
+            <button type="button" role="radio" data-v="steel" aria-checked="true">Ocel</button>
+            <button type="button" role="radio" data-v="alu" aria-checked="false">Hliník</button>
+            <button type="button" role="radio" data-v="cu" aria-checked="false">Měď</button>
+            <button type="button" role="radio" data-v="glass" aria-checked="false">Sklo</button>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="power">Příkon</label>
+          <div class="ctl-row">
+            <input type="range" id="power" min="0.5" max="3" step="0.1" value="2">
+            <output class="val" id="power-val" for="power"></output>
+          </div>
+        </div>
+        <button type="button" class="btn" id="run" aria-pressed="false">Zapnout</button>
+        <button type="button" class="btn ghost" id="reset">Studená voda</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Voda</span><span class="v" id="st-t"></span></li>
+          <li><span class="n">Uplynulo</span><span class="v" id="st-time"></span></li>
+          <li><span class="n">Do vody jde</span><span class="v" id="st-eff"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">V hrnci je litr a půl vody o teplotě 20 °C. Čas běží dvacetkrát rychleji než ve skutečnosti. Tloušťka vrstvy, ve které teče proud, je v řezu pro názornost zvětšená. Účinnosti jsou typické hodnoty, skutečné se liší podle hrnce a desky. Ocelí se tu myslí magnetická ocel, ze které jsou hrnce určené pro indukci.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-noviny">
+      <div class="prose">
+        <h2 id="h-noviny">Vaření přes noviny</h2>
+        <p>Položte mezi indukční desku a hrnec list novin a zapněte. Voda se uvaří a noviny neshoří, ani nezhnědnou. V padesátých letech tím firma Frigidaire ohromovala návštěvníky výstav a funguje to dodnes.</p>
+        <p>Na obyčejné plotýnce by papír vzplál hned. Plotýnka se totiž musí nejdřív sama rozžhavit a teplo pak předává hrnci. Indukční deska teplo nepředává. Posílá do hrnce energii jiným způsobem a v teplo se ta energie změní až ve dně hrnce. Papír mezi nimi nic nezastaví ani nezachytí.</p>
+        <p>Sklo desky se nakonec zahřeje taky, ale jen od horkého hrnce, který na něm stojí. Proto se na něm připálené mléko jen tak nepřipeče.</p>
+      </div>
+      <aside class="note" aria-label="Indukce v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>asi 25 000×</dt><dd>za sekundu změní proud v cívce směr</dd></div>
+          <div><dt>0,1 mm</dt><dd>je vrstva ocelového dna, ve které proud teče</dd></div>
+          <div><dt>kolem 85 %</dt><dd>energie skončí v hrnci, u plynu asi 40 %</dd></div>
+          <div><dt>1831</dt><dd>objevil Michael Faraday jev, na kterém deska stojí</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-civka">
+      <div class="prose">
+        <h2 id="h-civka">Cívka a hrnec</h2>
+        <p>Pod sklem leží plochá spirála z měděného drátu. Když jí teče proud, chová se jako magnet. Elektronika desky ten proud žene střídavě tam a zpátky, asi pětadvacettisíckrát za sekundu, a magnetické pole nad deskou se stejně rychle otáčí naruby.</p>
+        <p>Michael Faraday zjistil už roku 1831, co se stane, když do měnícího se magnetického pole vložíte kus kovu: začne v něm téct proud. Nikdo ho tam nepřivádí drátem, vyrobí ho pole samo. Ve dně hrnce ten proud krouží v kruzích, pořád dokola, a říká se mu vířivý.</p>
+        <p><span class="hl">Proud, který teče kovem, kov zahřívá.</span> Stejně hřeje spirála ve fénu nebo vlákno v žárovce. Tady je topnou spirálou samo dno hrnce. Deska s hrncem dohromady tvoří transformátor, jehož druhé vinutí je spojené nakrátko a celé se vaří.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte Indukci a Ocel a zapněte. V řezu se rozsvítí tenká vrstva u spodku dna, tam vzniká teplo. Vpravo je totéž dno shora s kruhy proudu.</p>
+        <p>Pak přepněte na Sklokeramiku. Teď žhne spirála pod sklem, od ní sklo a teprve od skla hrnec.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zelezo">
+      <div class="prose">
+        <h2 id="h-zelezo">Proč železo ano a hliník ne</h2>
+        <p>Vířivé proudy vzniknou v každém kovu. Hliníkový nebo měděný hrnec se přesto na indukci nezahřeje, a důvod je trochu překvapivý: vedou proud příliš dobře. Teplo vzniká tam, kde proudu něco klade odpor. V mědi a hliníku proud protéká skoro bez odporu a tepla je málo.</p>
+        <p>Železo je horší vodič, a navíc je magnetické. To má zvláštní důsledek. Při tak rychlých změnách vytlačí magnetické pole proud až k povrchu a v železe a oceli mu nechá vrstvu tenkou jednu až dvě desetiny milimetru. Do tak úzkého průřezu se proud musí vmáčknout, odpor je velký a dno se rozpálí. V hliníku je ta vrstva několikrát tlustší a odpor mnohonásobně menší.</p>
+        <p>Jestli hrnec na indukci funguje, poznáte magnetem. Když na dně drží, je to dobré. Hliníkové a měděné hrnce určené pro indukci mají do dna zalisovaný plát magnetické oceli. Sklo a keramika proud nevedou vůbec.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Na Indukci vyměňte hrnec za hliníkový. Deska ho nepozná a nezapne se. Na Sklokeramice i na Plynu tentýž hrnec funguje.</p>
+        <span class="label">Na okraj</span>
+        <p>Existují i desky, které hliník zvládnou. Pracují na několikrát vyšší frekvenci, při které se proud vmáčkne do tenké vrstvy i v hliníku.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-ucinnost">
+      <div class="prose">
+        <h2 id="h-ucinnost">Kam se poděje energie</h2>
+        <p>Plynový hořák hřeje hlavně vzduch. Horké spaliny obtečou hrnec, předají mu část tepla a zbytek odnesou ke stropu. Do jídla se dostane asi 40 % energie. Sklokeramická deska je na tom líp, ale musí nejdřív rozžhavit spirálu a sklo, a ty pak sálají i do stran. Do hrnce jde kolem 75 %.</p>
+        <p>U indukce vzniká teplo rovnou tam, kde ho chcete. Ztrácí se jen to, co se zahřeje v cívce a elektronice, a to, co horký hrnec vyzáří do okolí. Do hrnce se dostane kolem 85 %.</p>
+        <p>Druhá výhoda je rychlost reakce. Když uberete výkon, proud ve dně zeslábne okamžitě, stejně jako když stáhnete plamen. Rozpálenou sklokeramiku musíte nechat vychladnout, nebo hrnec odstavit.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nastavte stejný příkon a nechte uvařit vodu na všech třech deskách. Na indukci to při dvou kilowattech trvá necelých pět minut, na plynu přes deset.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zvuky">
+      <div class="prose">
+        <h2 id="h-zvuky">Proč bzučí a proč se sama vypne</h2>
+        <p>Indukční deska není úplně tichá. Bzučení a tiché pískání vydává hrnec: síly, které na jeho dno v rytmu pole působí, ho nepatrně rozechvívají. Nejvíc je to slyšet u hrnců se dnem slepeným z několika vrstev a při plném výkonu. Druhý zvuk je větrák, který chladí elektroniku.</p>
+        <p>Deska také pozná, jestli na ní něco stojí. Hrnec totiž mění chování cívky a elektronika to změří. Bez hrnce, se skleněnou mísou nebo s moc malým kouskem kovu, jako je lžička, se pole vůbec nezapne. Když hrnec zvednete, ohřev se během chvilky vypne.</p>
+        <p>Magnetické pole sahá jen pár centimetrů nad sklo a rychle slábne. Lidem s kardiostimulátorem přesto výrobci doporučují nenaklánět se těsně nad zapnutou desku a poradit se s lékařem.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p><a href="../mikrovlnka/">Mikrovlnná trouba</a> taky vaří bez plamene a bez rozžhavené plotny, jen jinak. Indukce rozproudí elektrony v kovu hrnce. Mikrovlny rozhýbou molekuly vody přímo v jídle a kov do nich nepatří.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../tlakovy-hrnec/" data-cat="domacnost">
+        <span class="label">Další článek · Domácnost</span>
+        <span class="t">Jak funguje tlakový hrnec</span>
+        <p>Proč voda v papiňáku vře až při 120 stupních a na horách jen při sedmdesáti.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const cs = (v, digits) => v.toLocaleString("cs-CZ", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------- model ---------- */
+    const LITRES = 1.5, HEAT = 4186, START = 20, SPEED = 20;      // voda, měrné teplo J/(kg·°C), počáteční teplota, zrychlení času
+    const HOBS = { ind: { eff: 0.85, name: "Indukce" }, cer: { eff: 0.75, name: "Sklokeramika" }, gas: { eff: 0.4, name: "Plyn" } };
+    // skin: tloušťka vrstvy s proudem při 25 kHz v milimetrech; weak: kolikrát míň tepla než v oceli při stejném proudu v cívce
+    const POTS = {
+      iron: { name: "litina", fill: "#4b5058", magnetic: true, skin: 0.2 },
+      steel: { name: "ocel", fill: "#aeb6c2", magnetic: true, skin: 0.1 },
+      alu: { name: "hliník", fill: "#d5d9de", magnetic: false, skin: 0.5, weak: 28 },
+      cu: { name: "měď", fill: "#c9824f", magnetic: false, skin: 0.4, weak: 37 },
+      glass: { name: "sklo", fill: "#9fc2d8", magnetic: false, skin: 0 },
+    };
+    const s = { hob: "ind", pot: "steel", power: 2, on: false, temp: START, time: 0 };
+    const works = () => s.hob !== "ind" || POTS[s.pot].magnetic;
+    const boilTime = () => (LITRES * HEAT * (100 - START)) / (s.power * 1000 * HOBS[s.hob].eff);     // sekund od studené vody
+    const clock = (sec) => { const t = Math.round(sec); return `${Math.floor(t / 60)} min ${String(t % 60).padStart(2, "0")} s`; };
+
+    /* ---------- kresba ---------- */
+    const svg = $("hob");
+    const POT = { x1: 150, x2: 370, top: 118, base: 236, glass: 252 };       // dno hrnce je mezi base a glass
+    const MID = (POT.x1 + POT.x2) / 2;
+    el("rect", { x: 40, y: POT.glass + 12, width: 440, height: 96, class: "counter" }, svg);
+    // pod deskou: cívka, topná spirála, nebo hořák
+    const under = { ind: el("g", {}, svg), cer: el("g", {}, svg), gas: el("g", {}, svg) };
+    for (let i = 0; i < 6; i++) [-1, 1].forEach((side) => el("circle", { cx: MID + side * (24 + i * 14), cy: POT.glass + 30, r: 5.5, class: "coil" }, under.ind));
+    el("rect", { x: MID - 104, y: POT.glass + 40, width: 208, height: 7, class: "ferrite" }, under.ind);
+    const fields = [];
+    [-1, 1].forEach((side) => [22, 40, 58].forEach((r, i) => fields.push(el("ellipse", { cx: MID + side * 60, cy: POT.glass + 12, rx: r, ry: r * 0.72, class: `field${side < 0 ? " back" : ""}`, opacity: 0.85 - i * 0.2 }, under.ind))));
+    { let d = `M${MID - 96} ${POT.glass + 30}`; for (let i = 0; i < 16; i++) d += `l6 ${i % 2 ? 10 : -10}l6 ${i % 2 ? -10 : 10}`; el("path", { d, class: "spiral" }, under.cer); }
+    el("path", { d: `M${MID - 60} ${POT.glass + 44}h120l-14 -24h-92Z`, class: "burner" }, under.gas);
+    const flames = [];
+    for (let i = 0; i < 7; i++) { const x = MID - 72 + i * 24; flames.push(el("path", { class: "flame" }, under.gas), el("path", { class: "flame-in" }, under.gas)); flames[flames.length - 2].dataset.x = x; flames[flames.length - 1].dataset.x = x; }
+    const escapes = [-1, 1].map((side) => el("path", { d: `M${MID + side * 118} ${POT.glass - 2}q${side * 22} -30 ${side * 10} -70t${side * 6} -70`, class: "escape" }, under.gas));
+    const glass = el("rect", { x: 40, y: POT.glass, width: 440, height: 12, rx: 2, class: "glass" }, svg);
+    const glassHot = el("rect", { x: MID - 104, y: POT.glass, width: 208, height: 12, class: "glass-hot" }, svg);
+    // hrnec s vodou
+    const water = el("rect", { x: POT.x1 + 5, y: 150, width: POT.x2 - POT.x1 - 10, height: POT.base - 150, class: "water" }, svg);
+    el("line", { x1: POT.x1 + 5, y1: 150, x2: POT.x2 - 5, y2: 150, class: "water-top" }, svg);
+    const bubbles = Array.from({ length: 10 }, (_, i) => ({ node: el("circle", { class: "bubble" }, svg), x: POT.x1 + 22 + i * 20, y: POT.base - 6 - i * 8, r: 3 + (i % 3) * 1.3, v: 30 + (i % 4) * 10 }));
+    const ups = [-60, -20, 20, 60].map((dx) => el("path", { d: `M${MID + dx} ${POT.base - 8}q7 -9 0 -18t0 -18`, class: "up" }, svg));
+    const base = el("rect", { x: POT.x1 - 4, y: POT.base, width: POT.x2 - POT.x1 + 8, height: POT.glass - POT.base }, svg);
+    const heat = el("rect", { x: POT.x1 - 4, width: POT.x2 - POT.x1 + 8, class: "heat" }, svg);
+    el("rect", { x: POT.x1 - 4, y: POT.base, width: POT.x2 - POT.x1 + 8, height: POT.glass - POT.base, class: "base-edge" }, svg);
+    const wall = el("path", { d: `M${POT.x1} ${POT.top}V${POT.base}M${POT.x2} ${POT.top}V${POT.base}`, class: "wall" }, svg);
+    el("path", { d: `M${POT.x1 - 4.5} ${POT.top}V${POT.base}M${POT.x2 + 4.5} ${POT.top}V${POT.base}`, class: "wall-edge" }, svg);
+    const tVal = el("text", { x: MID, y: 206, class: "rd-val" }, svg);
+    // popisek místa, kde vzniká teplo
+    const where = el("text", { x: 46, y: 60, class: "lbl strong" }, svg), whereLine = el("line", { class: "lead" }, svg);
+    const potT = el("text", { x: MID, y: POT.top - 14, class: "lbl", style: "text-anchor:middle" }, svg);
+
+    // vpravo: dno shora s vířivými proudy a podíl energie ve vodě
+    const side = $("side");
+    const DISH = { x: 140, y: 136, r: 78 };
+    el("text", { x: DISH.x, y: 34, class: "lbl", style: "text-anchor:middle" }, side).textContent = "dno hrnce shora";
+    const dish = el("circle", { cx: DISH.x, cy: DISH.y, r: DISH.r, class: "dish" }, side);
+    const eddies = el("g", {}, side);
+    [26, 46, 64].forEach((r) => {
+      el("circle", { cx: DISH.x, cy: DISH.y, r, class: "eddy" }, eddies);
+      [0, 120, 240].forEach((a) => { const q = (a * Math.PI) / 180; el("path", { d: "M-6 -5L6 0L-6 5Z", class: "eddy-head", transform: `translate(${DISH.x + r * Math.cos(q)} ${DISH.y + r * Math.sin(q)}) rotate(${a + 90})` }, eddies); });
+    });
+    const dishT = el("text", { x: DISH.x, y: DISH.y + DISH.r + 24, class: "lbl", style: "text-anchor:middle" }, side);
+    const BAR = { x: 30, y: 300, w: 220, h: 26 };
+    el("text", { x: BAR.x, y: BAR.y - 12, class: "lbl" }, side).textContent = "kam jde energie";
+    el("rect", { x: BAR.x, y: BAR.y, width: BAR.w, height: BAR.h, class: "bar-bg" }, side);
+    const barIn = el("rect", { x: BAR.x, y: BAR.y, height: BAR.h, class: "bar-in" }, side);
+    const barT = el("text", { x: BAR.x, y: BAR.y + BAR.h + 22, class: "lbl strong" }, side), lossT = el("text", { x: BAR.x, y: BAR.y + BAR.h + 42, class: "lbl" }, side);
+
+    function flameShape(time) {
+      flames.forEach((f, i) => {
+        const x = Number(f.dataset.x), inner = i % 2 === 1, h = (inner ? 12 : 22) * (0.5 + s.power / 3) * (1 + 0.12 * Math.sin(time / 90 + x)), w = inner ? 4 : 8;
+        f.setAttribute("d", `M${x - w} ${POT.glass + 20}Q${x} ${POT.glass + 20 - h * 1.6} ${x + w} ${POT.glass + 20}Z`);
+      });
+    }
+    let said = "";
+    function render(time = 0) {
+      const hob = HOBS[s.hob], pot = POTS[s.pot], ok = works(), heating = s.on && ok, boiling = s.temp >= 100;
+      Object.keys(under).forEach((k) => under[k].setAttribute("display", k === s.hob ? "" : "none"));
+      glass.setAttribute("display", s.hob === "gas" ? "none" : "");
+      glassHot.setAttribute("opacity", s.hob === "cer" && s.on ? 0.75 : 0);
+      under.cer.setAttribute("opacity", s.on ? 1 : 0.3);
+      under.gas.querySelectorAll(".flame, .flame-in").forEach((f) => f.setAttribute("display", s.on ? "" : "none"));
+      escapes.forEach((e) => e.setAttribute("display", s.on ? "" : "none"));
+      fields.forEach((f) => f.setAttribute("display", s.on ? "" : "none"));
+      if (s.hob === "gas") flameShape(time);
+
+      wall.setAttribute("stroke", pot.fill);
+      base.setAttribute("fill", pot.fill);
+      wall.setAttribute("opacity", s.pot === "glass" ? 0.7 : 1);
+      // vrstva dna, kde vzniká teplo: u indukce tenká u spodku, jinak se dno ohřívá zespodu celé
+      const thick = POT.glass - POT.base, layer = s.hob === "ind" ? Math.max(3, Math.min(thick, pot.skin * 26)) : thick;
+      heat.setAttribute("y", POT.glass - layer); heat.setAttribute("height", layer);
+      heat.setAttribute("opacity", heating ? (s.hob === "ind" ? 0.9 : 0.45) : 0);
+      ups.forEach((u) => u.setAttribute("opacity", heating ? 0.8 : 0));
+      const warm = (s.temp - START) / (100 - START);
+      water.setAttribute("opacity", 0.2 + 0.12 * warm);
+      tVal.textContent = `${cs(s.temp, 0)} °C`;
+      potT.textContent = `hrnec: ${pot.name}`;
+      bubbles.forEach((b) => b.node.setAttribute("display", boiling ? "" : "none"));
+
+      const spot = s.hob === "ind" ? "teplo vzniká ve dně hrnce" : s.hob === "cer" ? "teplo vzniká ve spirále pod sklem" : "teplo vzniká v plameni";
+      where.textContent = heating || (s.on && s.hob !== "ind") ? spot : s.on ? "žádné teplo nevzniká" : "vypnuto";
+      const ty = s.hob === "ind" ? POT.glass - 3 : POT.glass + 30;
+      whereLine.setAttribute("x1", 60); whereLine.setAttribute("y1", 68); whereLine.setAttribute("x2", POT.x1 - 8); whereLine.setAttribute("y2", ty);
+      whereLine.setAttribute("opacity", s.on ? 1 : 0);
+
+      const showEddies = s.hob === "ind" && s.on && pot.skin > 0;
+      eddies.setAttribute("display", showEddies ? "" : "none");
+      eddies.setAttribute("opacity", pot.magnetic ? 1 : 0.25);
+      dish.setAttribute("fill", pot.fill); dish.setAttribute("fill-opacity", 0.35);
+      dishT.textContent = s.hob !== "ind" ? "bez vířivých proudů" : !s.on ? "proud teče, až zapnete" : pot.skin === 0 ? "sklo proud nevede" : pot.magnetic ? `proud ve vrstvě ${cs(pot.skin, 1)} mm` : "proud teče, ale nehřeje";
+      const share = ok ? hob.eff : 0;
+      barIn.setAttribute("width", BAR.w * share);
+      barT.textContent = `do vody ${Math.round(share * 100)} %`;
+      lossT.textContent = ok ? `ztráty ${Math.round((1 - share) * 100)} %` : "deska se nezapne";
+
+      $("power-val").textContent = `${cs(s.power, 1)} kW`;
+      $("st-t").textContent = boiling ? "vře" : `${cs(s.temp, 0)} °C`;
+      $("st-time").textContent = clock(s.time);
+      $("st-eff").textContent = `${Math.round(share * 100)} %`;
+      $("run").textContent = s.on ? "Vypnout" : "Zapnout";
+      $("run").setAttribute("aria-pressed", String(s.on));
+
+      let status;
+      if (!s.on) status = ok ? "<strong>Vypnuto.</strong> Zapněte desku a sledujte, kde vzniká teplo." : "<strong>Vypnuto.</strong> Tenhle hrnec indukční deska nepozná. Zapněte ji a uvidíte proč.";
+      else if (!ok) {
+        status = s.pot === "glass" ? "<strong>Deska hrnec nepozná.</strong> Sklo proud nevede, žádné vířivé proudy v něm nevzniknou a deska se vůbec nezapne."
+          : `<strong>Deska hrnec nepozná.</strong> ${pot.name === "měď" ? "Měď" : "Hliník"} vede proud tak dobře, že se skoro nezahřeje: při stejném proudu v cívce by v něm vzniklo asi ${pot.weak}× míň tepla než v oceli. Deska to změří a nezapne se.`;
+      } else if (s.hob === "ind") status = `<strong>Hřeje dno hrnce.</strong> Pole z cívky rozproudilo v ${s.pot === "iron" ? "litině" : "oceli"} vířivé proudy. Tečou jen ve vrstvě ${cs(pot.skin, 1)} mm u spodku dna a ta se jimi rozpaluje. Sklo zůstává chladné.`;
+      else if (s.hob === "cer") status = "<strong>Hřeje spirála pod sklem.</strong> Rozžhaví se, od ní sklo a od skla teprve hrnec. Část tepla cestou uteče do stran a deska zůstane horká i po vypnutí.";
+      else status = "<strong>Hřeje plamen.</strong> Horké spaliny obtékají hrnec a většina tepla s nimi odejde vzhůru podél stěn. Na materiálu hrnce nezáleží.";
+      if (ok) status += boiling ? ` Voda začala vřít za ${clock(boilTime())}.` : ` Litr a půl vody začne při tomhle příkonu vřít za ${clock(boilTime())}.`;
+      if (status !== said) { said = status; $("status").innerHTML = status; }
+    }
+
+    /* ---------- běh ---------- */
+    let last = 0;
+    function tick(now) {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      if (s.on && works() && s.temp < 100) {
+        const sim = dt * SPEED;
+        s.temp = Math.min(100, s.temp + (s.power * 1000 * HOBS[s.hob].eff * sim) / (LITRES * HEAT));
+        s.time += sim;
+      }
+      if (s.temp >= 100) bubbles.forEach((b) => { b.y -= b.v * dt; if (b.y < 156) b.y = POT.base - 6; b.node.setAttribute("cx", b.x + 3 * Math.sin(b.y / 8)); b.node.setAttribute("cy", b.y); b.node.setAttribute("r", b.r + (POT.base - b.y) / 50); });
+      if (!calm && s.on) eddies.setAttribute("transform", `rotate(${(now / 14) % 360} ${DISH.x} ${DISH.y})`);
+      render(now);
+      if (s.on) requestAnimationFrame(tick);
+    }
+    function start() { if (s.on) { last = performance.now(); requestAnimationFrame(tick); } }
+
+    /* ---------- ovládání ---------- */
+    function bindSeg(id, apply) {
+      $(id).addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        $(id).querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+        apply(b.dataset.v);
+        render();
+      });
+    }
+    const cold = () => { s.temp = START; s.time = 0; };
+    bindSeg("hob-seg", (v) => { s.hob = v; cold(); });
+    bindSeg("pot-seg", (v) => { s.pot = v; cold(); });
+    $("power").addEventListener("input", (e) => { s.power = Number(e.target.value); render(); });
+    $("run").addEventListener("click", () => { s.on = !s.on; if (s.on && s.temp >= 100) cold(); render(); start(); });
+    $("reset").addEventListener("click", () => { cold(); render(); });
+    render();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>

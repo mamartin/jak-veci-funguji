@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje tlakový hrnec</title>
+  <meta name="description" content="Proč voda v papiňáku vře až při 120 stupních, proč se v něm vaří třikrát rychleji a proč na horách neuvaříte čaj. S modelem hrnce a křivkou varu.">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .pc-stage { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+    @media (min-width: 60rem) { .pc-stage { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+    #pot { justify-self: center; max-width: 30rem; }
+    #curve { justify-self: center; max-width: 27rem; }
+
+    .hob { fill: var(--ink); }
+    .glow { fill: var(--hot); opacity: 0.85; }
+    .wall { fill: none; stroke: var(--pin-top); stroke-width: 10; stroke-linejoin: round; }
+    .wall-edge { fill: none; stroke: var(--metal-line); stroke-width: 1.2; }
+    .water { fill: var(--cold); opacity: 0.24; }
+    .water-top { stroke: var(--cold); stroke-width: 2; }
+    .food { fill: var(--plug); stroke: var(--metal-line); stroke-width: 1; }
+    .lid { fill: var(--pin-top); stroke: var(--metal-line); stroke-width: 1.2; }
+    .gasket { stroke: var(--ink); stroke-width: 4; stroke-linecap: round; }
+    .valve { fill: var(--ink); }
+    .handle { fill: var(--ink); }
+    .mol { fill: var(--ink-2); }
+    .bubble { fill: var(--surface); stroke: var(--cold); stroke-width: 1.4; }
+    .jet { fill: none; stroke: var(--ink-3); stroke-width: 3; stroke-linecap: round; }
+    .push { stroke: var(--cat); stroke-width: 2; }
+    .push-head { fill: var(--cat); }
+    .dial { fill: var(--surface); stroke: var(--metal-line); stroke-width: 1.4; }
+    .needle { stroke: var(--hot); stroke-width: 2.4; stroke-linecap: round; }
+    .rd-val { fill: var(--ink); font: 800 46px var(--font-display); font-stretch: 112%; font-variant-numeric: tabular-nums; text-anchor: middle; }
+    .rd-cap { fill: var(--ink-2); font: 500 12px var(--font-mono); letter-spacing: 0.06em; text-anchor: middle; }
+    .lbl { fill: var(--ink-2); font: 500 12px var(--font-mono); }
+
+    .ax { stroke: var(--ink-3); stroke-width: 1.2; }
+    .grid-l { stroke: var(--grid); stroke-width: 1; }
+    .tick { fill: var(--ink-3); font: 500 11.5px var(--font-mono); }
+    .ax-t { fill: var(--ink-2); font: 500 12px var(--font-mono); }
+    .line { fill: none; stroke: var(--ink); stroke-width: 2.4; }
+    .mark { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.6; }
+    .mark-t { fill: var(--ink-2); font: 500 11.5px var(--font-mono); }
+    .now { fill: var(--cat); stroke: var(--surface); stroke-width: 2; }
+    .guide { stroke: var(--cat); stroke-width: 1.4; stroke-dasharray: 4 4; }
+
+    @media (max-width: 46rem) {
+      .lbl, .rd-cap { font-size: 15px; }
+      .tick, .mark-t { font-size: 14.5px; }
+      .ax-t { font-size: 15px; }
+    }
+  </style>
+</head>
+<body data-cat="domacnost">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Domácnost</a><span aria-hidden="true">/</span><span>Tlakový hrnec</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Domácnost</a></p>
+      <h1 class="display">Jak funguje tlakový hrnec</h1>
+      <p class="lede">V obyčejném hrnci vodu přes sto stupňů neohřejete, ať topíte, jak chcete. Tlakový hrnec to obchází jednoduše: zavře páru uvnitř. Voda pak vře až při sto dvaceti stupních a hovězí je hotové za třetinu času.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Při jaké teplotě voda vře, určuje tlak nad hladinou. U moře je to 100 °C, na Mount Everestu jen 70 °C.</li>
+        <li><span class="hl">Utěsněná poklička nepustí páru ven, tlak v hrnci stoupne asi na dvojnásobek</span> a voda začne vřít až kolem 120 °C.</li>
+        <li>O dvacet stupňů teplejší voda vaří několikrát rychleji. Ventil hlídá, aby tlak nerostl dál.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Hrnec v řezu a křivka varu</p>
+        <span class="label">Nasaďte tlakovou pokličku a vyneste hrnec na hory</span>
+      </div>
+      <div class="fig-stage pc-stage">
+        <svg id="pot" viewBox="0 0 460 420" role="img" aria-label="Řez hrncem na plotně: voda s jídlem, nad ní pára a nahoře poklička s ventilem a tlakoměrem"></svg>
+        <svg id="curve" viewBox="0 0 420 420" role="img" aria-label="Graf: čím vyšší tlak, tím vyšší teplota varu vody"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-lid">Poklička</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-lid" id="lid-seg">
+            <button type="button" role="radio" data-v="0" aria-checked="false">Obyčejný hrnec</button>
+            <button type="button" role="radio" data-v="50" aria-checked="false">Tlaková, nižší stupeň</button>
+            <button type="button" role="radio" data-v="100" aria-checked="true">Tlaková, vyšší stupeň</button>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="alt">Nadmořská výška</label>
+          <div class="ctl-row">
+            <input type="range" id="alt" min="0" max="8800" step="100" value="0">
+            <output class="val" id="alt-val" for="alt"></output>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-food">Co vaříte</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-food" id="food-seg">
+            <button type="button" role="radio" data-v="20" aria-checked="false">Brambory</button>
+            <button type="button" role="radio" data-v="90" aria-checked="false">Fazole</button>
+            <button type="button" role="radio" data-v="150" aria-checked="true">Hovězí</button>
+          </div>
+        </div>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Voda vře při</span><span class="v" id="st-t"></span></li>
+          <li><span class="n">Tlak v hrnci</span><span class="v" id="st-p"></span></li>
+          <li><span class="n">Hotovo asi za</span><span class="v" id="st-time"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Tečky nad hladinou jsou molekuly páry: čím víc jich je, tím větší tlak. Tlak je uvedený celkový, tedy tlak vzduchu venku plus přetlak, který drží ventil. Doba vaření je odhad podle pravidla, že o deset stupňů teplejší voda vaří zhruba dvakrát rychleji. Nepočítá se v ní ohřev a u velmi nízkých teplot už neplatí, některé jídlo se při nich neuvaří vůbec.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-sto">
+      <div class="prose">
+        <h2 id="h-sto">Proč to přes sto stupňů nejde</h2>
+        <p>Voda v otevřeném hrnci se ohřívá, dokud nezačne vřít. Pak se teplota zastaví. Přidáte plyn a voda bublá divočeji, ale teploměr ukazuje pořád sto stupňů. Všechno teplo navíc odnáší pára.</p>
+        <p>Brambory tedy nebudou hotové dřív, ani když pod nimi topíte naplno. Jídlo se vaří podle teploty vody, ne podle toho, jak moc voda bublá. Kdo chce vařit rychleji, musí vodu dostat na vyšší teplotu, a to v otevřeném hrnci nejde.</p>
+        <p>Těch sto stupňů ale není vlastnost vody. Je to vlastnost vody a vzduchu, který na ni shora tlačí. <a href="../var-vody/">Bublina páry</a> může ve vodě vzniknout a růst jen tehdy, když pára uvnitř tlačí ven stejně silně, jako okolí tlačí dovnitř. Při běžném tlaku vzduchu to pára dokáže právě při sto stupních.</p>
+      </div>
+      <aside class="note" aria-label="Tlakový hrnec v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>asi 120 °C</dt><dd>má voda v tlakovém hrnci na vyšší stupeň</dd></div>
+          <div><dt>2 bary</dt><dd>je tlak uvnitř, dvakrát tolik co venku</dd></div>
+          <div><dt>skoro 400 kg</dt><dd>tlačí zevnitř na pokličku širokou 22 cm</dd></div>
+          <div><dt>1679</dt><dd>předvedl Denis Papin první tlakový hrnec</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-para">
+      <div class="prose">
+        <h2 id="h-para">Zavřená pára</h2>
+        <p>Tlakový hrnec má pokličku s gumovým těsněním, která se do hrnce zamkne. Když se voda začne vařit, pára nemá kam utéct. Hromadí se nad hladinou a tlak v hrnci roste.</p>
+        <p>Na hladinu teď tlačí víc, a tak se bublinám páry hůř roste. Voda přestane vřít a ohřívá se dál, přes sto stupňů. <span class="hl">Vřít začne znovu, až když je pára dost horká na to, aby vyšší tlak přetlačila.</span> Při dvojnásobném tlaku je to zhruba při 120 °C.</p>
+        <p>Dál už tlak nestoupá. Na pokličce je ventil se závažím nebo pružinou, nastavený na určitý přetlak, u domácích hrnců nejvýš kolem jednoho baru. Jakmile ho pára překoná, ventil se nadzvedne a přebytek odsyčí ven. Od té chvíle stačí topit jen tolik, aby ventil občas zasyčel.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Přepínejte mezi obyčejným hrncem a tlakovou pokličkou. Teček páry nad hladinou přibude, ručička tlakoměru vyjede a bod na křivce vpravo se posune nahoru.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-rychlost">
+      <div class="prose">
+        <h2 id="h-rychlost">Dvacet stupňů navíc</h2>
+        <p>Dvacet stupňů nezní jako moc. Vaření je ale chemie: bílkoviny v mase se rozvolňují, škrob v bramborách bobtná, tuhé vazivo se mění v želatinu. Takové děje běží s teplotou rychle rychleji. Hrubé pravidlo říká, že každých deset stupňů navíc je zdvojnásobí.</p>
+        <p>O dvacet stupňů víc tak může znamenat až čtyřikrát rychlejší vaření. V kuchyni to vychází o něco míň, protože hrnec se musí nejdřív natlakovat a teplo potřebuje čas, aby se dostalo doprostřed kusu masa. Hovězí, které se jinak vaří dvě a půl hodiny, je hotové za tři čtvrtě. Namočené fazole místo hodiny a půl za dvacet minut.</p>
+        <p>Kratší doba znamená i menší spotřebu. Tlakový hrnec ušetří zhruba polovinu energie. Jídlo je navíc ve vodě kratší dobu, takže se z něj obvykle vyluhuje míň vitaminů.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Vyberte Hovězí a přepínejte pokličku. V obyčejném hrnci dvě a půl hodiny, na nižší stupeň něco přes hodinu, na vyšší necelých čtyřicet minut.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-hory">
+      <div class="prose">
+        <h2 id="h-hory">Na horách to jde obráceně</h2>
+        <p>Když vyšší tlak teplotu varu zvedá, nižší ji musí snižovat. Čím výš vystoupáte, tím míň vzduchu máte nad sebou a tím slabší je jeho tlak. Na Sněžce vře voda při 95 °C, na Mont Blanku při 84 °C a na vrcholu Mount Everestu při 70 °C.</p>
+        <p>Voda tam bublá úplně stejně, jen je chladnější. Čaj je vlažný, těstoviny se vaří věčnost a luštěniny skoro neuvaříte. Proto je tlakový hrnec ve výškových táborech a v horských městech, jako je bolivijský La Paz, běžná výbava. Vrátí vodě teplotu, o kterou ji hory připravily.</p>
+        <p>Jde to dotáhnout do konce. Když z uzavřené nádoby vyčerpáte skoro všechen vzduch, voda začne vřít při pokojové teplotě. Vařit se v ní ale nedá nic.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte obyčejný hrnec a táhněte výšku až na 8 800 metrů. Voda vře při 70 °C a brambory by se vařily hodiny. Pak nasaďte tlakovou pokličku: i na Everestu je uvnitř přes 107 °C.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-bezpecnost">
+      <div class="prose">
+        <h2 id="h-bezpecnost">Proč nejde otevřít</h2>
+        <p>Dva bary nejsou žádná hrůza, v pneumatice auta je víc. Jenže poklička je velká. Na pokličku o průměru 22 centimetrů tlačí pára zevnitř silou, jakou by na ni vyvinulo závaží skoro 400 kilogramů. Proto se poklička zamyká bajonetem a proto ji pod tlakem neotevřete: tlak sám drží zámek zaklesnutý.</p>
+        <p>Je tu i druhý důvod. Voda v hrnci má 120 °C a nevře jen proto, že ji drží tlak. Kdyby poklička naráz povolila, tlak by spadl a přehřátá voda by se v okamžiku začala prudce vařit v celém objemu. Proto se hrnec nejdřív nechá vychladnout, nebo se pára pomalu vypustí ventilem.</p>
+        <p>Kromě pracovního ventilu má každý hrnec ještě pojistný. Kdyby se hlavní ucpal, třeba slupkou z hrachu, otevře se pojistka a tlak pustí dřív, než by hrnec ohrozil. Na ventily mysleli už u prvního tlakového hrnce: francouzský fyzik Denis Papin, který ho předvedl roku 1679, na něj dal pojistný ventil se závažím. Hrnci se po něm dodnes říká papiňák.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Stejný trik používají nemocnice. Sterilizátor na nástroje je velký tlakový hrnec, ve kterém pára o teplotě 121 °C zabije i bakterie, které var při sto stupních přežijí.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../jistic-a-chranic/" data-cat="domacnost">
+        <span class="label">Další článek · Domácnost</span>
+        <span class="t">Jak funguje jistič a proudový chránič</span>
+        <p>Co vypne proud při zkratu a co vás zachrání, když sáhnete na drát.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const cs = (v, digits) => v.toLocaleString("cs-CZ", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ---------- model ---------- */
+    const SEA = 101.325;                                                       // tlak vzduchu u moře v kPa
+    const airAt = (m) => SEA * Math.pow(1 - 2.25577e-5 * m, 5.25588);          // tlak vzduchu v dané výšce
+    // teplota varu vody při daném tlaku: hodnoty z parních tabulek (kPa, °C), mezi nimi se dopočítává
+    const STEAM = [[20, 60.06], [30, 69.1], [40, 75.87], [50, 81.33], [60, 85.94], [70, 89.95], [80, 93.5], [90, 96.71], [SEA, 100], [125, 105.99], [150, 111.37], [175, 116.06], [200, 120.23], [225, 124], [250, 127.44]];
+    function boilAt(kPa) {
+      let i = 1;
+      while (i < STEAM.length - 1 && kPa > STEAM[i][0]) i++;
+      const [p0, t0] = STEAM[i - 1], [p1, t1] = STEAM[i];
+      return t0 + ((t1 - t0) * Math.log(kPa / p0)) / Math.log(p1 / p0);
+    }
+    const LID_AREA = Math.PI * 0.11 * 0.11;                                    // poklička o průměru 22 cm, v metrech čtverečních
+    const PLACES = [[0, "u moře"], [1600, "Sněžka"], [3600, "La Paz"], [4800, "Mont Blanc"], [8800, "Mount Everest"]];
+    const s = { over: 100, alt: 0, base: 150 };
+    const state = () => { const air = airAt(s.alt), p = air + s.over, t = boilAt(p); return { air, p, t, time: s.base * Math.pow(2, (100 - t) / 10) }; };
+
+    /* ---------- hrnec ---------- */
+    const pot = $("pot");
+    const HEAD = { x1: 122, x2: 338, y1: 160, y2: 226 };                        // prostor pro páru nad hladinou
+    el("rect", { x: 60, y: 372, width: 340, height: 20, rx: 3, class: "hob" }, pot);
+    el("rect", { x: 130, y: 366, width: 200, height: 7, rx: 3, class: "glow" }, pot);
+    el("rect", { x: 115, y: 232, width: 230, height: 124, class: "water" }, pot);
+    el("line", { x1: 115, y1: 232, x2: 345, y2: 232, class: "water-top" }, pot);
+    [[160, 336, 26, 13, -8], [224, 340, 30, 13, 5], [290, 336, 26, 13, 12]].forEach(([x, y, rx, ry, a]) => el("ellipse", { cx: x, cy: y, rx, ry, transform: `rotate(${a} ${x} ${y})`, class: "food" }, pot));
+    const bubbles = Array.from({ length: 9 }, (_, i) => ({ node: el("circle", { class: "bubble" }, pot), x: 130 + i * 24 + (i % 2) * 7, y: 350 - i * 13, r: 3 + (i % 3) * 1.4, v: 26 + (i % 4) * 9 }));
+    const mols = Array.from({ length: 34 }, (_, i) => ({ node: el("circle", { r: 2.6, class: "mol" }, pot), x: HEAD.x1 + ((i * 53) % (HEAD.x2 - HEAD.x1)), y: HEAD.y1 + ((i * 29) % (HEAD.y2 - HEAD.y1)), vx: (i % 2 ? 1 : -1) * (40 + (i * 7) % 50), vy: (i % 3 ? 1 : -1) * (30 + (i * 11) % 45) }));
+    el("path", { d: "M110 150V360H350V150", class: "wall" }, pot);
+    el("path", { d: "M105 150V365H355V150", class: "wall-edge" }, pot);
+    el("rect", { x: 62, y: 176, width: 44, height: 12, rx: 3, class: "handle" }, pot);
+    el("rect", { x: 354, y: 176, width: 44, height: 12, rx: 3, class: "handle" }, pot);
+    // tlaková poklička s ventilem a tlakoměrem; u obyčejného hrnce se schová
+    const lid = el("g", {}, pot);
+    el("line", { x1: 106, y1: 151, x2: 354, y2: 151, class: "gasket" }, lid);
+    el("path", { d: "M98 148Q230 108 362 148Z", class: "lid" }, lid);
+    el("rect", { x: 224, y: 104, width: 12, height: 22, class: "valve" }, lid);
+    const weight = el("rect", { x: 214, y: 92, width: 32, height: 16, rx: 3, class: "valve" }, lid);
+    const jets = [el("path", { class: "jet" }, lid), el("path", { class: "jet" }, lid)];
+    el("circle", { cx: 300, cy: 112, r: 20, class: "dial" }, lid);
+    for (let i = 0; i <= 4; i++) { const a = Math.PI * (1 - i / 4); el("line", { x1: 300 + 15 * Math.cos(a), y1: 112 - 15 * Math.sin(a), x2: 300 + 19 * Math.cos(a), y2: 112 - 19 * Math.sin(a), class: "ax" }, lid); }
+    const needle = el("line", { x1: 300, y1: 112, class: "needle" }, lid);
+    // šipky: pára tlačí na pokličku
+    const pushes = [150, 190, 262].map((x) => { const g = el("g", {}, lid); el("line", { x1: x, y1: 176, x2: x, y2: 160, class: "push" }, g); el("path", { d: `M${x - 5} 162L${x} 152L${x + 5} 162Z`, class: "push-head" }, g); return g; });
+    const steam = [0, 1, 2].map((i) => el("path", { class: "jet" }, pot));    // pára z otevřeného hrnce
+    const tVal = el("text", { x: 230, y: 304, class: "rd-val" }, pot), tCap = el("text", { x: 230, y: 258, class: "rd-cap" }, pot);
+    tCap.textContent = "VODA VŘE PŘI";
+    const airT = el("text", { x: 20, y: 36, class: "lbl" }, pot), inT = el("text", { x: 20, y: 56, class: "lbl" }, pot);
+
+    /* ---------- křivka varu ---------- */
+    const curve = $("curve");
+    const AX = { x0: 58, x1: 400, y0: 366, y1: 28, p0: 20, p1: 220, t0: 60, t1: 125 };
+    const px = (p) => AX.x0 + ((p - AX.p0) / (AX.p1 - AX.p0)) * (AX.x1 - AX.x0), py = (t) => AX.y0 - ((t - AX.t0) / (AX.t1 - AX.t0)) * (AX.y0 - AX.y1);
+    for (let t = 60; t <= 120; t += 10) { el("line", { x1: AX.x0, y1: py(t), x2: AX.x1, y2: py(t), class: "grid-l" }, curve); el("text", { x: AX.x0 - 8, y: py(t) + 4, class: "tick", style: "text-anchor:end" }, curve).textContent = t; }
+    for (let p = 50; p <= 200; p += 50) { el("line", { x1: px(p), y1: AX.y0, x2: px(p), y2: AX.y1, class: "grid-l" }, curve); el("text", { x: px(p), y: AX.y0 + 18, class: "tick", style: "text-anchor:middle" }, curve).textContent = cs(p / 100, 1); }
+    el("line", { x1: AX.x0, y1: AX.y0, x2: AX.x1, y2: AX.y0, class: "ax" }, curve);
+    el("line", { x1: AX.x0, y1: AX.y0, x2: AX.x0, y2: AX.y1, class: "ax" }, curve);
+    el("text", { x: AX.x1, y: AX.y0 + 40, class: "ax-t", style: "text-anchor:end" }, curve).textContent = "tlak v barech";
+    el("text", { x: AX.x0 - 44, y: AX.y1 - 10, class: "ax-t" }, curve).textContent = "teplota varu ve °C";
+    { let d = ""; for (let p = 24; p <= 216; p += 2) d += `${d ? "L" : "M"}${px(p).toFixed(1)} ${py(boilAt(p)).toFixed(1)}`; el("path", { d, class: "line" }, curve); }
+    [[airAt(8800), "Everest", 12, 4], [airAt(1600), "Sněžka", 10, 14], [SEA, "u moře", 10, 16], [SEA + 100, "tlakový hrnec", -10, -12]].forEach(([p, name, dx, dy]) => {
+      el("circle", { cx: px(p), cy: py(boilAt(p)), r: 4.5, class: "mark" }, curve);
+      el("text", { x: px(p) + dx, y: py(boilAt(p)) + dy, class: "mark-t", style: dx < 0 ? "text-anchor:end" : "" }, curve).textContent = name;
+    });
+    const guideX = el("line", { class: "guide" }, curve), guideY = el("line", { class: "guide" }, curve), now = el("circle", { r: 7, class: "now" }, curve);
+
+    /* ---------- kresba ---------- */
+    let said = "";
+    function render() {
+      const st = state(), sealed = s.over > 0;
+      lid.setAttribute("display", sealed ? "" : "none");
+      steam.forEach((n) => n.setAttribute("display", sealed ? "none" : ""));
+      const a = Math.PI * (1 - Math.min(1, s.over / 100) * 0.92);
+      needle.setAttribute("x2", 300 + 16 * Math.cos(a)); needle.setAttribute("y2", 112 - 16 * Math.sin(a));
+      pushes.forEach((g, i) => g.setAttribute("opacity", s.over >= 100 || i < 2 ? 1 : 0.25));
+      tVal.textContent = `${cs(st.t, 0)} °C`;
+      airT.textContent = `tlak vzduchu venku ${cs(st.air / 100, 2)} baru`;
+      inT.textContent = sealed ? `ventil drží přetlak ${cs(s.over / 100, 1)} baru` : "pára může volně ven";
+      const visible = Math.round((st.p / 100) * 16);
+      mols.forEach((m, i) => m.node.setAttribute("display", i < visible ? "" : "none"));
+      now.setAttribute("cx", px(st.p)); now.setAttribute("cy", py(st.t));
+      guideX.setAttribute("x1", px(st.p)); guideX.setAttribute("x2", px(st.p)); guideX.setAttribute("y1", py(st.t)); guideX.setAttribute("y2", AX.y0);
+      guideY.setAttribute("x1", AX.x0); guideY.setAttribute("x2", px(st.p)); guideY.setAttribute("y1", py(st.t)); guideY.setAttribute("y2", py(st.t));
+
+      const place = PLACES.find(([m]) => Math.abs(m - s.alt) < 60);
+      $("alt-val").textContent = place ? `${cs(s.alt, 0)} m, ${place[1]}` : `${cs(s.alt, 0)} m`;
+      $("st-t").textContent = `${cs(st.t, 0)} °C`;
+      $("st-p").textContent = `${cs(st.p / 100, 2)} baru`;
+      const mins = Math.round(st.time);
+      $("st-time").textContent = mins > 720 ? "víc než 12 h" : mins >= 60 ? `${Math.floor(mins / 60)} h ${mins % 60} min` : `${mins} min`;
+
+      const kg = Math.round((s.over * 1000 * LID_AREA) / 9.81 / 10) * 10;
+      let status;
+      if (sealed) {
+        status = `<strong>Pod tlakem.</strong> Pára nemůže ven, tlak v hrnci stoupl na ${cs(st.p / 100, 2)} baru a voda vře až při ${cs(st.t, 0)} °C. Na pokličku tlačí zevnitř síla jako závaží ${kg} kg.`;
+        if (s.alt >= 1500) status += " Řidší vzduch venku hrnci ubírá jen pár stupňů.";
+      } else if (st.t < 97) status = `<strong>Na horách.</strong> Vzduch je tu řidší, tlačí na hladinu míň a voda vře už při ${cs(st.t, 0)} °C. Bublá stejně, ale vaří pomaleji.`;
+      else status = "<strong>Obyčejný hrnec.</strong> Voda vře při 100 °C a teplejší nebude, i když přidáte plyn. Všechno teplo navíc odnese pára.";
+      if (status !== said) { said = status; $("status").innerHTML = status; }
+    }
+
+    /* ---------- pohyb páry a bublin ---------- */
+    function place(time) {
+      const sealed = s.over > 0, dt = 1 / 60;
+      mols.forEach((m) => {
+        m.x += m.vx * dt; m.y += m.vy * dt;
+        if (m.x < HEAD.x1 || m.x > HEAD.x2) { m.vx *= -1; m.x = Math.max(HEAD.x1, Math.min(HEAD.x2, m.x)); }
+        if (sealed) { if (m.y < HEAD.y1 || m.y > HEAD.y2) { m.vy *= -1; m.y = Math.max(HEAD.y1, Math.min(HEAD.y2, m.y)); } }
+        else { m.vy = -Math.abs(m.vy); if (m.y < 70) { m.y = HEAD.y2; m.x = HEAD.x1 + ((m.x * 7.3) % (HEAD.x2 - HEAD.x1)); } }
+        m.node.setAttribute("cx", m.x.toFixed(1)); m.node.setAttribute("cy", m.y.toFixed(1));
+        m.node.setAttribute("opacity", sealed ? 1 : Math.max(0, (m.y - 70) / 150));
+      });
+      bubbles.forEach((b) => {
+        b.y -= b.v * dt;
+        if (b.y < 238) b.y = 350;
+        b.node.setAttribute("cx", b.x + 3 * Math.sin(b.y / 9)); b.node.setAttribute("cy", b.y.toFixed(1)); b.node.setAttribute("r", b.r + (350 - b.y) / 60);
+      });
+      const lift = sealed ? 2 + 2 * Math.sin(time / 90) : 0;
+      weight.setAttribute("y", 92 - lift);
+      jets.forEach((j, i) => { const side = i ? 1 : -1, w = 8 + 4 * Math.sin(time / 130 + i); j.setAttribute("d", `M${230 + side * 20} 100q${side * w} -6 ${side * (w + 8)} -20`); });
+      steam.forEach((n, i) => { const x = 170 + i * 60, w = 7 * Math.sin(time / 400 + i * 2); n.setAttribute("d", `M${x} 140q${w} -22 0 -44t0 -44`); n.setAttribute("opacity", 0.55); });
+    }
+    function loop(time) { place(time); requestAnimationFrame(loop); }
+
+    /* ---------- ovládání ---------- */
+    function bindSeg(id, apply) {
+      $(id).addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        $(id).querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+        apply(Number(b.dataset.v));
+        render();
+      });
+    }
+    bindSeg("lid-seg", (v) => { s.over = v; });
+    bindSeg("food-seg", (v) => { s.base = v; });
+    $("alt").addEventListener("input", (e) => { s.alt = Number(e.target.value); render(); });
+    render();
+    place(0);
+    if (!calm) requestAnimationFrame(loop);
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>
