@@ -7,10 +7,17 @@
 - `index.html` je rozcestník se všemi tématy.
 - `domacnost/`, `technika/`, `doprava/`, `priroda/`, `lidske-telo/` a `vesmir/` jsou kategorie. `index.html` v každé z nich je stránka kategorie se seznamem článků.
 - `<kategorie>/<název>/index.html` jsou články. Každý je samostatná stránka s vlastním stylem a skriptem.
-- `style.css` a `feedback.js` jsou společné pro rozcestník i články.
+- `style.css`, `app.js` a `feedback.js` jsou společné pro rozcestník, kategorie i články.
+- `app.js` se stará o chování webu jako aplikace: instaluje service worker, nabízí novou verzi, pamatuje si přečtené články a pozici čtení (vše jen v prohlížeči čtenáře).
 - `feedback.js` vkládá dva formuláře: zpětnou vazbu pod článek a pod rozcestník, a nápad na nový článek tam, kde stránka má `<div data-form="napady"></div>` (rozcestník a stránky kategorií).
+- `fonts/` jsou písma hostovaná u nás, aby šla uložit pro čtení bez připojení.
+- `manifest.webmanifest`, `icon.svg` a PNG ikony dělají z webu aplikaci, kterou jde přidat na plochu telefonu.
 - `api/` jsou funkce, které odpovědi z formulářů ukládají, `admin/` je jejich administrace.
-- `scripts/` je server pro lokální zkoušení.
+- `scripts/` je server pro lokální zkoušení a build service workeru.
+
+## Web jako aplikace (PWA)
+
+Service worker `sw.js` se negeneruje ručně: při nasazení ho z šablony `scripts/sw.template.js` vyrobí `scripts/build.mjs` (Vercel spouští `buildCommand` z `vercel.json`, lokálně `npm run build`). Do šablony doplní seznam všech stránek, stylů a písem s otiskem obsahu. Při první návštěvě se celý web uloží do telefonu a dál se načítá odtud, takže funguje i bez připojení. Po změně libovolného souboru se změní i `sw.js`, prohlížeč stáhne jen změněné soubory a stránka nabídne tlačítko *Aktualizovat*. Lokální server skládá `sw.js` za běhu.
 
 Nový článek potřebuje kartu na rozcestníku a na stránce své kategorie a odkaz v seznamu témat na rozcestníku.
 

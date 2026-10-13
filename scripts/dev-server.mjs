@@ -15,13 +15,20 @@ if (existsSync(join(root, ".env.local"))) for (const line of readFileSync(join(r
 process.env.FEEDBACK_DIR ||= join(root, ".data");
 
 const handlers = { feedback: (await import("../api/feedback.js")).default, admin: (await import("../api/admin.js")).default };
-const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".ico": "image/x-icon" };
+const { buildServiceWorker } = await import("./build.mjs");
+const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".webmanifest": "application/manifest+json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".ico": "image/x-icon", ".woff2": "font/woff2" };
 const port = Number(process.env.PORT || 8787);
 
 createServer(async (req, res) => {
   const { pathname } = new URL(req.url, "http://x");
   const api = pathname.match(/^\/api\/(feedback|admin)$/);
   if (api) return handlers[api[1]](req, res);
+  // service worker se skládá za běhu, aby odpovídal aktuálním souborům
+  if (pathname === "/sw.js") {
+    res.setHeader("Content-Type", TYPES[".js"]);
+    res.setHeader("Cache-Control", "no-store");
+    return res.end(await buildServiceWorker(root));
+  }
   // soubory webu; nic, co začíná tečkou, a nic mimo složku
   let file = resolve(root, "." + decodeURIComponent(pathname));
   const hidden = pathname.split("/").some((p) => p.startsWith(".")) || /^\/(api|scripts|node_modules)\//.test(pathname);

@@ -1,0 +1,20 @@
+{
+  "name": "Jak věci fungují",
+  "short_name": "Jak věci fungují",
+  "description": "Interaktivní vysvětlení věcí, které máme denně v ruce. Ke každému tématu patří model, se kterým si můžete hrát.",
+  "lang": "cs",
+  "id": "/",
+  "start_url": "/?zdroj=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffe15c",
+  "theme_color": "#f1f2ed",
+  "categories": ["education"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
