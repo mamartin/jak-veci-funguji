@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Proč se střídají roční období</title>
+  <meta name="description" content="Proč je v zimě zima, i když je Země Slunci nejblíž, a co s tím má společného nakloněná osa. S modelem, ve kterém Zemi provedete celým rokem.">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .sea-stage { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+    @media (min-width: 60rem) { .sea-stage { grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); } }
+    #orbit { touch-action: pan-y; }
+    #globe { justify-self: center; max-width: 24rem; }
+
+    .sun { fill: #f2b63c; stroke: var(--metal-line); stroke-width: 1.2; }
+    .sunray { stroke: #d9981a; stroke-width: 2; stroke-linecap: round; }
+    .path { fill: none; stroke: var(--rule); stroke-width: 1.6; stroke-dasharray: 3 6; }
+    .dir { fill: var(--ink-3); }
+    .sight { stroke: #d9981a; stroke-width: 1.4; stroke-dasharray: 4 5; opacity: 0.8; }
+    .axis { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+    .ghost .axis { stroke: var(--ink-3); stroke-width: 1.5; }
+    .ghost circle { fill: var(--sunk); stroke: var(--ink-3); stroke-width: 1; }
+    /* Země má stejné barvy ve světlém i tmavém režimu: den světle modrý, noc tmavá */
+    .e-day { fill: #7fb2e0; }
+    .e-night { fill: #1b2233; }
+    .e-rim { fill: none; stroke: var(--metal-line); stroke-width: 1.4; }
+    #earth-handle { fill: transparent; cursor: grab; touch-action: none; outline: none; }
+    #earth-handle:focus-visible + .focus-ring { opacity: 1; }
+    .focus-ring { fill: none; stroke: var(--cat); stroke-width: 2.5; opacity: 0; pointer-events: none; }
+    .mon { fill: var(--ink-2); font: 600 13px var(--font-mono); text-anchor: middle; }
+    .lbl { fill: var(--ink-3); font: 500 11.5px var(--font-mono); }
+    .tick { stroke: var(--ink-3); stroke-width: 1.4; }
+
+    .ray { stroke: #d9981a; stroke-width: 2; }
+    .ray-head { fill: #d9981a; }
+    .term { stroke: var(--metal-line); stroke-width: 1; stroke-dasharray: 3 4; }
+    .par { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .par.eq { stroke: #dfe7f3; stroke-width: 1; opacity: 0.55; }
+    .par.day { stroke: #ffd15c; stroke-width: 4; }
+    .par.night { stroke: #7482a3; stroke-width: 4; }
+    .par.back { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.75; }
+    .pole { fill: var(--ink-2); font: 600 12px var(--font-mono); text-anchor: middle; }
+    .you { fill: var(--cat); stroke: #fff; stroke-width: 1.5; }
+    .g-cap { fill: var(--ink-3); font: 500 11.5px var(--font-mono); letter-spacing: 0.06em; text-anchor: middle; }
+    .ground { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+    .beam { fill: #f2b63c; opacity: 0.35; }
+    .beam-edge { stroke: #d9981a; stroke-width: 1.4; }
+    .foot { stroke: var(--cat); stroke-width: 5; stroke-linecap: butt; }
+    .inset-t { fill: var(--ink-2); font: 500 12.5px var(--font-mono); text-anchor: middle; }
+
+    @media (max-width: 46rem) {
+      .lbl { display: none; }
+      .mon { font-size: 17px; }
+      .pole, .g-cap { font-size: 14px; }
+      .inset-t { font-size: 15px; }
+    }
+  </style>
+</head>
+<body data-cat="vesmir">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Vesmír</a><span aria-hidden="true">/</span><span>Roční období</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Vesmír</a></p>
+      <h1 class="display">Proč se střídají roční období</h1>
+      <p class="lede">V lednu je Země ke Slunci nejblíž za celý rok, a přesto u nás mrzne. Léto a zimu nedělá vzdálenost. Dělá je to, že Země obíhá nakloněná a půl roku nastavuje Slunci víc sever, půl roku jih.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Zemská osa je nakloněná o 23,4 stupně a celý rok míří stejným směrem.</li>
+        <li><span class="hl">Když je naše polokoule přikloněná ke Slunci, je Slunce výš a den je delší.</span> Obojí dohromady dá u nás v červnu víc než pětkrát tolik energie co v prosinci.</li>
+        <li>Vzdálenost od Slunce se během roku změní jen o tři procenta a s ročními obdobími skoro nesouvisí.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Země na cestě kolem Slunce</p>
+        <span class="label">Přetáhněte Zemi po dráze a zvolte místo, odkud se díváte</span>
+      </div>
+      <div class="fig-stage sea-stage">
+        <svg id="orbit" viewBox="0 0 560 420" role="img" aria-label="Oběžná dráha Země kolem Slunce při pohledu šikmo shora. Zemská osa je nakloněná a míří po celý rok stejným směrem."></svg>
+        <svg id="globe" viewBox="0 0 380 420" role="img" aria-label="Země z boku s osvětlenou polovinou, vybranou rovnoběžkou a výškou Slunce v poledne"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl ctl-grow">
+          <label class="label" for="day">Datum</label>
+          <div class="ctl-row">
+            <input type="range" id="day" min="1" max="365" step="1" value="172">
+            <output class="val" id="day-val" for="day"></output>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="lat">Zeměpisná šířka</label>
+          <div class="ctl-row">
+            <input type="range" id="lat" min="-90" max="90" step="1" value="50">
+            <output class="val" id="lat-val" for="lat"></output>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-tilt">Sklon osy</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-tilt" id="tilt-seg">
+            <button type="button" role="radio" data-v="0" aria-checked="false">Žádný</button>
+            <button type="button" role="radio" data-v="23.44" aria-checked="true">Skutečný 23,4°</button>
+            <button type="button" role="radio" data-v="47" aria-checked="false">Dvojnásobný</button>
+          </div>
+        </div>
+        <button type="button" class="btn" id="play" aria-pressed="false">Spustit rok</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Slunce v poledne</span><span class="v" id="st-noon"></span></li>
+          <li><span class="n">Délka dne</span><span class="v" id="st-len"></span></li>
+          <li><span class="n">Vzdálenost od Slunce</span><span class="v" id="st-dist"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Vlevo dráha Země při pohledu šikmo shora, velikosti a vzdálenosti nejsou v měřítku. Skutečná dráha je skoro přesný kruh. Vpravo Země z boku, Slunce svítí zleva. Tlustá čára je vaše rovnoběžka: žlutá část je ve dne, šedá v noci, a po té čáře vás Země za 24 hodin jednou proveze. Dole je vidět, na jak velkou plochu se v pravé poledne rozloží stejný svazek světla. Délka dne počítá s tím, že vzduch světlo ohýbá, proto je o pár minut delší, než odpovídá kresbě. Energie je spočítaná pro vodorovnou plochu nad atmosférou.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-vzdalenost">
+      <div class="prose">
+        <h2 id="h-vzdalenost">Vzdálenost to není</h2>
+        <p>Nejčastější vysvětlení zní rozumně: v létě jsme Slunci blíž, v zimě dál. Dráha Země opravdu není přesný kruh. Jenže nejblíž Slunci jsme kolem 3. ledna a nejdál kolem 4. července.</p>
+        <p>Rozdíl je navíc malý. V lednu je to ke Slunci 147 milionů kilometrů, v červenci 152 milionů. To jsou tři procenta. Kdybyste dráhu nakreslili kružítkem na papír, odchylku byste nepoznali.</p>
+        <p>A hlavně: kdyby léto dělala vzdálenost, bylo by na celé Zemi naráz. V Austrálii ale slaví Vánoce na pláži. Když je na severu léto, je na jihu zima, a to žádná vzdálenost nevysvětlí.</p>
+      </div>
+      <aside class="note" aria-label="Roční období v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>23,4°</dt><dd>je zemská osa odkloněná od kolmice k oběžné dráze</dd></div>
+          <div><dt>147,1 mil. km</dt><dd>je Země od Slunce začátkem ledna, kdy je nejblíž</dd></div>
+          <div><dt>152,1 mil. km</dt><dd>začátkem července, kdy je nejdál</dd></div>
+          <div><dt>16 h 22 min</dt><dd>trvá den v Praze o letním slunovratu, o zimním jen 8 h 4 min</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-osa">
+      <div class="prose">
+        <h2 id="h-osa">Osa míří pořád stejně</h2>
+        <p>Země se točí kolem osy, která prochází oběma póly. Ta osa nestojí na oběžné dráze kolmo. Je skloněná o 23,4 stupně, asi jako vlček, který se točí trochu nakřivo.</p>
+        <p>Důležité je, že se ten sklon během roku nemění a osa míří pořád do stejného místa mezi hvězdami, skoro přesně k Polárce. Země se chová jako setrvačník: co se rychle točí, drží směr.</p>
+        <p>Když tedy Země obíhá Slunce, je jednou severní pól přikloněný ke Slunci a o půl roku později, na druhé straně dráhy, odkloněný. Osa se nepohnula. Změnilo se jen to, z které strany na ni Slunce svítí.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Pusťte rok a sledujte v levém obrázku osu. Míří pořád stejným směrem. V červnu se severní konec naklání ke Slunci, v prosinci od něj.</p>
+        <p>Pak přepněte Sklon osy na Žádný a pusťte rok znovu. Délka dne i výška Slunce se přestanou měnit, i když se vzdálenost od Slunce mění dál.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-dve">
+      <div class="prose">
+        <h2 id="h-dve">Dvě věci naráz</h2>
+        <p>Přikloněná polokoule dostává víc tepla ze dvou důvodů a oba jsou v modelu vidět.</p>
+        <p>První je výška Slunce. Posviťte baterkou kolmo na stůl a pak šikmo. Šikmý kužel osvítí větší plochu, ale stejným množstvím světla, takže každé místo dostane míň. V Praze stojí Slunce v červnu v poledne 63 stupňů nad obzorem, v prosinci necelých 17. Zimní svazek světla se rozloží na třikrát větší plochu než letní.</p>
+        <p>Druhý je délka dne. V červnu svítí Slunce na Prahu přes šestnáct hodin, v prosinci osm. <span class="hl">Slabší světlo po kratší dobu: za prosincový den dopadne na metr čtvereční pětkrát až šestkrát míň energie než za červnový.</span></p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte šířku na 50 stupních a přejeďte datem z června do prosince. Žlutá část rovnoběžky se zkrátí ze dvou třetin na třetinu a svazek světla dole se roztáhne.</p>
+        <p>Pak nastavte šířku na 70 stupňů. V červnu je celá rovnoběžka žlutá a Slunce nezapadne, v prosinci je celá ve stínu.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zpozdeni">
+      <div class="prose">
+        <h2 id="h-zpozdeni">Proč je nejtepleji až v červenci</h2>
+        <p>Nejvíc slunečního světla dostáváme 21. června. Nejtepleji ale bývá o měsíc později a nejchladněji až koncem ledna, ne o Vánocích.</p>
+        <p>Je to stejné jako s hrncem na plotně. Voda není nejteplejší ve chvíli, kdy plotnu pustíte naplno, ale až po čase. Půda a hlavně moře se ohřívají pomalu. Po slunovratu sice sluneční energie ubývá, ale pořád jí přichází víc, než kolik Země stihne vyzářit zpátky, a tak teplota roste dál.</p>
+        <p>Proto je také u moře podzim teplejší než jaro, i když Slunce svítí v říjnu stejně jako v únoru.</p>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="h-jinde">
+      <div class="prose">
+        <h2 id="h-jinde">Jinde na Zemi je to jinak</h2>
+        <p>Na rovníku trvá den celý rok dvanáct hodin a Slunce je v poledne vždycky vysoko. Čtyři roční období tam neznají, rok se dělí na období dešťů a sucha. Přímo nad hlavou tam Slunce stojí dvakrát ročně, o rovnodennostech.</p>
+        <p>Za polárním kruhem, tedy dál než 66,6 stupně od rovníku, naopak sklon osy vyhrává úplně. V létě tam Slunce celé dny až měsíce nezapadne, v zimě stejně dlouho nevyjde. Na samotném pólu trvá den půl roku a noc druhou půlku.</p>
+        <p>Na jižní polokouli je všechno o půl roku posunuté. Červenec je tam uprostřed zimy.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Posuňte šířku na nulu a pusťte rok. Délka dne se ani nehne. Pak zkuste 34 stupňů jižní šířky, tam leží Sydney: nejdelší den vyjde na prosinec.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-prece">
+      <div class="prose">
+        <h2 id="h-prece">A co tedy ta vzdálenost dělá</h2>
+        <p>Úplně bez vlivu není. Začátkem ledna dostává celá Země od Slunce skoro o sedm procent víc světla než začátkem července. Severní polokouli to zimu trochu zmírňuje a léto trochu ochlazuje. Na jižní je to obráceně, tam ale rozdíly tlumí oceán, kterého je na jihu mnohem víc.</p>
+        <p>Druhý důsledek se dá najít v kalendáři. Čím je Země od Slunce dál, tím pomaleji obíhá. Vzdálenější část dráhy jí proto trvá déle: od jarní rovnodennosti do podzimní uběhne 186 dní, zpátky jen 179. Jaro a léto jsou na severu dohromady o týden delší než podzim a zima.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Ani sklon osy není navždy stejný. Během desítek tisíc let kolísá mezi 22 a 24,5 stupně a osa navíc opisuje kužel jako dobíhající káča. Polárka proto nebyla a nebude severní hvězdou vždycky. Tyhle pomalé změny patří k tomu, co spouští a ukončuje doby ledové.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../vzdalenost-hvezd/" data-cat="vesmir">
+        <span class="label">Další článek · Vesmír</span>
+        <span class="t">Jak daleko jsou hvězdy</span>
+        <p>Jak se dá změřit vzdálenost k něčemu, kam nikdo nedoletí.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const RAD = Math.PI / 180;
+    const fmt1 = new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const fmt0 = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+
+    /* ---------- model ---------- */
+    const ECC = 0.0167, PERI_LON = 282.9, PERI_DAY = 3, AU = 149.6;   // AU v milionech km
+    const SOLAR = 1.361;                                                // kW na metr čtvereční nad atmosférou
+    // kde je Slunce na obloze mezi hvězdami (délka), jak je daleko a jak vysoko nad rovníkem stojí
+    function sunAt(n, tilt) {
+      const M = (2 * Math.PI * (n - PERI_DAY)) / 365.25;
+      const nu = M + 2 * ECC * Math.sin(M) + 1.25 * ECC * ECC * Math.sin(2 * M);
+      const lon = (((nu / RAD + PERI_LON) % 360) + 360) % 360;
+      return { lon, dist: (1 - ECC * ECC) / (1 + ECC * Math.cos(nu)), dec: Math.asin(Math.sin(tilt * RAD) * Math.sin(lon * RAD)) / RAD };
+    }
+    // délka dne v hodinách; alt je výška středu Slunce, při které vychází (−0,833° kvůli ohybu světla)
+    function dayLength(lat, dec, alt) {
+      const c = (Math.sin(alt * RAD) - Math.sin(lat * RAD) * Math.sin(dec * RAD)) / (Math.cos(lat * RAD) * Math.cos(dec * RAD));
+      return c >= 1 ? 0 : c <= -1 ? 24 : (2 * Math.acos(c)) / RAD / 15;
+    }
+    // energie za den na vodorovný metr čtvereční nad atmosférou, v kWh
+    function energy(lat, dec, dist) {
+      const H = (dayLength(lat, dec, 0) / 2) * 15 * RAD;
+      return Math.max(0, ((24 / Math.PI) * SOLAR / (dist * dist)) * (H * Math.sin(lat * RAD) * Math.sin(dec * RAD) + Math.cos(lat * RAD) * Math.cos(dec * RAD) * Math.sin(H)));
+    }
+    const MONTHS = ["ledna", "února", "března", "dubna", "května", "června", "července", "srpna", "září", "října", "listopadu", "prosince"];
+    const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    function dateOf(n) {
+      let m = 0, d = Math.round(n);
+      while (d > DAYS[m]) { d -= DAYS[m]; m++; }
+      return `${d}. ${MONTHS[m]}`;
+    }
+    const s = { day: 172, lat: 50, tilt: 23.44, playing: false };
+
+    /* ---------- levý obrázek: dráha ---------- */
+    const orbit = $("orbit");
+    const OC = { x: 280, y: 208, rx: 212, ry: 92 };
+    // délka Slunce 0° (březen) je vzadu, 90° (červen) vlevo, Země obíhá proti směru hodin
+    const posOf = (lon) => { const a = (lon + 90) * RAD; return { x: OC.x + OC.rx * Math.cos(a), y: OC.y - OC.ry * Math.sin(a) }; };
+    el("ellipse", { cx: OC.x, cy: OC.y, rx: OC.rx, ry: OC.ry, class: "path" }, orbit);
+    // šipka směru oběhu
+    { const p = posOf(135), q = posOf(139); const ang = Math.atan2(q.y - p.y, q.x - p.x) / RAD; el("path", { d: "M-7 -5L5 0L-7 5Z", class: "dir", transform: `translate(${p.x} ${p.y}) rotate(${ang})` }, orbit); }
+    const sight = el("line", { class: "sight" }, orbit);
+    for (let i = 0; i < 12; i++) { const a = i * 30 * RAD; el("line", { x1: OC.x + 28 * Math.cos(a), y1: OC.y + 28 * Math.sin(a), x2: OC.x + 36 * Math.cos(a), y2: OC.y + 36 * Math.sin(a), class: "sunray" }, orbit); }
+    el("circle", { cx: OC.x, cy: OC.y, r: 22, class: "sun" }, orbit);
+    const ghosts = [];
+    [[0, "březen", 0, -22], [90, "červen", -6, 40], [180, "září", 0, 38], [270, "prosinec", 6, 40]].forEach(([lon, name, dx, dy]) => {
+      const p = posOf(lon), g = el("g", { class: "ghost", transform: `translate(${p.x} ${p.y})` }, orbit);
+      el("circle", { r: 9 }, g);
+      ghosts.push(el("line", { class: "axis" }, g));
+      el("text", { x: p.x + dx, y: p.y + dy, class: "mon" }, orbit).textContent = name;
+    });
+    // nejblíž a nejdál od Slunce
+    [[PERI_LON, "nejblíž · 3. 1.", "end", -12], [PERI_LON + 180, "nejdál · 4. 7.", "start", 12]].forEach(([lon, text, anchor, dx]) => {
+      const p = posOf(lon), ux = (p.x - OC.x) / OC.rx, uy = (p.y - OC.y) / OC.ry;
+      el("line", { x1: p.x - 6 * ux, y1: p.y - 6 * uy, x2: p.x + 6 * ux, y2: p.y + 6 * uy, class: "tick" }, orbit);
+      el("text", { x: p.x + dx, y: p.y - 8, class: "lbl", style: `text-anchor:${anchor}` }, orbit).textContent = text;
+    });
+    const earthG = el("g", {}, orbit);
+    el("circle", { r: 16, class: "e-night" }, earthG);
+    const earthDay = el("path", { class: "e-day" }, earthG);
+    el("circle", { r: 16, class: "e-rim" }, earthG);
+    const earthAxis = el("line", { class: "axis" }, earthG);
+    const handle = el("circle", { r: 28, id: "earth-handle", tabindex: 0, role: "slider", "aria-label": "Poloha Země na dráze", "aria-valuemin": 1, "aria-valuemax": 365 }, earthG);
+    el("circle", { r: 22, class: "focus-ring" }, earthG);
+
+    /* ---------- pravý obrázek: Země z boku a polední Slunce ---------- */
+    const globe = $("globe");
+    const GC = { x: 205, y: 140, r: 102 };
+    [-70, -35, 0, 35, 70].forEach((dy) => {
+      el("line", { x1: 8, y1: GC.y + dy, x2: 62, y2: GC.y + dy, class: "ray" }, globe);
+      el("path", { d: `M62 ${GC.y + dy - 5}L74 ${GC.y + dy}L62 ${GC.y + dy + 5}Z`, class: "ray-head" }, globe);
+    });
+    el("circle", { cx: GC.x, cy: GC.y, r: GC.r, class: "e-night" }, globe);
+    el("path", { d: `M${GC.x} ${GC.y - GC.r}A${GC.r} ${GC.r} 0 0 0 ${GC.x} ${GC.y + GC.r}Z`, class: "e-day" }, globe);
+    el("line", { x1: GC.x, y1: GC.y - GC.r, x2: GC.x, y2: GC.y + GC.r, class: "term" }, globe);
+    const parEq = [el("path", { class: "par eq" }, globe), el("path", { class: "par eq back" }, globe)];
+    const parParts = { dayBack: el("path", { class: "par day back" }, globe), nightBack: el("path", { class: "par night back" }, globe), night: el("path", { class: "par night" }, globe), day: el("path", { class: "par day" }, globe) };
+    const gAxis = el("line", { class: "axis" }, globe);
+    el("circle", { cx: GC.x, cy: GC.y, r: GC.r, class: "e-rim" }, globe);
+    const poleN = el("text", { class: "pole" }, globe);
+    poleN.textContent = "sever";
+    const you = el("circle", { r: 6, class: "you" }, globe);
+    el("text", { x: GC.x - GC.r / 2, y: GC.y + GC.r + 24, class: "g-cap" }, globe).textContent = "DEN";
+    el("text", { x: GC.x + GC.r / 2, y: GC.y + GC.r + 24, class: "g-cap" }, globe).textContent = "NOC";
+    // polední Slunce: stejně široký svazek světla dopadá na různě velkou plochu
+    const IN = { x: 190, ground: 398, top: 296 };
+    const clip = el("clipPath", { id: "inset-clip" }, el("defs", {}, globe));
+    el("rect", { x: 20, y: IN.top, width: 340, height: IN.ground - IN.top }, clip);
+    const beamG = el("g", { "clip-path": "url(#inset-clip)" }, globe);
+    const beam = el("path", { class: "beam" }, beamG), edgeA = el("line", { class: "beam-edge" }, beamG), edgeB = el("line", { class: "beam-edge" }, beamG);
+    el("line", { x1: 24, y1: IN.ground, x2: 356, y2: IN.ground, class: "ground" }, globe);
+    const foot = el("line", { class: "foot" }, globe);
+    const insetT = el("text", { x: IN.x, y: IN.top - 10, class: "inset-t" }, globe);
+
+    // bod na Zemi (šířka, úhel kolem osy) v prostoru: x ke Slunci, y k severu oběžné dráhy, z k nám
+    function frame(tilt, lon) {
+      const a = (lon - 90) * RAD, st = Math.sin(tilt * RAD), ct = Math.cos(tilt * RAD);
+      const n = [st * Math.cos(a), ct, st * Math.sin(a)];
+      // dva směry kolmé na osu
+      const e1 = [ct * Math.cos(a), -st, ct * Math.sin(a)];
+      const e2 = [n[1] * e1[2] - n[2] * e1[1], n[2] * e1[0] - n[0] * e1[2], n[0] * e1[1] - n[1] * e1[0]];
+      return { n, e1, e2 };
+    }
+    function parallel(f, lat) {
+      const pts = [], cl = Math.cos(lat * RAD), sl = Math.sin(lat * RAD);
+      for (let i = 0; i <= 180; i++) {
+        const t = (i * 2 * Math.PI) / 180, c = Math.cos(t) * cl, d = Math.sin(t) * cl;
+        pts.push([c * f.e1[0] + d * f.e2[0] + sl * f.n[0], c * f.e1[1] + d * f.e2[1] + sl * f.n[1], c * f.e1[2] + d * f.e2[2] + sl * f.n[2]]);
+      }
+      return pts;
+    }
+    const sx = (p) => GC.x - GC.r * p[0], sy = (p) => GC.y - GC.r * p[1];
+    // rozdělí kružnici na souvislé kousky podle toho, jestli vyhovují podmínce
+    function strokes(pts, test) {
+      let d = "", open = false;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const mid = [(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2, (pts[i][2] + pts[i + 1][2]) / 2];
+        if (test(mid)) { d += `${open ? "L" : "M"}${sx(pts[i]).toFixed(1)} ${sy(pts[i]).toFixed(1)}L${sx(pts[i + 1]).toFixed(1)} ${sy(pts[i + 1]).toFixed(1)}`; open = true; } else open = false;
+      }
+      return d;
+    }
+
+    /* ---------- kresba ---------- */
+    let said = "";
+    function render() {
+      const sun = sunAt(s.day, s.tilt), noon = 90 - Math.abs(s.lat - sun.dec), len = dayLength(s.lat, sun.dec, -0.833);
+      // dráha
+      const p = posOf(sun.lon), lean = Math.sin(s.tilt * RAD), up = Math.cos(s.tilt * RAD);
+      earthG.setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
+      earthAxis.setAttribute("x1", -26 * lean); earthAxis.setAttribute("y1", 26 * up); earthAxis.setAttribute("x2", 26 * lean); earthAxis.setAttribute("y2", -26 * up);
+      ghosts.forEach((g) => { g.setAttribute("x1", -15 * lean); g.setAttribute("y1", 15 * up); g.setAttribute("x2", 15 * lean); g.setAttribute("y2", -15 * up); });
+      const toSun = Math.atan2(OC.y - p.y, OC.x - p.x);
+      earthDay.setAttribute("d", "M0 -16A16 16 0 0 1 0 16Z");
+      earthDay.setAttribute("transform", `rotate(${toSun / RAD})`);
+      sight.setAttribute("x1", OC.x); sight.setAttribute("y1", OC.y); sight.setAttribute("x2", p.x); sight.setAttribute("y2", p.y);
+      handle.setAttribute("aria-valuenow", s.day);
+      handle.setAttribute("aria-valuetext", dateOf(s.day));
+
+      // Země z boku
+      const f = frame(s.tilt, sun.lon);
+      gAxis.setAttribute("x1", GC.x + GC.r * 1.2 * f.n[0]); gAxis.setAttribute("y1", GC.y + GC.r * 1.2 * f.n[1]);
+      gAxis.setAttribute("x2", GC.x - GC.r * 1.2 * f.n[0]); gAxis.setAttribute("y2", GC.y - GC.r * 1.2 * f.n[1]);
+      poleN.setAttribute("x", GC.x - GC.r * 1.34 * f.n[0]); poleN.setAttribute("y", GC.y - GC.r * 1.34 * f.n[1] + 4);
+      const eq = parallel(f, 0), mine = parallel(f, s.lat);
+      parEq[0].setAttribute("d", strokes(eq, (m) => m[2] >= 0));
+      parEq[1].setAttribute("d", strokes(eq, (m) => m[2] < 0));
+      parParts.day.setAttribute("d", strokes(mine, (m) => m[2] >= 0 && m[0] > 0));
+      parParts.night.setAttribute("d", strokes(mine, (m) => m[2] >= 0 && m[0] <= 0));
+      parParts.dayBack.setAttribute("d", strokes(mine, (m) => m[2] < 0 && m[0] > 0));
+      parParts.nightBack.setAttribute("d", strokes(mine, (m) => m[2] < 0 && m[0] <= 0));
+      // vy v poledne: bod rovnoběžky nejblíž Slunci
+      let best = mine[0];
+      for (const q of mine) if (q[0] > best[0]) best = q;
+      you.setAttribute("cx", sx(best)); you.setAttribute("cy", sy(best));
+      you.setAttribute("opacity", best[2] >= -0.02 ? 1 : 0.45);
+
+      // polední svazek
+      if (noon > 0.5) {
+        const h = noon * RAD, L = Math.min(30 / Math.sin(h), 300);
+        const x1 = IN.x - L / 2, x2 = IN.x + L / 2, far = 400, dx = -Math.cos(h) * far, dy = -Math.sin(h) * far;
+        beam.setAttribute("d", `M${x1} ${IN.ground}L${x2} ${IN.ground}L${x2 + dx} ${IN.ground + dy}L${x1 + dx} ${IN.ground + dy}Z`);
+        [[edgeA, x1], [edgeB, x2]].forEach(([e, x]) => { e.setAttribute("x1", x); e.setAttribute("y1", IN.ground); e.setAttribute("x2", x + dx); e.setAttribute("y2", IN.ground + dy); });
+        foot.setAttribute("x1", x1); foot.setAttribute("x2", x2); foot.setAttribute("y1", IN.ground); foot.setAttribute("y2", IN.ground);
+        beamG.setAttribute("display", ""); foot.setAttribute("display", "");
+        const spread = 1 / Math.sin(h);
+        insetT.textContent = spread < 1.05 ? "světlo dopadá skoro kolmo" : `stejné světlo na ${fmt1.format(spread)}× větší ploše`;
+      } else {
+        beamG.setAttribute("display", "none"); foot.setAttribute("display", "none");
+        insetT.textContent = "Slunce dnes nevyjde";
+      }
+
+      // čísla
+      $("day").value = s.day;
+      $("day-val").textContent = dateOf(s.day);
+      $("lat-val").textContent = s.lat === 0 ? "rovník" : `${Math.abs(s.lat)}° ${s.lat > 0 ? "s. š." : "j. š."}`;
+      $("st-noon").textContent = noon > 0 ? `${fmt0.format(noon)}° vysoko` : "pod obzorem";
+      const mins = Math.round(len * 60);
+      $("st-len").textContent = len >= 24 ? "celý den" : len <= 0 ? "žádný" : `${Math.floor(mins / 60)} h ${mins % 60} min`;
+      $("st-dist").textContent = `${fmt1.format(sun.dist * AU)} mil. km`;
+      $("play").textContent = s.playing ? "Zastavit" : "Spustit rok";
+      $("play").setAttribute("aria-pressed", String(s.playing));
+
+      // popis
+      const e = energy(s.lat, sun.dec, sun.dist);
+      let top = 0;
+      for (let n = 1; n <= 365; n += 2) { const q = sunAt(n, s.tilt); top = Math.max(top, energy(s.lat, q.dec, q.dist)); }
+      const share = top > 0 ? Math.round((e / top) * 100) : 0;
+      const north = s.lat >= 0, quarter = Math.floor((((sun.lon + 0.7 + (north ? 0 : 180)) % 360) / 90));
+      let status;
+      if (s.tilt === 0) status = "<strong>Bez sklonu žádná roční období.</strong> Slunce chodí celý rok stejně vysoko a den trvá všude dvanáct hodin. Vzdálenost od Slunce se přitom mění dál.";
+      else if (len >= 24) status = "<strong>Polární den.</strong> Celá rovnoběžka je na světle, Slunce dnes vůbec nezapadne a jen obchází obzor.";
+      else if (len <= 0) status = "<strong>Polární noc.</strong> Celá rovnoběžka je ve stínu, Slunce se dnes nad obzor nedostane.";
+      else if (Math.abs(s.lat) <= 10) status = "<strong>U rovníku.</strong> Den trvá celý rok zhruba dvanáct hodin a Slunce je v poledne vždycky vysoko. Roční období se tu poznají podle dešťů, ne podle tepla.";
+      else status = [
+        "<strong>Jaro.</strong> Tahle polokoule se ke Slunci přiklání čím dál víc. Den se prodlužuje a Slunce stoupá.",
+        "<strong>Léto.</strong> Tahle polokoule je přikloněná ke Slunci. Slunce je vysoko a den je dlouhý.",
+        "<strong>Podzim.</strong> Tahle polokoule se od Slunce odklání. Den se krátí a Slunce klesá.",
+        "<strong>Zima.</strong> Tahle polokoule je od Slunce odkloněná. Slunce je nízko a den je krátký.",
+      ][quarter];
+      if (s.tilt !== 0 && len > 0) status += ` Za den sem dopadne ${fmt1.format(e)} kWh na metr čtvereční, ${share} % zdejšího ročního maxima.`;
+      if (status !== said) { said = status; $("status").innerHTML = status; }
+    }
+
+    /* ---------- ovládání ---------- */
+    function setDay(n) { s.day = ((Math.round(n) - 1 + 3650) % 365) + 1; render(); }
+    $("day").addEventListener("input", (e) => { s.playing = false; setDay(Number(e.target.value)); });
+    $("lat").addEventListener("input", (e) => { s.lat = Number(e.target.value); render(); });
+    $("tilt-seg").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-v]");
+      if (!b) return;
+      $("tilt-seg").querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+      s.tilt = Number(b.dataset.v);
+      render();
+    });
+    // tažení Země po dráze: z polohy ukazatele délka Slunce a k ní nejbližší den
+    const LON = Array.from({ length: 366 }, (_, n) => sunAt(n, 23.44).lon);
+    function dayFromPointer(ev) {
+      const pt = orbit.createSVGPoint();
+      pt.x = ev.clientX; pt.y = ev.clientY;
+      const q = pt.matrixTransform(orbit.getScreenCTM().inverse());
+      const lon = (((Math.atan2(-(q.y - OC.y) / OC.ry, (q.x - OC.x) / OC.rx) / RAD - 90) % 360) + 360) % 360;
+      let best = 1, gap = 999;
+      for (let n = 1; n <= 365; n++) { const d = Math.abs(((LON[n] - lon + 540) % 360) - 180); if (d < gap) { gap = d; best = n; } }
+      return best;
+    }
+    let dragging = false;
+    handle.addEventListener("pointerdown", (ev) => { dragging = true; s.playing = false; handle.setPointerCapture(ev.pointerId); setDay(dayFromPointer(ev)); });
+    handle.addEventListener("pointermove", (ev) => { if (dragging) setDay(dayFromPointer(ev)); });
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach((n) => handle.addEventListener(n, () => { dragging = false; }));
+    handle.addEventListener("keydown", (ev) => {
+      const step = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 30, PageDown: -30 }[ev.key];
+      if (!step) return;
+      ev.preventDefault();
+      s.playing = false;
+      setDay(s.day + step);
+    });
+    // rok proběhne asi za dvanáct sekund
+    let last = 0, carry = 0;
+    function tick(t) {
+      if (!s.playing) return;
+      carry += Math.min(0.1, (t - last) / 1000) * 30;
+      last = t;
+      if (carry >= 1) { const whole = Math.floor(carry); carry -= whole; setDay(s.day + whole); }
+      requestAnimationFrame(tick);
+    }
+    $("play").addEventListener("click", () => {
+      s.playing = !s.playing;
+      render();
+      if (s.playing) { last = performance.now(); carry = 0; requestAnimationFrame(tick); }
+    });
+    render();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>

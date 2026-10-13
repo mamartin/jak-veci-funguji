@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak daleko jsou hvězdy</title>
+  <meta name="description" content="Jak se dá změřit vzdálenost ke hvězdě, kam nikdo nedoletí: paralaxa, oběžná dráha Země jako základna a družice Gaia. S modelem, ve kterém hvězdu oddalujete.">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .par-stage { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+    @media (min-width: 60rem) { .par-stage { grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); } }
+    #top { touch-action: pan-y; }
+    #sky { justify-self: center; max-width: 24rem; }
+
+    .sun { fill: #f2b63c; stroke: var(--metal-line); stroke-width: 1.2; }
+    .path { fill: none; stroke: var(--rule); stroke-width: 1.6; stroke-dasharray: 3 6; }
+    .base { stroke: var(--ink-3); stroke-width: 1.2; }
+    .earth { fill: #3f7fd0; stroke: var(--metal-line); stroke-width: 1.2; }
+    .ghost { fill: var(--sunk); stroke: var(--ink-3); stroke-width: 1; }
+    .far { stroke: var(--ink-3); stroke-width: 1.2; stroke-dasharray: 4 5; opacity: 0.8; }
+    .now { stroke: var(--cat); stroke-width: 2.2; }
+    .near { fill: #f1c86a; stroke: var(--metal-line); stroke-width: 1.2; }
+    .wall { fill: var(--sunk); stroke: var(--rule); stroke-width: 1; }
+    .wall-star { fill: var(--ink-3); }
+    .hit { fill: var(--cat); }
+    .arc { fill: none; stroke: var(--ink-2); stroke-width: 1.4; }
+    .lbl { fill: var(--ink-3); font: 500 11.5px var(--font-mono); }
+    .mon { fill: var(--ink-2); font: 600 12.5px var(--font-mono); text-anchor: middle; }
+    .name { fill: var(--ink); font: 600 13px var(--font-mono); text-anchor: middle; }
+    #earth-handle { fill: transparent; cursor: grab; touch-action: none; outline: none; }
+    #earth-handle:focus-visible + .focus-ring { opacity: 1; }
+    .focus-ring { fill: none; stroke: var(--cat); stroke-width: 2.5; opacity: 0; pointer-events: none; }
+
+    /* obloha je tmavá v obou režimech, barvy jsou proto pevné */
+    .sky-bg { fill: #101624; }
+    .bg-star { fill: #cdd6ea; }
+    .trace { stroke: #5b6788; stroke-width: 1.4; }
+    .core { fill: #fff; }
+    .sky-t { fill: #aab4cc; font: 500 12px var(--font-mono); text-anchor: middle; }
+    .sky-b { fill: #e7ecf7; font: 600 13px var(--font-mono); text-anchor: middle; }
+    .brace { fill: none; stroke: #ffd15c; stroke-width: 1.6; }
+    .brace-t { fill: #ffd15c; font: 600 13px var(--font-mono); text-anchor: middle; }
+
+    @media (max-width: 46rem) {
+      .lbl { display: none; }
+      .mon { font-size: 16px; }
+      .name { font-size: 16px; }
+      .sky-t { font-size: 14.5px; }
+      .sky-b, .brace-t { font-size: 15.5px; }
+    }
+  </style>
+</head>
+<body data-cat="vesmir">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Vesmír</a><span aria-hidden="true">/</span><span>Vzdálenost hvězd</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Vesmír</a></p>
+      <h1 class="display">Jak daleko jsou hvězdy</h1>
+      <p class="lede">K nejbližší hvězdě letí světlo přes čtyři roky a žádná sonda tam nedoletěla. Přesto víme, jak daleko je. Stačí se na ni podívat dvakrát, s půlročním odstupem, a změřit, o kolik se mezitím posunula.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Když se díváte ze dvou míst, blízká věc se proti vzdálenému pozadí posune. Čím je blíž, tím víc.</li>
+        <li><span class="hl">Země se za půl roku přesune na druhou stranu Slunce, o 300 milionů kilometrů.</span> Blízké hvězdy se přitom na obloze nepatrně pohnou.</li>
+        <li>Ten posun je menší než úhel, pod kterým vidíte korunu ze čtyř kilometrů. Poprvé se ho podařilo změřit až roku 1838.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Hvězda ze dvou stran oběžné dráhy</p>
+        <span class="label">Pusťte rok, pak hvězdu oddalujte a měňte přístroj</span>
+      </div>
+      <div class="fig-stage par-stage">
+        <svg id="top" viewBox="0 0 560 420" role="img" aria-label="Pohled shora: Země obíhá Slunce a dívá se přes blízkou hvězdu na vzdálené pozadí. Směr pohledu se během roku mění."></svg>
+        <svg id="sky" viewBox="0 0 380 420" role="img" aria-label="Pohled dalekohledem: blízká hvězda se během roku posouvá proti vzdáleným hvězdám"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl ctl-grow">
+          <label class="label" for="when">Poloha Země</label>
+          <div class="ctl-row">
+            <input type="range" id="when" min="0" max="12" step="0.05" value="0">
+            <output class="val" id="when-val" for="when"></output>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="dist">Vzdálenost hvězdy</label>
+          <div class="ctl-row">
+            <input type="range" id="dist" min="0.62" max="4.5" step="0.01" value="0.63">
+            <output class="val" id="dist-val" for="dist"></output>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-star">Hvězda</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-star" id="star-seg">
+            <button type="button" role="radio" data-v="4.24" aria-checked="true">Proxima</button>
+            <button type="button" role="radio" data-v="8.6" aria-checked="false">Sirius</button>
+            <button type="button" role="radio" data-v="25" aria-checked="false">Vega</button>
+            <button type="button" role="radio" data-v="430" aria-checked="false">Polárka</button>
+            <button type="button" role="radio" data-v="26000" aria-checked="false">Střed Galaxie</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-tool">Čím měříme</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-tool" id="tool-seg">
+            <button type="button" role="radio" data-v="old" aria-checked="true">Dalekohled 1838</button>
+            <button type="button" role="radio" data-v="hip" aria-checked="false">Hipparcos</button>
+            <button type="button" role="radio" data-v="gaia" aria-checked="false">Gaia</button>
+          </div>
+        </div>
+        <button type="button" class="btn" id="play" aria-pressed="false">Spustit rok</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Paralaxa</span><span class="v" id="st-p"></span></li>
+          <li><span class="n">Vzdálenost</span><span class="v small" id="st-d"></span></li>
+          <li><span class="n">Chyba vzdálenosti</span><span class="v small" id="st-err"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Vlevo pohled shora. Úhly jsou mnohonásobně zvětšené: ve správném měřítku by nejbližší hvězda ležela čtyři kilometry od papíru. Vpravo to, co vidí dalekohled. Záběr se vždy zvětší tak, aby posun hvězdy vyšel stejně velký, a čím víc je potřeba zvětšit, tím víc je vidět neostrost měření. Hvězda v modelu leží v rovině oběžné dráhy Země, proto se pohybuje po úsečce. Hvězdy mimo tuto rovinu opisují elipsu.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-palec">
+      <div class="prose">
+        <h2 id="h-palec">Palec před nosem</h2>
+        <p>Natáhněte ruku, zvedněte palec a dívejte se na něj střídavě levým a pravým okem. Palec skáče ze strany na stranu proti tomu, co je za ním. Přitáhněte ho k nosu a skáče víc.</p>
+        <p>Tomu posunu se říká paralaxa. Mozek ji používá pořád, právě díky ní odhadnete, jak daleko je hrnek na stole. Stačí znát dvě věci: jak daleko jsou od sebe oči a o jaký úhel se věc posunula. Zbytek je trojúhelník.</p>
+        <p>Oči jsou od sebe šest centimetrů a na hrnek to stačí. Na strom na obzoru už ne, tam se posun ztratí. Kdo chce měřit dál, potřebuje oči dál od sebe.</p>
+      </div>
+      <aside class="note" aria-label="Vzdálenosti hvězd v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>4,24 sv. roku</dt><dd>je k Proximě Centauri, nejbližší hvězdě po Slunci</dd></div>
+          <div><dt>0,77″</dt><dd>je její paralaxa, největší ze všech hvězd</dd></div>
+          <div><dt>1838</dt><dd>změřil Friedrich Bessel první vzdálenost hvězdy</dd></div>
+          <div><dt>skoro 1,5 miliardy</dt><dd>hvězd má paralaxu změřenou družicí Gaia</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zakladna">
+      <div class="prose">
+        <h2 id="h-zakladna">Oči tři sta milionů kilometrů od sebe</h2>
+        <p>Největší rozestup, jaký máme k dispozici zadarmo, je oběžná dráha Země. V lednu jsme na jedné straně Slunce, v červenci na druhé, o 300 milionů kilometrů jinde. Astronom vyfotí hvězdu v lednu a pak znovu v červenci, jako by mrkl jedním a druhým okem.</p>
+        <p>Vzdálené hvězdy se mezi oběma snímky nepohnou, jsou jako stěna za palcem. Blízká hvězda se proti nim o kousek posune. <span class="hl">Polovině toho posunu se říká paralaxa hvězdy a ze samotného úhlu se dá vzdálenost rovnou vypočítat.</span></p>
+        <p>Odtud má jméno i jednotka, kterou astronomové používají nejčastěji. Parsek je vzdálenost, ze které má hvězda paralaxu jednu úhlovou vteřinu. Vychází na 3,26 světelného roku. Hvězda s paralaxou půl vteřiny je dva parseky daleko, s desetinou vteřiny deset.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Pusťte rok a sledujte oba obrázky naráz. Když je Země nahoře, míří pohled přes hvězdu dolů na pozadí a hvězda je v dalekohledu vpravo. O půl roku později je to obráceně.</p>
+        <p>Pak táhněte posuvník vzdálenosti doprava. Paralaxa klesá přesně tak, jak vzdálenost roste: desetkrát dál, desetkrát menší úhel.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-uhel">
+      <div class="prose">
+        <h2 id="h-uhel">Úhel, který nikdo neviděl</h2>
+        <p>Že by se hvězdy musely během roku posouvat, kdyby Země obíhala Slunce, věděli už staří Řekové. Žádný posun ale neviděli a brali to jako důkaz, že Země stojí. Druhá možnost byla, že hvězdy jsou nepředstavitelně daleko. Ta byla správně.</p>
+        <p>Úhlová vteřina je stupeň rozdělený na 3 600 dílků. Pod takovým úhlem vidíte korunovou minci ze čtyř kilometrů. Žádná hvězda nemá paralaxu ani tak velkou. Nejbližší, Proxima Centauri, má 0,77 vteřiny.</p>
+        <p>Proto to trvalo tak dlouho. Dalekohled se k obloze obrátil už roku 1609, ale teprve v roce 1838 změřil německý astronom Friedrich Bessel paralaxu hvězdy 61 Cygni v souhvězdí Labutě. Vyšla mu třetina vteřiny, tedy asi deset světelných let. Dnešní hodnota je 11,4. Lidé se tehdy poprvé dozvěděli, jak daleko hvězdy doopravdy jsou.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte Dalekohled 1838 a vyberte Vegu. Posun je jen asi šestkrát větší než chyba měření, hvězda je v záběru rozmazaná a vzdálenost vyjde jen zhruba. U Polárky už je rozmazaná přes celý záběr.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-druzice">
+      <div class="prose">
+        <h2 id="h-druzice">Z oběžné dráhy</h2>
+        <p>Ze Země se dál než na pár desítek světelných let dohlédnout nedalo. Vzduch se chvěje a obraz hvězdy rozmazává do kotoučku širokého asi jednu vteřinu. Hledat v něm posun stokrát menší je práce na roky a výsledek je nejistý.</p>
+        <p>Nad atmosférou ten problém není. Evropská družice Hipparcos změřila v letech 1989 až 1993 polohy 118 tisíc hvězd s přesností na tisícinu vteřiny. Spolehlivé vzdálenosti tím poskočily z desítek na stovky světelných let.</p>
+        <p>Její nástupkyně Gaia měřila od roku 2014 do začátku roku 2025 a je ještě padesátkrát přesnější. U jasných hvězd pozná úhel, pod jakým byste viděli lidský vlas z tisíce kilometrů. Paralaxu změřila skoro miliardě a půl hvězd a dosáhne přes velkou část naší Galaxie.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Vyberte Polárku a přepínejte přístroje. Dalekohled z roku 1838 nezměří nic, Hipparcos zhruba, Gaia přesně.</p>
+        <p>Pak zkuste Střed Galaxie. I pro Gaiu je posun jen asi šestkrát větší než chyba měření.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-dal">
+      <div class="prose">
+        <h2 id="h-dal">A co je ještě dál</h2>
+        <p>K jiným galaxiím paralaxa nedosáhne, úhly jsou příliš malé i pro Gaiu. Tam se měří jinak: podle toho, jak slabě svítí něco, o čem víme, jak silně svítí doopravdy. Je to jako odhadovat vzdálenost auta v noci podle jasu světel.</p>
+        <p>Takovým světlem jsou cefeidy, hvězdy, které pravidelně zjasňují a slábnou. Americká astronomka Henrietta Leavittová v roce 1912 zjistila, že čím déle jim jedno zjasnění trvá, tím jsou svítivější. Stačí tedy změřit dobu pulzu a víme, jak jasná hvězda je. Podle cefeid poznal Edwin Hubble ve dvacátých letech, že mlhovina v Andromedě je jiná galaxie.</p>
+        <p>Aby to fungovalo, musí někdo nejdřív zjistit skutečnou svítivost aspoň několika cefeid. A to jde jen u těch blízkých, kterým se dá změřit paralaxa. Všechny vzdálenosti ve vesmíru, až po ty nejvzdálenější galaxie, tak stojí na trojúhelníku s oběžnou dráhou Země v základně.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Světelný rok není čas, ale vzdálenost: dráha, kterou světlo uletí za rok. Je to 9,46 bilionu kilometrů. K Proximě Centauri je to 40 bilionů kilometrů. Sonda Voyager 1, nejrychlejší věc, která opouští Sluneční soustavu, by tam letěla 75 tisíc let.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../velikost-vesmiru/" data-cat="vesmir">
+        <span class="label">Další článek · Vesmír</span>
+        <span class="t">Jak velký je vesmír</span>
+        <p>Od Země po hranici toho, co je vidět, a kolik je cestou hvězd.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const cs = (v, digits) => v.toLocaleString("cs-CZ", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+
+    /* ---------- model ---------- */
+    const LY_PER_PC = 3.2616;                       // světelných let v jednom parseku
+    // nejistota jednoho změřeného úhlu v úhlových vteřinách
+    const TOOLS = {
+      old: { sigma: 0.02, who: "Dalekohled 1838" },
+      hip: { sigma: 0.001, who: "Hipparcos" },
+      gaia: { sigma: 0.00002, who: "Gaia" },
+    };
+    const MONTHS = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"];
+    const s = { t: 0, logLy: Math.log10(4.24), tool: "old", playing: false };
+    const angle = () => Math.PI / 2 + 2 * Math.PI * s.t;       // leden nahoře, Země obíhá proti směru hodin
+
+    /* ---------- pohled shora ---------- */
+    const top = $("top");
+    const SUN = { x: 78, y: 210 }, R = 52, WALL = 520;
+    const starX = () => 250 + (150 * (s.logLy - 0.62)) / (4.5 - 0.62);
+    el("rect", { x: WALL - 8, y: 36, width: 30, height: 348, class: "wall" }, top);
+    { let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      for (let i = 0; i < 26; i++) el("circle", { cx: WALL - 4 + rnd() * 22, cy: 42 + rnd() * 336, r: 0.8 + rnd() * 1.2, class: "wall-star" }, top); }
+    el("text", { x: 552, y: 26, class: "lbl", style: "text-anchor:end" }, top).textContent = "vzdálené hvězdy";
+    el("circle", { cx: SUN.x, cy: SUN.y, r: R, class: "path" }, top);
+    el("line", { x1: SUN.x, y1: SUN.y - R, x2: SUN.x, y2: SUN.y + R, class: "base" }, top);
+    el("text", { x: SUN.x, y: SUN.y + R + 40, class: "lbl", style: "text-anchor:middle" }, top).textContent = "rozestup 300 mil. km";
+    el("text", { x: SUN.x, y: SUN.y - R - 12, class: "mon" }, top).textContent = "leden";
+    el("text", { x: SUN.x, y: SUN.y + R + 22, class: "mon" }, top).textContent = "červenec";
+    const farJan = el("line", { class: "far" }, top), farJul = el("line", { class: "far" }, top);
+    const sightA = el("line", { class: "now" }, top), sightB = el("line", { class: "now" }, top);
+    const arc = el("path", { class: "arc" }, top), arcT = el("text", { class: "lbl", style: "fill:var(--ink-2);font-weight:600" }, top);
+    arcT.textContent = "p";
+    el("circle", { cx: SUN.x, cy: SUN.y, r: 12, class: "sun" }, top);
+    el("circle", { cx: SUN.x, cy: SUN.y - R, r: 5, class: "ghost" }, top);
+    el("circle", { cx: SUN.x, cy: SUN.y + R, r: 5, class: "ghost" }, top);
+    const hit = el("circle", { r: 5, class: "hit" }, top);
+    const star = el("circle", { cy: SUN.y, r: 7, class: "near" }, top), starName = el("text", { class: "name" }, top);
+    const earthG = el("g", {}, top);
+    el("circle", { r: 8, class: "earth" }, earthG);
+    const handle = el("circle", { r: 22, id: "earth-handle", tabindex: 0, role: "slider", "aria-label": "Poloha Země na dráze", "aria-valuemin": 0, "aria-valuemax": 12 }, earthG);
+    el("circle", { r: 14, class: "focus-ring" }, earthG);
+
+    /* ---------- pohled dalekohledem ---------- */
+    const sky = $("sky");
+    const SC = { x: 190, y: 190 }, AMP = 110;
+    const defs = el("defs", {}, sky), grad = el("radialGradient", { id: "blur" }, defs);
+    [[0, 1], [0.3, 0.6], [1, 0]].forEach(([o, a]) => el("stop", { offset: o, "stop-color": "#ffffff", "stop-opacity": a }, grad));
+    const clip = el("clipPath", { id: "sky-clip" }, defs);
+    el("rect", { x: 8, y: 8, width: 364, height: 404, rx: 8 }, clip);
+    el("rect", { x: 8, y: 8, width: 364, height: 404, rx: 8, class: "sky-bg" }, sky);
+    const inSky = el("g", { "clip-path": "url(#sky-clip)" }, sky);
+    { let seed = 4; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      for (let i = 0; i < 46; i++) el("circle", { cx: 14 + rnd() * 352, cy: 14 + rnd() * 392, r: 0.7 + rnd() * 1.3, opacity: 0.35 + rnd() * 0.55, class: "bg-star" }, inSky); }
+    el("line", { x1: SC.x - AMP, y1: SC.y, x2: SC.x + AMP, y2: SC.y, class: "trace" }, inSky);
+    el("line", { x1: SC.x - AMP, y1: SC.y - 7, x2: SC.x - AMP, y2: SC.y + 7, class: "trace" }, inSky);
+    el("line", { x1: SC.x + AMP, y1: SC.y - 7, x2: SC.x + AMP, y2: SC.y + 7, class: "trace" }, inSky);
+    el("text", { x: SC.x + AMP, y: SC.y - 16, class: "sky-t" }, inSky).textContent = "leden";
+    el("text", { x: SC.x - AMP, y: SC.y - 16, class: "sky-t" }, inSky).textContent = "červenec";
+    const blur = el("circle", { cy: SC.y, fill: "url(#blur)" }, inSky), core = el("circle", { cy: SC.y, r: 2.6, class: "core" }, inSky);
+    // svorka pod polovinou dráhy hvězdy: to je paralaxa
+    el("path", { d: `M${SC.x} ${SC.y + 34}v8h${AMP}v-8`, class: "brace" }, inSky);
+    const braceT = el("text", { x: SC.x + AMP / 2, y: SC.y + 62, class: "brace-t" }, inSky);
+    const viewT = el("text", { x: SC.x, y: 392, class: "sky-b" }, sky), toolT = el("text", { x: SC.x, y: 34, class: "sky-t" }, sky);
+
+    /* ---------- formáty ---------- */
+    function arcsec(p) {
+      if (p >= 0.1) return `${cs(p, 2)}″`;
+      return `${Number(p.toPrecision(2)).toLocaleString("cs-CZ", { maximumFractionDigits: 7 })}″`;
+    }
+    function lightYears(ly) {
+      if (ly < 10) return `${cs(ly, 1)} sv. roku`;
+      if (ly < 1000) return `${cs(Number(ly.toPrecision(2)), 0)} sv. let`;
+      return `${cs(Number((ly / 1000).toPrecision(2)), ly < 10000 ? 1 : 0)} tis. sv. let`;
+    }
+    function coin(p) {                                // z jaké dálky je koruna (2 cm) vidět pod úhlem p
+      const km = 0.02 / ((p * Math.PI) / 648000) / 1000;
+      if (km < 10) return `${cs(km, 1)} km`;
+      if (km < 1000) return `${cs(Number(km.toPrecision(2)), 0)} km`;
+      return `${cs(Number((km / 1000).toPrecision(2)), km < 10000 ? 1 : 0)} tisíc km`;
+    }
+    const NAMES = [[4.24, "Proxima Centauri"], [8.6, "Sirius"], [11.4, "61 Cygni"], [25, "Vega"], [37, "Arcturus"], [65, "Aldebaran"], [430, "Polárka"], [860, "Rigel"], [26000, "střed Galaxie"]];
+
+    /* ---------- kresba ---------- */
+    let said = "";
+    function render() {
+      const ly = Math.pow(10, s.logLy), p = LY_PER_PC / ly, tool = TOOLS[s.tool], rel = tool.sigma / p;
+      const a = angle(), ex = SUN.x + R * Math.cos(a), ey = SUN.y - R * Math.sin(a), sxp = starX();
+      // pohled shora
+      earthG.setAttribute("transform", `translate(${ex.toFixed(1)} ${ey.toFixed(1)})`);
+      star.setAttribute("cx", sxp);
+      starName.setAttribute("x", sxp); starName.setAttribute("y", SUN.y - 20);
+      const near = NAMES.find(([d]) => Math.abs(Math.log10(d) - s.logLy) < 0.02);
+      starName.textContent = near ? near[1] : "hvězda";
+      const through = (x0, y0) => y0 + ((SUN.y - y0) * (WALL - x0)) / (sxp - x0);       // kde přímka přes hvězdu protne pozadí
+      [[farJan, SUN.x, SUN.y - R], [farJul, SUN.x, SUN.y + R]].forEach(([line, x0, y0]) => { line.setAttribute("x1", x0); line.setAttribute("y1", y0); line.setAttribute("x2", WALL); line.setAttribute("y2", through(x0, y0)); });
+      const hy = through(ex, ey);
+      sightA.setAttribute("x1", ex); sightA.setAttribute("y1", ey); sightA.setAttribute("x2", sxp); sightA.setAttribute("y2", SUN.y);
+      sightB.setAttribute("x1", sxp); sightB.setAttribute("y1", SUN.y); sightB.setAttribute("x2", WALL); sightB.setAttribute("y2", hy);
+      hit.setAttribute("cx", WALL); hit.setAttribute("cy", hy);
+      // úhel p u hvězdy: mezi směrem ke Slunci a k lednové Zemi
+      const half = Math.atan2(R, sxp - SUN.x), ar = 46;
+      arc.setAttribute("d", `M${sxp - ar} ${SUN.y}A${ar} ${ar} 0 0 1 ${sxp - ar * Math.cos(half)} ${SUN.y - ar * Math.sin(half)}`);
+      arcT.setAttribute("x", sxp - ar - 14); arcT.setAttribute("y", SUN.y - 8);
+      handle.setAttribute("aria-valuenow", (s.t * 12).toFixed(1));
+      handle.setAttribute("aria-valuetext", MONTHS[Math.floor(s.t * 12) % 12]);
+
+      // dalekohled: posun má vždy stejnou velikost, mění se neostrost
+      const x = SC.x + AMP * Math.sin(a), rb = Math.max(4, Math.min(380, rel * AMP));
+      blur.setAttribute("cx", x); blur.setAttribute("r", rb);
+      blur.setAttribute("opacity", Math.max(0.12, Math.min(1, Math.pow(14 / rb, 0.6))));
+      core.setAttribute("cx", x); core.setAttribute("opacity", rb < 14 ? 1 : 0);
+      braceT.textContent = `p = ${arcsec(p)}`;
+      viewT.textContent = `šířka záběru ${arcsec((380 / AMP) * p)}`;
+      toolT.textContent = `${tool.who} · chyba ${arcsec(tool.sigma)}`;
+
+      // čísla
+      $("when").value = s.t * 12;
+      $("when-val").textContent = MONTHS[Math.floor(s.t * 12 + 1e-6) % 12];
+      $("dist").value = s.logLy;
+      $("dist-val").textContent = lightYears(ly);
+      $("st-p").textContent = arcsec(p);
+      $("st-d").textContent = lightYears(ly);
+      $("st-err").textContent = rel >= 1 ? "nezměřitelná" : rel < 0.01 ? "pod 1 %" : `asi ${Math.round(rel * 100)} %`;
+      $("play").textContent = s.playing ? "Zastavit" : "Spustit rok";
+      $("play").setAttribute("aria-pressed", String(s.playing));
+      $("star-seg").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(Math.abs(Math.log10(Number(b.dataset.v)) - s.logLy) < 0.006)));
+
+      let status;
+      if (rel < 0.1) status = `<strong>Dobře měřitelné.</strong> Posun hvězdy je ${cs(Math.round(1 / rel), 0)}× větší než chyba měření, takže vzdálenost vyjde přesně.`;
+      else if (rel < 0.5) status = `<strong>Na hraně.</strong> Posun je jen ${cs(1 / rel, 1)}× větší než chyba měření. Vzdálenost vyjde jen zhruba.`;
+      else status = "<strong>Posun se ztrácí v chybě.</strong> Hvězda je moc daleko: pohne se o míň, než jak přesně umí přístroj měřit. Vzdálenost se takhle zjistit nedá.";
+      status += ` Úhel p je stejný, pod jakým byste viděli korunu z ${coin(p)}.`;
+      if (status !== said) { said = status; $("status").innerHTML = status; }
+    }
+
+    /* ---------- ovládání ---------- */
+    $("when").addEventListener("input", (e) => { s.playing = false; s.t = (Number(e.target.value) / 12) % 1; render(); });
+    $("dist").addEventListener("input", (e) => { s.logLy = Number(e.target.value); render(); });
+    function bindSeg(id, apply) {
+      $(id).addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        $(id).querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+        apply(b.dataset.v);
+        render();
+      });
+    }
+    bindSeg("star-seg", (v) => { s.logLy = Math.log10(Number(v)); });
+    bindSeg("tool-seg", (v) => { s.tool = v; });
+    // tažení Země po dráze
+    function yearFromPointer(ev) {
+      const pt = top.createSVGPoint();
+      pt.x = ev.clientX; pt.y = ev.clientY;
+      const q = pt.matrixTransform(top.getScreenCTM().inverse());
+      return ((((Math.atan2(-(q.y - SUN.y), q.x - SUN.x) - Math.PI / 2) / (2 * Math.PI)) % 1) + 1) % 1;
+    }
+    let dragging = false;
+    handle.addEventListener("pointerdown", (ev) => { dragging = true; s.playing = false; handle.setPointerCapture(ev.pointerId); s.t = yearFromPointer(ev); render(); });
+    handle.addEventListener("pointermove", (ev) => { if (dragging) { s.t = yearFromPointer(ev); render(); } });
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach((n) => handle.addEventListener(n, () => { dragging = false; }));
+    handle.addEventListener("keydown", (ev) => {
+      const step = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[ev.key];
+      if (!step) return;
+      ev.preventDefault();
+      s.playing = false;
+      s.t = (((s.t + step / 48) % 1) + 1) % 1;
+      render();
+    });
+    // rok proběhne asi za osm sekund
+    let last = 0;
+    function tick(now) {
+      if (!s.playing) return;
+      s.t = (s.t + Math.min(0.1, (now - last) / 1000) / 8) % 1;
+      last = now;
+      render();
+      requestAnimationFrame(tick);
+    }
+    $("play").addEventListener("click", () => {
+      s.playing = !s.playing;
+      render();
+      if (s.playing) { last = performance.now(); requestAnimationFrame(tick); }
+    });
+    render();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>

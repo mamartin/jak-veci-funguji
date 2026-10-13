@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak velký je vesmír</title>
+  <meta name="description" content="Od Země přes Sluneční soustavu a Mléčnou dráhu až po hranici toho, co je vidět. Kolik je hvězd a galaxií a proč je vesmír skoro prázdný. S modelem, ve kterém odletíte až na okraj.">
+  <link rel="stylesheet" href="/style.css?v=8">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    #cosmos { display: block; width: 100%; max-width: 46rem; margin: 0 auto; }
+    /* vesmír je tmavý v obou režimech, barvy jsou proto pevné */
+    .void { fill: #070a12; }
+    .known { fill: #0e1320; }
+    .ring { fill: none; stroke: #5b6788; stroke-width: 1.2; }
+    .ring.dash { stroke-dasharray: 4 6; }
+    .ring.edge { stroke: #b39bff; stroke-width: 2.2; }
+    .dots { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    .dots.star { stroke: #dfe6f7; stroke-width: 1.7; }
+    .dots.gal { stroke: #f3d9a4; stroke-width: 2; }
+    .arm { fill: none; stroke: #b9c8ff; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+    .earth { fill: #3f7fd0; stroke: #9fc2ee; stroke-width: 1; }
+    .moon { fill: #c9ccd4; }
+    .sun { fill: #f2b63c; }
+    .pt { fill: #fff3cf; }
+    .here { fill: none; stroke: #b39bff; stroke-width: 1.6; }
+    .scope { fill: none; stroke: #7a86a8; stroke-width: 1.2; stroke-dasharray: 1 6; stroke-linecap: round; }
+    .t { fill: #cdd6ea; font: 500 12px var(--font-mono); }
+    .t.strong { fill: #ffffff; font-weight: 600; }
+    .t.me { fill: #b39bff; font-weight: 600; }
+
+    @media (max-width: 46rem) {
+      .t { font-size: 19px; }
+    }
+  </style>
+</head>
+<body data-cat="vesmir">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Vesmír</a><span aria-hidden="true">/</span><span>Velikost vesmíru</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Vesmír</a></p>
+      <h1 class="display">Jak velký je vesmír</h1>
+      <p class="lede">K Měsíci letí světlo vteřinu, ke Slunci osm minut, k nejbližší hvězdě čtyři roky. A to jsme pořád doma. Hvězd je v naší Galaxii několik set miliard a galaxií je zhruba stejně jako hvězd v té naší.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Vzdálenosti ve vesmíru se měří dobou, za kterou je uletí světlo. Kdo se dívá daleko, dívá se zároveň do minulosti.</li>
+        <li><span class="hl">Vesmír je skoro prázdný.</span> Kdyby bylo Slunce pomeranč, byla by nejbližší hvězda další pomeranč tři tisíce kilometrů daleko.</li>
+        <li>Vidět je koule kolem nás o poloměru 46,5 miliardy světelných let. Je v ní řádově 10²³ hvězd. Co je za ní, nevíme.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Od Země po hranici viditelného vesmíru</p>
+        <span class="label">Oddalujte posuvníkem, nebo se nechte odvézt tlačítkem</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="cosmos" viewBox="0 0 600 480" role="img" aria-label="Pohled do vesmíru se Zemí uprostřed. Oddalováním se postupně objeví Měsíc, Slunce, planety, nejbližší hvězdy, Galaxie, okolní galaxie a hranice pozorovatelného vesmíru."></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl ctl-grow">
+          <label class="label" for="zoom">Oddálení</label>
+          <div class="ctl-row">
+            <input type="range" id="zoom" min="4.3" max="23.9" step="0.02" value="5.74">
+            <output class="val" id="zoom-val" for="zoom"></output>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-jump">Skočit na</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-jump" id="jump-seg">
+            <button type="button" role="radio" data-v="5.74" aria-checked="true">Měsíc</button>
+            <button type="button" role="radio" data-v="8.34" aria-checked="false">Slunce</button>
+            <button type="button" role="radio" data-v="9.78" aria-checked="false">Planety</button>
+            <button type="button" role="radio" data-v="14.09" aria-checked="false">Nejbližší hvězdy</button>
+            <button type="button" role="radio" data-v="17.9" aria-checked="false">Galaxie</button>
+            <button type="button" role="radio" data-v="19.72" aria-checked="false">Sousední galaxie</button>
+            <button type="button" role="radio" data-v="23.79" aria-checked="false">Celý vesmír</button>
+          </div>
+        </div>
+        <button type="button" class="btn" id="play" aria-pressed="false">Odletět</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Od nás k okraji kruhu</span><span class="v small" id="st-r"></span></li>
+          <li><span class="n">Světlo tu dálku letí</span><span class="v small" id="st-t"></span></li>
+          <li><span class="n">Hvězd v té dálce</span><span class="v small" id="st-n"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Uprostřed jsme vždycky my. Čísla platí pro tečkovaný kruh a všechno, co je uvnitř něj. Vzdálenosti jsou v měřítku, směry jen naznačené a všechno je promítnuté do roviny. Tečky hvězd a galaxií jsou rozmístěné náhodně a je jich nakreslený jen zlomek. Počty hvězd jsou hrubé odhady, u největších vzdáleností na řád. Na největších vzdálenostech už neplatí, že světlo letělo tolik let, kolik je to světelných let daleko, protože se vesmír mezitím rozpínal.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-svetlo">
+      <div class="prose">
+        <h2 id="h-svetlo">Metr ze světla</h2>
+        <p>Kilometry přestanou stačit hned za humny. Ke Slunci je to 150 milionů kilometrů, k nejbližší hvězdě 40 bilionů. S takovými čísly se nedá pracovat, a tak se vzdálenosti udávají dobou, za kterou je urazí světlo.</p>
+        <p>Světlo uletí 300 tisíc kilometrů za sekundu. Kolem rovníku by oběhlo sedmkrát a půl, než řeknete dvacet jedna. K Měsíci letí 1,3 sekundy, ke Slunci 8 minut a 19 sekund. Světelný rok, tedy dráha, kterou urazí za rok, měří 9,46 bilionu kilometrů.</p>
+        <p>Má to jeden důsledek. Slunce vidíte tam, kde bylo před osmi minutami. Hvězdu vzdálenou sto světelných let takovou, jaká byla před sto lety. <span class="hl">Čím dál se díváte, tím starší obraz dostáváte,</span> a dalekohled je tak zároveň stroj času.</p>
+      </div>
+      <aside class="note" aria-label="Vesmír v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>1,3 s</dt><dd>letí světlo z Měsíce</dd></div>
+          <div><dt>8 min 19 s</dt><dd>ze Slunce</dd></div>
+          <div><dt>4,24 roku</dt><dd>z nejbližší hvězdy</dd></div>
+          <div><dt>100 000 let</dt><dd>napříč naší Galaxií</dd></div>
+          <div><dt>2,5 mil. let</dt><dd>z galaxie v Andromedě</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-prazdno">
+      <div class="prose">
+        <h2 id="h-prazdno">Skoro všude nic není</h2>
+        <p>Zmenšete Slunce na pomeranč o průměru deset centimetrů. Země je pak zrnko písku necelý milimetr velké a krouží jedenáct metrů od něj. Neptun, nejvzdálenější planeta, je zrnko pepře o tři sta metrů dál. Mezi tím není nic.</p>
+        <p>Sonda Voyager 1 letí od roku 1977 rychlostí 17 kilometrů za sekundu. Dostala se dál než cokoli jiného, co člověk vyrobil, a v tomhle měřítku je necelé dva kilometry od pomeranče. Skutečné světlo k ní letí skoro celý den.</p>
+        <p>Nejbližší hvězda, Proxima Centauri, je další pomeranč. Leží 2 900 kilometrů daleko, zhruba jako z Prahy na jih Maroka. Mezi oběma pomeranči je jen pár zrnek písku a řídký oblak komet. Voyager by k ní letěl 75 tisíc let.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Skočte na Planety a pak pomalu táhněte posuvník doprava. Dráhy planet se smrsknou do tečky a dlouho se neděje nic. První hvězda se objeví až ve chvíli, kdy kruh měří přes čtyři světelné roky.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-hvezdy">
+      <div class="prose">
+        <h2 id="h-hvezdy">Kolik je hvězd</h2>
+        <p>Za dokonale tmavé noci vidíte okem asi tři tisíce hvězd, na celé obloze dohromady kolem šesti tisíc. Skoro všechny jsou blíž než pár tisíc světelných let, většina mnohem blíž. Je to naše nejbližší sousedství.</p>
+        <p>Všechny patří do Mléčné dráhy, naší Galaxie. Je to plochý disk sto tisíc světelných let široký a Slunce leží asi v polovině cesty od středu k okraji. Jeden oběh kolem středu mu trvá 230 milionů let.</p>
+        <p>Hvězdy v Galaxii nikdo nespočítal, většinu z nich zakrývá prach. Odhad vychází z toho, kolik Galaxie váží a jak těžká je průměrná hvězda: sto až čtyři sta miliard. Kdybyste je počítali po jedné za sekundu, trvalo by jen prvních sto miliard přes tři tisíce let.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Skočte na Nejbližší hvězdy a oddalujte až na Galaxii. Kruh s hvězdami viditelnými okem se scvrkne do tečky na okraji jednoho ramene.</p>
+        <span class="label">Na okraj</span>
+        <p>Rádiové vysílání lidstva se šíří asi sto let, doletělo tedy sto světelných let daleko. V záběru celé Galaxie je to tečka, kterou by nebylo vidět.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-galaxie">
+      <div class="prose">
+        <h2 id="h-galaxie">Galaxií je jako hvězd</h2>
+        <p>Ještě před sto lety se vědci přeli, jestli je Mléčná dráha celý vesmír. Ve dvacátých letech se ukázalo, že mlhavé skvrnky na obloze jsou jiné galaxie. Ta nejbližší velká, v souhvězdí Andromedy, je 2,5 milionu světelných let daleko a je vidět i okem.</p>
+        <p>Kolik jich je, se ukázalo v prosinci 1995. Hubbleův dalekohled tehdy deset dní mířil na místo, kde nebylo vidět nic. Kousek oblohy byl tak malý, jako když se díváte na tenisový míček ze sta metrů. Na snímku se objevily tři tisíce galaxií.</p>
+        <p>Celá obloha je čtyřiadvacetmilionkrát větší. Hlubší snímky a výpočty odhad od té doby zvedly na stovky miliard galaxií, možná až dva biliony. Když v každé počítáte se sto miliardami hvězd, vyjde <span class="hl">řádově 10²³ hvězd. To je jednička a za ní třiadvacet nul.</span> Zrnek písku na všech plážích světa je podle jednoho odhadu asi desettisíckrát míň.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Skočte na Sousední galaxie a oddalujte dál. Mléčná dráha se ztratí mezi ostatními tečkami a každá ta tečka je teď galaxie.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-hranice">
+      <div class="prose">
+        <h2 id="h-hranice">Kde to končí</h2>
+        <p>Vesmír je starý 13,8 miliardy let. Nejstarší světlo, které vidíme, vyletělo krátce po začátku a letělo k nám skoro celou tu dobu. Nic staršího vidět nemůžeme. Tím je dané, kam až dohlédneme.</p>
+        <p>Místa, odkud to nejstarší světlo přišlo, ale nejsou 13,8 miliardy světelných let daleko. Vesmír se celou dobu rozpínal a ta místa se mezitím vzdálila. Dnes jsou od nás 46,5 miliardy světelných let. To je poloměr pozorovatelného vesmíru.</p>
+        <p>Ta hranice není zeď ani okraj. Je to obzor, stejný jako na moři: kdo stojí jinde, má ho jinde. Uprostřed jsme jen proto, že se díváme odsud. Co je za obzorem, nevíme. Nejspíš totéž, jen ještě mnohem dál, a možná bez konce.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Pusťte Odletět od začátku. Cesta od Země po hranici trvá necelou půlminutu a každou sekundu se obraz zmenší asi šestkrát.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../../domacnost/zamek/" data-cat="domacnost">
+        <span class="label">Další článek · Domácnost</span>
+        <span class="t">Jak funguje zámek ve dveřích</span>
+        <p>Proč dveře otevře jen jeden klíč a co přesně dělají zuby na něm.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const svg = $("cosmos");
+
+    /* ---------- měřítka ---------- */
+    const AU = 1.495979e8, LY = 9.4607e12, C = 299792.458;      // km, km, km/s
+    const CX = 300, CY = 240, RPX = 200;                         // střed a poloměr kruhu, ke kterému se vztahují čísla
+    const EDGE = 4.65e10 * LY;                                   // poloměr pozorovatelného vesmíru
+    const s = { exp: 5.74, playing: false };
+    const scale = () => RPX / Math.pow(10, s.exp);               // obrazových bodů na kilometr
+    const ramp = (v, a, b) => Math.max(0, Math.min(1, Math.log(v / a) / Math.log(b / a)));
+    // viditelnost podle velikosti na obrazovce: objeví se mezi a–b, zmizí mezi c–d
+    const fade = (px, a, b, c, d) => Math.min(ramp(px, a, b), 1 - ramp(px, c, d));
+    const dir = (deg) => [Math.cos((deg * Math.PI) / 180), -Math.sin((deg * Math.PI) / 180)];
+    function random(seed) { let x = seed; return () => (x = (x * 16807) % 2147483647) / 2147483647; }
+
+    /* ---------- kresba: vrstvy odzadu dopředu ---------- */
+    const defs = el("defs", {}, svg);
+    const gradient = (id, stops) => { const g = el("radialGradient", { id }, defs); stops.forEach(([o, c, a]) => el("stop", { offset: o, "stop-color": c, "stop-opacity": a }, g)); };
+    gradient("g-mw", [[0, "#fff1c9", 0.95], [0.12, "#e9d9b0", 0.55], [0.45, "#9fb0e8", 0.3], [1, "#9fb0e8", 0]]);
+    gradient("g-gal", [[0, "#fff1c9", 0.9], [0.3, "#cdd3f0", 0.45], [1, "#cdd3f0", 0]]);
+    gradient("g-oort", [[0, "#8fa0c8", 0], [0.35, "#8fa0c8", 0.18], [0.8, "#8fa0c8", 0.1], [1, "#8fa0c8", 0]]);
+    el("clipPath", { id: "frame" }, defs).appendChild(el("rect", { x: 0, y: 0, width: 600, height: 480, rx: 6 }));
+    const root = el("g", { "clip-path": "url(#frame)" }, svg);
+    el("rect", { x: 0, y: 0, width: 600, height: 480, class: "void" }, root);
+    const known = el("circle", { cx: CX, cy: CY, class: "known" }, root);
+
+    // náhodná pole teček: každé pokrývá kruh o poloměru R a kreslí se, jen když je na obrazovce rozumně velké
+    function field(R, n, seed, cls, opts = {}) {
+      const rnd = random(seed);
+      let d = "";
+      const reach = Math.min(1, EDGE / R);                   // za hranici toho, co je vidět, nic nekreslíme
+      const put = (x, y) => { const r = Math.hypot(x, y); if (r > (opts.hole || 0) / R && r <= reach) d += `M${x.toFixed(4)} ${y.toFixed(4)}h0`; };
+      if (opts.clumps) {
+        for (let i = 0; i < n / 4; i++) { const a = rnd() * 6.2832, r = Math.sqrt(rnd()) * reach; for (let j = 0; j < 4; j++) put(r * Math.cos(a) + (rnd() - 0.5) * 0.09 * reach, r * Math.sin(a) + (rnd() - 0.5) * 0.09 * reach); }
+      } else for (let i = 0; i < n; i++) { const a = rnd() * 6.2832, r = Math.sqrt(rnd()) * reach; put(r * Math.cos(a), r * Math.sin(a)); }
+      return { R, node: el("path", { d, class: `dots ${cls}` }, root) };
+    }
+    const fields = [];
+    for (let i = 0, R = 1.5e7 * LY; i < 16; i++, R *= 2) fields.push(field(R, 128, 31 + i, "gal", { hole: 3.2e6 * LY, clumps: true }));
+    // Mléčná dráha: střed 26 tisíc světelných let vpravo od nás, poloměr 50 tisíc
+    const MW = { r: 5e4 * LY, off: 2.6e4 * LY };
+    const mw = el("g", {}, root), arms = [];
+    el("circle", { r: 1, fill: "url(#g-mw)" }, mw);
+    [[0, 5, 0.4], [Math.PI, 5, 0.4], [Math.PI / 2, 3, 0.25], [-Math.PI / 2, 3, 0.25]].forEach(([turn, w, o]) => {
+      let d = "";
+      for (let a = 0.3; a <= 9.4; a += 0.12) { const r = 0.12 * Math.exp(0.22 * a); d += `${d ? "L" : "M"}${(r * Math.cos(a + turn)).toFixed(4)} ${(r * Math.sin(a + turn)).toFixed(4)}`; }
+      arms.push({ w, node: el("path", { d, class: "arm", opacity: o }, mw) });
+    });
+    // sousední galaxie jako mlhavé skvrny
+    const blobs = [
+      { at: [1.63e5 * LY, 250], r: 9e3 * LY, squash: 0.8, turn: 20 },
+      { at: [2.0e5 * LY, 266], r: 5e3 * LY, squash: 0.8, turn: 0 },
+      { at: [2.5e6 * LY, 30], r: 1.1e5 * LY, squash: 0.36, turn: -35 },
+      { at: [2.7e6 * LY, 52], r: 3e4 * LY, squash: 0.7, turn: 30 },
+    ].map((b) => ({ ...b, node: el("ellipse", { fill: "url(#g-gal)" }, root) }));
+    for (let i = 0, R = 20 * LY; i < 11; i++, R *= 2) fields.push(field(R, 120, 7 + i, "star", { hole: 4.5 * LY }));
+    const oort = el("circle", { cx: CX, cy: CY, fill: "url(#g-oort)" }, root);
+
+    // kružnice: oběžné dráhy a hranice
+    const SUN = [-AU, 0];
+    const rings = [
+      { r: 384400, at: [0, 0], label: "dráha Měsíce" },
+      { r: 0.387 * AU, at: SUN }, { r: 0.723 * AU, at: SUN },
+      { r: AU, at: SUN, label: "dráha Země", ang: 62 },
+      { r: 1.524 * AU, at: SUN, label: "Mars", ang: 75 },
+      { r: 5.203 * AU, at: SUN, label: "Jupiter" }, { r: 9.58 * AU, at: SUN, label: "Saturn", ang: 20 }, { r: 19.2 * AU, at: SUN, label: "Uran", ang: 80 },
+      { r: 30.07 * AU, at: SUN, label: "Neptun" },
+      { r: 1000 * LY, at: [0, 0], label: "většina hvězd viditelných okem", cls: "dash" },
+      { r: 5e6 * LY, at: [0, 0], label: "Místní skupina galaxií", cls: "dash" },
+      { r: 2.6e8 * LY, at: [0, 0], label: "nadkupa Laniakea", cls: "dash" },
+      { r: EDGE, at: [0, 0], label: "hranice toho, co je vidět", cls: "edge", ang: 90 },
+    ].map((r) => ({ ang: 48, ...r, node: el("circle", { class: `ring ${r.cls || ""}` }, root) }));
+
+    // jednotlivé body se jménem
+    const points = [
+      { name: "Voyager 1", d: 170 * AU, ang: 40 },
+      { name: "Alfa Centauri", d: 4.3 * LY, ang: 215 }, { d: 5.96 * LY, ang: 75 }, { name: "Sirius", d: 8.6 * LY, ang: 320 }, { d: 11.5 * LY, ang: 350 },
+      { name: "Vega", d: 25 * LY, ang: 110 }, { name: "Arcturus", d: 37 * LY, ang: 165 }, { name: "Polárka", d: 430 * LY, ang: 95 },
+      { name: "střed Galaxie", d: MW.off, ang: 0, quiet: true },
+      { name: "Magellanova mračna", d: 1.8e5 * LY, ang: 258, quiet: true },
+      { name: "galaxie v Andromedě", d: 2.5e6 * LY, ang: 30, quiet: true },
+      { name: "kupa galaxií v Panně", d: 5.4e7 * LY, ang: 140 },
+    ].map((p) => ({ ...p, node: p.quiet ? null : el("circle", { r: 2.6, class: "pt" }, root) }));
+
+    const sun = el("circle", { class: "sun" }, root), moon = el("circle", { class: "moon" }, root), earth = el("circle", { cx: CX, cy: CY, class: "earth" }, root);
+    const here = el("circle", { cx: CX, cy: CY, r: 5, class: "here" }, root);
+    el("circle", { cx: CX, cy: CY, r: RPX, class: "scope" }, root);
+    const labels = el("g", {}, root);
+    const scopeLabel = el("text", { x: CX, y: CY + RPX + 22, class: "t", style: "text-anchor:middle" }, labels);
+    const mwLabel = el("text", { class: "t strong", style: "text-anchor:middle" }, labels), oortLabel = el("text", { class: "t", style: "text-anchor:middle" }, labels);
+    mwLabel.textContent = "Mléčná dráha";
+    oortLabel.textContent = "oblak komet";
+    rings.forEach((r) => { if (r.label) { r.text = el("text", { class: r.cls === "edge" ? "t strong" : "t", style: r.ang === 90 ? "text-anchor:middle" : "" }, labels); r.text.textContent = r.label; } });
+    points.forEach((p) => { if (p.name) { p.text = el("text", { class: "t" }, labels); p.text.textContent = p.name; } });
+    const sunLabel = el("text", { class: "t", style: "text-anchor:middle" }, labels), meLabel = el("text", { class: "t me", style: "text-anchor:middle" }, labels);
+    sunLabel.textContent = "Slunce";
+
+    /* ---------- čísla ---------- */
+    const sig = (v) => Number(v.toPrecision(2)).toLocaleString("cs-CZ", { maximumFractionDigits: 2 });
+    function distance(km) {
+      if (km < 1e6) return `${sig(km / 1e3)} tis. km`;
+      if (km < 1e9) return `${sig(km / 1e6)} mil. km`;
+      if (km < 0.1 * LY) return `${sig(km / 1e9)} mld. km`;
+      const ly = km / LY;
+      if (ly < 5) return `${sig(ly)} sv. roku`;
+      if (ly < 1e3) return `${sig(ly)} sv. let`;
+      if (ly < 1e6) return `${sig(ly / 1e3)} tis. sv. let`;
+      if (ly < 1e9) return `${sig(ly / 1e6)} mil. sv. let`;
+      return `${sig(ly / 1e9)} mld. sv. let`;
+    }
+    function lightTime(km) {
+      const sec = km / C, years = sec / 31557600;
+      if (sec < 90) return `${sig(sec)} s`;
+      if (sec < 5400) return `${sig(sec / 60)} min`;
+      if (sec < 172800) return `${sig(sec / 3600)} h`;
+      if (years < 1.5) { const d = sig(sec / 86400); return `${d} ${d.includes(",") ? "dne" : Number(d) < 5 ? "dny" : "dní"}`; }
+      if (years < 5) return `${sig(years)} roku`;
+      if (years < 1e3) return `${sig(years)} let`;
+      if (years < 1e6) return `${sig(years / 1e3)} tis. let`;
+      if (years < 1e9) return `${sig(years / 1e6)} mil. let`;
+      if (years < 1.2e10) return `${sig(years / 1e9)} mld. let`;
+      return "až 13,8 mld. let";
+    }
+    // hrubý odhad počtu hvězd do dané vzdálenosti (světelné roky → počet), mezi body se počítá plynule
+    const COUNT = [[4.2, 1], [10, 12], [100, 1.3e4], [1e3, 1e7], [1e4, 3e9], [8e4, 2e11], [1e6, 2.5e11], [3e6, 1.5e12], [1e7, 2e12], [6e7, 1e14], [3e8, 2.7e16], [4.65e10, 1e23]];
+    const SUPER = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+    function stars(km) {
+      if (km < AU) return "žádná";
+      const ly = km / LY;
+      if (ly < 4.2) return "jedna, Slunce";
+      let n = COUNT[COUNT.length - 1][1];
+      for (let i = 1; i < COUNT.length; i++) if (ly <= COUNT[i][0]) { const [x0, y0] = COUNT[i - 1], [x1, y1] = COUNT[i]; n = y0 * Math.pow(y1 / y0, Math.log(ly / x0) / Math.log(x1 / x0)); break; }
+      if (n < 100) return `asi ${Math.round(n)}`;
+      const one = Number(n.toPrecision(1));
+      if (one < 1e6) return `asi ${sig(one / 1e3)} tis.`;
+      if (one < 1e9) return `asi ${sig(one / 1e6)} mil.`;
+      if (one < 1e12) return `asi ${sig(one / 1e9)} mld.`;
+      if (one < 1e15) return `asi ${sig(one / 1e12)} bil.`;
+      const e = Math.floor(Math.log10(one) + 1e-9), m = Math.round(one / Math.pow(10, e));
+      return `asi ${m === 1 ? "" : `${m} × `}10${String(e).split("").map((c) => SUPER[c]).join("")}`;
+    }
+
+    /* ---------- vykreslení ---------- */
+    const place = (node, km, ang) => { const k = scale(), u = dir(ang), left = u[0] < -0.2; node.setAttribute("x", CX + km * k * u[0] + (left ? -7 : 7)); node.setAttribute("y", CY + km * k * u[1] - 6); node.style.textAnchor = left ? "end" : "start"; };
+    let said = "";
+    function render() {
+      const k = scale(), view = Math.pow(10, s.exp);
+      known.setAttribute("r", Math.min(EDGE * k, 900));
+      fields.forEach((f) => {
+        const px = f.R * k, o = fade(px, 225, 450, 900, 1800);
+        f.node.setAttribute("opacity", o);
+        if (o > 0) f.node.setAttribute("transform", `translate(${CX} ${CY}) scale(${px})`);
+        f.node.setAttribute("display", o > 0 ? "" : "none");
+      });
+      // Mléčná dráha a sousedé
+      const mpx = MW.r * k, mo = fade(mpx, 1.5, 4, 700, 2500);
+      mw.setAttribute("display", mo > 0 ? "" : "none");
+      mw.setAttribute("opacity", mo);
+      mw.setAttribute("transform", `translate(${CX + MW.off * k} ${CY}) scale(${mpx})`);
+      arms.forEach((a) => a.node.setAttribute("stroke-width", Math.max(0.4, Math.min(a.w * 2.4, (mpx / 150) * a.w))));
+      mwLabel.setAttribute("opacity", fade(mpx, 40, 80, 300, 500));
+      mwLabel.setAttribute("x", CX + MW.off * k); mwLabel.setAttribute("y", CY - mpx - 8);
+      blobs.forEach((b) => {
+        const u = dir(b.at[1]), px = b.r * k, o = fade(px, 0.8, 2.5, 4000, 12000);
+        b.node.setAttribute("display", o > 0 ? "" : "none");
+        b.node.setAttribute("opacity", o);
+        b.node.setAttribute("rx", Math.max(px, 1.6)); b.node.setAttribute("ry", Math.max(px * b.squash, 1.6));
+        b.node.setAttribute("transform", `translate(${CX + b.at[0] * k * u[0]} ${CY + b.at[0] * k * u[1]}) rotate(${b.turn})`);
+      });
+      const opx = 1.5 * LY * k, oo = fade(opx, 20, 60, 1500, 4000);
+      oort.setAttribute("r", Math.min(opx, 5000)); oort.setAttribute("opacity", oo);
+      oortLabel.setAttribute("opacity", fade(opx, 60, 110, 190, 300));
+      oortLabel.setAttribute("x", CX); oortLabel.setAttribute("y", CY - opx * 0.62);
+
+      rings.forEach((r) => {
+        const px = r.r * k, cx = CX + r.at[0] * k, cy = CY + r.at[1] * k;
+        const o = px > 30000 ? 0 : fade(px, 3, 8, 6000, 30000);
+        r.node.setAttribute("display", o > 0 ? "" : "none");
+        r.node.setAttribute("opacity", o);
+        r.node.setAttribute("cx", cx); r.node.setAttribute("cy", cy); r.node.setAttribute("r", px);
+        if (r.text) {
+          const u = dir(r.ang);
+          r.text.setAttribute("opacity", fade(px, 26, 48, r.cls === "edge" ? 205 : 190, r.cls === "edge" ? 215 : 232));
+          r.text.setAttribute("x", cx + px * u[0] + (r.ang === 90 ? 0 : 6)); r.text.setAttribute("y", cy + px * u[1] - 6);
+        }
+      });
+      points.forEach((p) => {
+        const px = p.d * k, u = dir(p.ang), o = fade(px, 10, 24, 215, 260);
+        if (p.node) { p.node.setAttribute("opacity", o); p.node.setAttribute("cx", CX + px * u[0]); p.node.setAttribute("cy", CY + px * u[1]); }
+        if (p.text) { p.text.setAttribute("opacity", o); place(p.text, p.d, p.ang); }
+      });
+
+      // Slunce, Země a Měsíc
+      const sunX = CX - AU * k, apart = AU * k;
+      sun.setAttribute("cx", apart < 5 ? CX : sunX); sun.setAttribute("cy", CY);
+      sun.setAttribute("r", Math.max(696000 * k, 3.5));
+      sun.setAttribute("opacity", fade(apart, 1e-9, 2e-9, 2e7, 6e7) * (s.exp > 13.7 ? 1 - ramp(s.exp, 13.7, 14.2) : 1));
+      sunLabel.setAttribute("opacity", fade(apart, 30, 60, 400, 900));
+      sunLabel.setAttribute("x", sunX); sunLabel.setAttribute("y", CY - Math.max(696000 * k, 3.5) - 8);
+      const epx = 6371 * k;
+      earth.setAttribute("r", Math.max(epx, 2.2));
+      earth.setAttribute("opacity", apart < 5 ? 0 : 1);
+      const mu = dir(35), mdist = 384400 * k;
+      moon.setAttribute("cx", CX + mdist * mu[0]); moon.setAttribute("cy", CY + mdist * mu[1]);
+      moon.setAttribute("r", Math.max(1737 * k, 2));
+      moon.setAttribute("opacity", fade(mdist, 8, 20, 1e5, 2e5));
+      here.setAttribute("opacity", apart < 5 ? 1 : 0);
+      meLabel.textContent = s.exp < 7.4 ? "Země" : apart >= 5 ? "Země" : s.exp < 13.6 ? "Slunce a my" : "tady jsme";
+      meLabel.setAttribute("x", CX); meLabel.setAttribute("y", CY + Math.min(Math.max(epx, 8) + 18, 215));
+
+      // čísla a popis
+      scopeLabel.textContent = `od středu ke kruhu ${distance(view)}`;
+      $("zoom").value = s.exp;
+      $("zoom-val").textContent = distance(view);
+      $("st-r").textContent = distance(view);
+      $("st-t").textContent = lightTime(view);
+      $("st-n").textContent = stars(view);
+      $("play").textContent = s.playing ? "Zastavit" : "Odletět";
+      $("play").setAttribute("aria-pressed", String(s.playing));
+      $("jump-seg").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(Math.abs(Number(b.dataset.v) - s.exp) < 0.011)));
+      let status;
+      if (s.exp < 6.6) status = "<strong>Země a Měsíc.</strong> Dál než sem se žádný člověk nedostal. Světlo z Měsíce k nám letí 1,3 sekundy.";
+      else if (s.exp < 8.75) status = "<strong>Ke Slunci.</strong> Slunce je 150 milionů kilometrů daleko a jeho světlo je na cestě osm minut. Vidíte ho tam, kde bylo před osmi minutami.";
+      else if (s.exp < 10.2) status = "<strong>Planety.</strong> Neptun obíhá třicetkrát dál od Slunce než Země a světlo k němu letí přes čtyři hodiny.";
+      else if (s.exp < 11.6) status = "<strong>Okraj Sluneční soustavy.</strong> Sonda Voyager 1 letí od roku 1977 a je necelý světelný den daleko. Nic vyrobeného člověkem se nedostalo dál.";
+      else if (s.exp < 13.6) status = "<strong>Prázdno.</strong> Za planetami je jen řídký oblak komet a pak roky cesty světla skoro nic.";
+      else if (s.exp < 15.4) status = "<strong>Nejbližší hvězdy.</strong> Každá tečka je slunce. I ta nejbližší jsou od sebe světelné roky.";
+      else if (s.exp < 17.0) status = "<strong>Hvězdy viditelné okem.</strong> Skoro všechno, co vidíte za jasné noci, leží uvnitř čárkovaného kruhu. Je to nepatrný kousek Galaxie.";
+      else if (s.exp < 18.85) status = "<strong>Mléčná dráha.</strong> Naše Galaxie je disk sto tisíc světelných let široký a je v něm několik set miliard hvězd. Slunce leží asi v polovině cesty od středu k okraji.";
+      else if (s.exp < 20.6) status = "<strong>Sousední galaxie.</strong> Nejbližší velká, ta v Andromedě, je 2,5 milionu světelných let daleko. Světlo, které z ní dnes vidíte, vyletělo dávno před prvními lidmi dnešního typu.";
+      else if (s.exp < 22.7) status = "<strong>Galaxie, kam se podíváte.</strong> Každá tečka je teď celá galaxie se stovkami miliard hvězd. Shlukují se do kup a mezi nimi jsou obrovské prázdné bubliny.";
+      else status = "<strong>Pozorovatelný vesmír.</strong> Dál nevidíme, protože světlo z větší dálky k nám za 13,8 miliardy let ještě nedoletělo. Fialová čára je náš obzor, ne okraj vesmíru.";
+      if (status !== said) { said = status; $("status").innerHTML = status; }
+    }
+
+    /* ---------- ovládání ---------- */
+    const MIN = 4.3, MAX = 23.9;
+    $("zoom").addEventListener("input", (e) => { s.playing = false; s.exp = Number(e.target.value); render(); });
+    $("jump-seg").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-v]");
+      if (!b) return;
+      s.playing = false;
+      s.exp = Number(b.dataset.v);
+      render();
+    });
+    // odlet: necelý řád za sekundu
+    let last = 0;
+    function tick(now) {
+      if (!s.playing) return;
+      s.exp = Math.min(MAX - 0.1, s.exp + Math.min(0.1, (now - last) / 1000) * 0.8);
+      last = now;
+      if (s.exp >= MAX - 0.1) s.playing = false;
+      render();
+      if (s.playing) requestAnimationFrame(tick);
+    }
+    $("play").addEventListener("click", () => {
+      s.playing = !s.playing;
+      if (s.playing && s.exp >= MAX - 0.15) s.exp = MIN;
+      render();
+      if (s.playing) { last = performance.now(); requestAnimationFrame(tick); }
+    });
+    render();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>
