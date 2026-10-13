@@ -155,7 +155,7 @@
         <h2 id="h-vzory">Druhý trik: čtverečky a vzory</h2>
         <p>Obrázek se rozdělí na čtverečky osm krát osm bodů. Každý má šedesát čtyři hodnot jasu. JPEG je neukládá přímo. Popíše čtvereček jinak: jako směs šedesáti čtyř pevně daných vzorů.</p>
         <p>První vzor je rovnoměrná plocha. Další jsou plynulé přechody zleva doprava a shora dolů, pak čím dál hustší pruhy a nakonec jemná šachovnice, kde se světlá a tmavá střídá bod od bodu. Jakýkoli čtvereček se dá přesně složit, když se vezme správné množství každého vzoru.</p>
-        <p>Ke každému vzoru pak patří jedno číslo: kolik ho ve čtverečku je. Velké číslo znamená, že je vzor ve čtverečku výrazný. Nula znamená, že v něm není vůbec. Záporné číslo říká, že se vzor bere obráceně, se světlými a tmavými místy prohozenými.</p>
+        <p>Ke každému vzoru pak patří jedno číslo: kolik ho ve čtverečku je. Velké číslo znamená, že je vzor ve čtverečku výrazný. Nula znamená, že v něm není vůbec. Záporné číslo říká, že se vzor přidává převrácený jako negativ: co má světlé, je tmavé, a naopak.</p>
         <p>Počet čísel se tím nezměnil, pořád jich je šedesát čtyři. Změnilo se, co znamenají. <span class="hl">U běžné fotky vyjde velké číslo jen u několika hrubých vzorů a u jemných skoro nula.</span> Kus oblohy je skoro celý první vzor. Kus trávy potřebuje i ty jemnější.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
@@ -176,7 +176,7 @@
           <figure class="tile wide"><canvas id="g-amt" class="pick" width="73" height="73" role="img" aria-label="Kolik je kterého vzoru ve vybraném čtverečku"></canvas><span class="label">Kolik je kterého</span></figure>
           <figure class="tile"><canvas id="t2-orig" width="8" height="8"></canvas><span class="label">Původní čtvereček</span></figure>
           <figure class="tile"><canvas id="t2-sum" width="8" height="8"></canvas><span class="label" id="t2-sum-label">Složeno ze vzorů</span></figure>
-          <figure class="tile"><canvas id="t2-pat" width="8" height="8"></canvas><span class="label">Vybraný vzor</span></figure>
+          <figure class="tile"><canvas id="t2-pat" width="8" height="8"></canvas><span class="label" id="t2-pat-label">Vybraný vzor</span></figure>
         </div>
       </div>
       <div class="fig-controls">
@@ -459,9 +459,10 @@
 
       tile("t2-orig", (i) => gray(P.data[at(i)]));
       tile("t2-sum", (i) => gray(rec[i] + 128));
-      tile("t2-pat", (i) => gray(PAT[s.pat][i]));
-
+      // záporné množství znamená vzor s prohozenou světlou a tmavou; dlaždice ho ukáže tak, jak se do čtverečku opravdu přidává
       const amount = Math.round(P.coef[at(s.pat)]), shown = String(amount).replace("-", "−");
+      tile("t2-pat", (i) => gray(amount < 0 ? 256 - PAT[s.pat][i] : PAT[s.pat][i]));
+      $("t2-pat-label").textContent = amount < 0 ? "Vybraný vzor, převrácený" : "Vybraný vzor";
       $("k").value = s.k;
       $("k-val").textContent = `${s.k} z 64`;
       $("t2-sum-label").textContent = s.k === 1 ? "Složeno z 1 vzoru" : `Složeno z ${s.k} vzorů`;
@@ -477,7 +478,7 @@
       else status = "<strong>Hrubý obrys.</strong> Rozložení světla a stínu už sedí, jemné detaily ještě chybí.";
       status += ` Vybraný vzor je ${RANK[s.pat] + 1}. v pořadí`;
       if (amount > 0) status += ` a ve čtverečku je ho ${shown}.`;
-      else if (amount < 0) status += ` a ve čtverečku je ho ${shown}. Záporné číslo znamená, že se bere obráceně.`;
+      else if (amount < 0) status += ` a ve čtverečku je ho ${shown}. Záporné číslo znamená, že se přidává převrácený: co má vzor světlé, je tmavé, a naopak.`;
       else status += " a ve čtverečku není vůbec.";
       if (status !== said2) { said2 = status; $("status2").innerHTML = status; }
     }
