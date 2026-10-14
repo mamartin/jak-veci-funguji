@@ -434,13 +434,15 @@ html:has(.topbar) { scroll-padding-top: calc(3.25rem + env(safe-area-inset-top))
   color: var(--ink-2);
 }
 
-.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--ink); background: var(--surface); }
+/* dělicí čáry tvoří mezera 1 px nad tmavým pozadím, takže drží i po zalomení do dvou řádků;
+   tlačítka se roztáhnou, aby každý řádek vyplnila celý */
+.seg { display: inline-flex; flex-wrap: wrap; gap: 1px; border: 1px solid var(--ink); background: var(--ink); }
 .seg button {
+  flex: 1 1 auto;
   min-height: 40px;
   padding: 0.55rem 0.85rem;
   border: 0;
-  border-left: 1px solid var(--ink);
-  background: transparent;
+  background: var(--surface);
   color: var(--ink);
   font-family: var(--font-display);
   font-stretch: 108%;
@@ -449,9 +451,8 @@ html:has(.topbar) { scroll-padding-top: calc(3.25rem + env(safe-area-inset-top))
   line-height: 1;
   cursor: pointer;
 }
-.seg button:first-child { border-left: 0; }
 .seg button[aria-checked="true"] { background: var(--ink); color: var(--paper); }
-.seg button:disabled { cursor: not-allowed; opacity: 0.5; }
+.seg button:disabled { cursor: not-allowed; color: var(--ink-3); }
 
 .btn {
   min-height: 42px;
