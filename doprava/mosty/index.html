@@ -214,11 +214,11 @@
         <h2 id="h-zaveseny">Zavěšený most: lana šikmo</h2>
         <p>Zavěšený most vypadá podobně jako visutý, ale pracuje jinak. Nemá hlavní lano mezi věžemi. Lana vedou z vysokého pylonu šikmo rovnou k mostovce, každé ke svému místu, jako struny harfy nebo paprsky vějíře.</p>
         <p>Šikmé lano táhne mostovku nahoru, ale zároveň k pylonu. <span class="hl">Ta vodorovná část tahu mostovku stlačuje,</span> a čím blíž pylonu, tím víc, protože se v ní sčítají tahy všech lan. Mostovka je tak vodorovný stlačený trám, který tlak sám odvede do paty pylonu. Lana na druhé straně pylonu, vedená do krajního pole mostu, drží pylon zpátky, aby se nenaklonil.</p>
-        <p>Obří kotevní bloky, které by lano táhly vodorovně, proto zavěšený most nepotřebuje. Staví se rychleji než visutý a pro rozpětí od stovky metrů do zhruba kilometru je dnes nejčastější volbou. U nás je takový třeba Mariánský most přes Labe v Ústí nad Labem.</p>
+        <p>Obří kotevní bloky, které by lano táhly vodorovně, proto zavěšený most nepotřebuje. Konce krajních polí stačí připoutat k pilířům, protože je zadní lana táhnou vzhůru. Staví se rychleji než visutý a pro rozpětí od stovky metrů do zhruba kilometru je dnes nejčastější volbou. U nás je takový třeba Mariánský most přes Labe v Ústí nad Labem.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
-        <p>Vyberte Zavěšený a přepněte vlastní váhu na Počítat. Lana jsou červená, pylony i mostovka modré. Mostovka je stlačená nejvíc u pylonů a směrem ke středu tlak slábne. Nejvíc práce mají zadní lana, která pylon drží zpátky.</p>
+        <p>Vyberte Zavěšený a přepněte vlastní váhu na Počítat. Lana jsou červená, pylony i mostovka modré. Mostovka je stlačená nejvíc u pylonů a směrem ke středu tlak slábne. Zadní lana za pylonem táhnou stejně silně jako lana nad řekou, protože pylon drží zpátky. Proto pylon nese zhruba dvakrát tolik, kolik mu přinášejí lana nad řekou.</p>
       </aside>
     </section>
 
@@ -327,8 +327,9 @@
       return { H, left, right, cable: Math.hypot(H, Math.max(left, right)), towerL: left + 1.5 * H, towerR: right + 1.5 * H, anchor: H * back };
     }
 
-    // zavěšený most: dva pylony na březích, lana vedou šikmo k uzlům mostovky a mezi uzly je mostovka prostě uložená
-    const STAY_X = [0, 6, 12, 18, 24, 36, 42, 48, 54, 60], BACK_DX = [4, 8, 12];
+    // zavěšený most: dva pylony na březích, lana vedou šikmo k uzlům mostovky a mezi uzly je mostovka prostě uložená;
+    // za každým pylonem je krajní pole se zrcadlově vedenými zadními lany, jeho konec drží kotevní pilíř
+    const STAY_X = [0, 6, 12, 18, 24, 36, 42, 48, 54, 60], BACK = 24;
     function solveStayed(a, w) {
       const load = STAY_X.map((x, i) => (w * ((i ? x - STAY_X[i - 1] : 0) + (i < STAY_X.length - 1 ? STAY_X[i + 1] - x : 0))) / 2);
       let k = 0;
@@ -338,14 +339,15 @@
       const stays = STAY_X.slice(1, -1).map((x, j) => { const V = load[j + 1], dx = x < SPAN / 2 ? x : SPAN - x; return { x, side: x < SPAN / 2 ? 0 : 1, V, H: (V * dx) / PYLON, T: (V * Math.hypot(dx, PYLON)) / PYLON }; });
       const sides = [0, 1].map((side) => {
         const mine = stays.filter((st) => st.side === side), H = mine.reduce((sum, st) => sum + st.H, 0);
-        // zadní lana vyrovnají vodorovný tah do pylonu; každé převezme třetinu
-        const back = BACK_DX.map((dx) => ({ dx, T: ((H / 3) * Math.hypot(dx, PYLON)) / dx, V: ((H / 3) * PYLON) / dx }));
-        const pylon = load[side ? STAY_X.length - 1 : 0] + mine.reduce((sum, st) => sum + st.V, 0) + back.reduce((sum, b) => sum + b.V, 0);
-        return { H, back, pylon };
+        // zadní lano je zrcadlem lana nad řekou: stejný sklon, stejný vodorovný tah, a tedy i stejná svislá síla dolů
+        const back = mine.map((st) => ({ dx: st.side ? SPAN - st.x : st.x, H: st.H, V: st.V, T: st.T }));
+        const hold = back.reduce((sum, b) => sum + b.V, 0);          // tolik musí kotevní pilíř držet krajní pole u země
+        const pylon = load[side ? STAY_X.length - 1 : 0] + mine.reduce((sum, st) => sum + st.V, 0) + hold;
+        return { H, back, pylon, hold };
       });
       // mostovka je stlačená mezi pylonem a kotvením každého lana
       const press = (x) => stays.filter((st) => (st.side === 0 ? x < st.x : x > st.x)).reduce((sum, st) => sum + st.H, 0);
-      return { stays, sides, press, maxStay: Math.max(...stays.map((st) => st.T), ...sides.flatMap((sd) => sd.back.map((b) => b.T))) };
+      return { stays, sides, press, maxStay: Math.max(0, ...stays.map((st) => st.T)) };
     }
 
     // měřítko tloušťky čar: největší síla, která se v daném typu a režimu při jízdě objeví
@@ -379,8 +381,7 @@
     }
     const width = (f, ref, min = 2, span = 9) => (min + span * Math.min(1, Math.abs(f) / ref)).toFixed(1);
     const bar = (g, x1, y1, x2, y2, f, ref) => el("line", { x1, y1, x2, y2, class: Math.abs(f) < ref * 0.02 ? "idle" : f > 0 ? "pull" : "push", "stroke-width": width(f, ref) }, g);
-    function truck(g, deckY) {
-      const x = X(s.a);
+    function truck(g, deckY, x = X(s.a)) {
       el("rect", { x: x - 22, y: deckY - 24, width: 30, height: 18, rx: 2, class: "truck" }, g);
       el("rect", { x: x + 9, y: deckY - 19, width: 13, height: 13, rx: 2, class: "truck" }, g);
       [-13, 0, 15].forEach((dx) => el("circle", { cx: x + dx, cy: deckY - 5, r: 4.5, class: "wheel" }, g));
@@ -470,24 +471,32 @@
         status = "<strong>Mostovka visí na laně.</strong> Lano i závěsy jsou jen tažené, věže jen tlačené. Váhu náklaďáku přebírá nejbližší závěs a předává ji lanu. To ji přes vrcholy věží svádí dolů do věží a tahem do kotev na březích.";
         if (!s.own) status += " Tíha mostovky se tu počítá vždycky, bez ní by lano nemělo tvar.";
       } else {
-        banks(scene, DECK + 4);
-        const r = solveStayed(a, w), topY = DECK - PYLON * PX;
+        // zavěšený most má i krajní pole, a tak má vlastní, menší měřítko
+        const XS = (m) => 360 + (m - SPAN / 2) * 5.6, r = solveStayed(a, w), topY = DECK - PYLON * 5.6;
+        el("path", { d: `M0 ${DECK + 4}H${XS(0)}V330L${XS(0) - 30} ${H_SVG}H0Z`, class: "ground" }, scene);
+        el("path", { d: `M720 ${DECK + 4}H${XS(SPAN)}V330L${XS(SPAN) + 30} ${H_SVG}H720Z`, class: "ground" }, scene);
         // mostovka: stlačená mezi pylonem a místem, kde ji drží lano
-        const deckX = [-13, ...STAY_X, SPAN + 13];
+        const deckX = [-BACK, -18, -12, -6, ...STAY_X, SPAN + 6, SPAN + 12, SPAN + 18, SPAN + BACK];
         for (let i = 0; i < deckX.length - 1; i++) {
           const mid = (deckX[i] + deckX[i + 1]) / 2;
           let f = 0;
-          if (mid < 0) f = r.sides[0].back.filter((b) => -b.dx < mid).reduce((sum, b) => sum + (b.T * b.dx) / Math.hypot(b.dx, PYLON), 0);
-          else if (mid > SPAN) f = r.sides[1].back.filter((b) => SPAN + b.dx > mid).reduce((sum, b) => sum + (b.T * b.dx) / Math.hypot(b.dx, PYLON), 0);
+          if (mid < 0) f = r.sides[0].back.filter((b) => b.dx > -mid).reduce((sum, b) => sum + b.H, 0);
+          else if (mid > SPAN) f = r.sides[1].back.filter((b) => b.dx > mid - SPAN).reduce((sum, b) => sum + b.H, 0);
           else f = r.press(mid);
-          el("line", { x1: X(deckX[i]), y1: DECK, x2: X(deckX[i + 1]), y2: DECK, class: f > ref * 0.02 ? "push" : "deck", "stroke-width": f > ref * 0.02 ? width(f, ref, 3, 8) : 4 }, scene);
+          el("line", { x1: XS(deckX[i]), y1: DECK, x2: XS(deckX[i + 1]), y2: DECK, class: f > ref * 0.02 ? "push" : "deck", "stroke-width": f > ref * 0.02 ? width(f, ref, 3, 8) : 4 }, scene);
         }
-        r.stays.forEach((st) => { const px = X(st.side ? SPAN : 0); bar(scene, px, topY, X(st.x), DECK, st.T, ref); });
-        r.sides.forEach((sd, side) => sd.back.forEach((b) => { const px = X(side ? SPAN : 0); bar(scene, px, topY, X(side ? SPAN + b.dx : -b.dx), DECK, b.T, ref); }));
-        r.sides.forEach((sd, side) => el("line", { x1: X(side ? SPAN : 0), y1: topY - 6, x2: X(side ? SPAN : 0), y2: DECK + 60, class: "push", "stroke-width": width(sd.pylon, ref, 4, 8) }, scene));
-        truck(scene, DECK - 2);
+        r.stays.forEach((st) => bar(scene, XS(st.side ? SPAN : 0), topY, XS(st.x), DECK, st.T, ref));
+        r.sides.forEach((sd, side) => sd.back.forEach((b) => bar(scene, XS(side ? SPAN : 0), topY, XS(side ? SPAN + b.dx : -b.dx), DECK, b.T, ref)));
+        r.sides.forEach((sd, side) => el("line", { x1: XS(side ? SPAN : 0), y1: topY - 6, x2: XS(side ? SPAN : 0), y2: DECK + 60, class: "push", "stroke-width": width(sd.pylon, ref, 4, 8) }, scene));
+        // kotevní pilíře na koncích krajních polí: drží mostovku u země, zadní lana ji táhnou nahoru
+        [[-BACK, 0], [SPAN + BACK, 1]].forEach(([x, side]) => {
+          el("line", { x1: XS(x), y1: DECK, x2: XS(x), y2: DECK + 40, class: r.sides[side].hold > ref * 0.02 ? "pull" : "idle", "stroke-width": width(r.sides[side].hold, ref, 4, 8) }, scene);
+          el("text", { x: side ? 712 : 8, y: DECK + 62, class: "tag", "text-anchor": side ? "end" : "start" }, scene).textContent = "kotevní pilíř";
+        });
+        truck(scene, DECK - 2, XS(a));
         rows = [["Levý pylon nese", tons(r.sides[0].pylon)], ["Mostovka stlačená až", tons(r.press(0.1))], ["Nejsilnější lano", tons(r.maxStay)]];
-        status = "<strong>Lana táhnou šikmo.</strong> Každé nese kus mostovky a táhne ho k pylonu. Šikmý tah se dělí na svislou část, která mostovku drží, a vodorovnou, která ji stlačuje. Proto je mostovka modrá a vodorovné síly si vyrovná sama, bez kotev na březích." + ownNote;
+        status = "<strong>Lana táhnou šikmo.</strong> Každé nese kus mostovky a táhne ho k pylonu. Šikmý tah se dělí na svislou část, která mostovku drží, a vodorovnou, která ji stlačuje. Proto je mostovka modrá a vodorovné síly si vyrovná sama." + ownNote;
+        if (r.sides[0].hold > 0.5) status += ` Levý pylon nese víc, než mu přinášejí lana nad řekou: zadní lana ho drží zpátky a přitom ho stejnou silou stahují dolů. Kotevní pilíř za ním drží konec krajního pole u země silou ${tons(r.sides[0].hold)}.`;
       }
       $("pos").value = s.a;
       $("pos-val").textContent = `${s.a} m`;
