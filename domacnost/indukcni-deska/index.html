@@ -87,7 +87,7 @@
     <section class="tldr" aria-labelledby="h-zkratka">
       <h2 class="label" id="h-zkratka">Ve zkratce</h2>
       <ul>
-        <li>Pod sklem je cívka. Teče jí proud, který desetitisíckrát za sekundu mění směr, a kolem cívky vzniká stejně rychle se měnící magnetické pole.</li>
+        <li>Pod sklem je cívka. Teče jí proud, který desítkytisíckrát za sekundu mění směr, a kolem cívky vzniká stejně rychle se měnící magnetické pole.</li>
         <li><span class="hl">Měnící se pole rozproudí ve dně hrnce elektrický proud a ten dno rozpálí.</span> Hrnec je topné těleso, deska jen vysílač.</li>
         <li>Funguje to jen v železe a magnetické oceli. Hliník a měď vedou proud až moc dobře a skoro se nezahřejí.</li>
       </ul>
@@ -147,12 +147,12 @@
         <h2 id="h-noviny">Vaření přes noviny</h2>
         <p>Položte mezi indukční desku a hrnec list novin a zapněte. Voda se uvaří a noviny neshoří, ani nezhnědnou. V padesátých letech tím firma Frigidaire ohromovala návštěvníky výstav a funguje to dodnes.</p>
         <p>Na obyčejné plotýnce by papír vzplál hned. Plotýnka se totiž musí nejdřív sama rozžhavit a teplo pak předává hrnci. Indukční deska teplo nepředává. Posílá do hrnce energii jiným způsobem a v teplo se ta energie změní až ve dně hrnce. Papír mezi nimi nic nezastaví ani nezachytí.</p>
-        <p>Sklo desky se nakonec zahřeje taky, ale jen od horkého hrnce, který na něm stojí. Proto se na něm připálené mléko jen tak nepřipeče.</p>
+        <p>Sklo desky se nakonec zahřeje taky, ale jen od horkého hrnce, který na něm stojí. Vykypělé mléko se proto nepřipeče tak snadno jako na sklokeramice, jen těsně u hrnce bývá sklo pořádně horké.</p>
       </div>
       <aside class="note" aria-label="Indukce v číslech">
         <span class="label">V číslech</span>
         <dl class="facts">
-          <div><dt>asi 25 000×</dt><dd>za sekundu změní proud v cívce směr</dd></div>
+          <div><dt>asi 25 000×</dt><dd>za sekundu proběhne proud v cívce tam a zpátky</dd></div>
           <div><dt>0,1 mm</dt><dd>je vrstva ocelového dna, ve které proud teče, v litině asi 0,2 mm</dd></div>
           <div><dt>kolem 85 %</dt><dd>energie skončí v hrnci, u plynu asi 40 %</dd></div>
           <div><dt>1831</dt><dd>objevil Michael Faraday jev, na kterém deska stojí</dd></div>
@@ -342,11 +342,10 @@
       whereLine.setAttribute("x1", 60); whereLine.setAttribute("y1", 68); whereLine.setAttribute("x2", POT.x1 - 8); whereLine.setAttribute("y2", ty);
       whereLine.setAttribute("opacity", s.on ? 1 : 0);
 
-      const showEddies = s.hob === "ind" && s.on && pot.skin > 0;
-      eddies.setAttribute("display", showEddies ? "" : "none");
-      eddies.setAttribute("opacity", pot.magnetic ? 1 : 0.25);
+      // deska nemagnetický hrnec nepozná a proud do cívky vůbec nepustí, takže ve dně žádný proud neteče
+      eddies.setAttribute("display", s.hob === "ind" && heating ? "" : "none");
       dish.setAttribute("fill", pot.fill); dish.setAttribute("fill-opacity", 0.35);
-      dishT.textContent = s.hob !== "ind" ? "bez vířivých proudů" : !s.on ? "proud teče, až zapnete" : pot.skin === 0 ? "sklo proud nevede" : pot.magnetic ? `proud ve vrstvě ${cs(pot.skin, 1)} mm` : "proud teče, ale nehřeje";
+      dishT.textContent = s.hob !== "ind" ? "bez vířivých proudů" : pot.skin === 0 ? "sklo proud nevede" : !pot.magnetic ? "deska hrnec nepozná" : !s.on ? "proud teče, až zapnete" : `proud ve vrstvě ${cs(pot.skin, 1)} mm`;
       const share = ok ? hob.eff : 0;
       barIn.setAttribute("width", BAR.w * share);
       barT.textContent = `do vody ${Math.round(share * 100)} %`;
