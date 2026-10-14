@@ -35,10 +35,9 @@
   `;
   document.head.appendChild(style);
 
-  // Správci, který se v tomhle prohlížeči přihlásil do administrace, ukážeme nahoře odkaz zpět do ní.
-  let admin = false;
-  try { admin = localStorage.getItem("jvf-admin-on") === "1"; } catch { /* bez úložiště odkaz není */ }
-  if (admin) {
+  // Správci, který je v tomhle prohlížeči přihlášený do administrace, ukážeme nahoře odkaz zpět do ní.
+  // Cookie jvf_admin_on nastaví administrace při přihlášení a vyprší spolu s ním.
+  if (document.cookie.split(/;\s*/).includes("jvf_admin_on=1")) {
     const bar = document.createElement("div");
     bar.className = "admin-bar";
     bar.innerHTML = `<div class="wrap"><a href="/admin/">Administrace</a></div>`;

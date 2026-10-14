@@ -43,6 +43,7 @@
     <p class="home"><a href="../">← Jak věci fungují</a></p>
     <h1>Zpětná vazba</h1>
     <p class="muted">Odpovědi čtenářů k článkům Jak věci fungují.</p>
+    <p class="muted" id="session" hidden></p>
 
     <form class="login" id="login">
       <label for="pass" class="muted" style="flex-basis:100%">Heslo do administrace</label>
@@ -79,13 +80,14 @@
     const SITE = new URL("../", location.href).href;        // administrace leží o složku níž než rozcestník
     const RATING = { ano: "srozumitelné", zcasti: "zčásti", ne: "nesrozumitelné" };
     const when = new Intl.DateTimeFormat("cs-CZ", { dateStyle: "medium", timeStyle: "short" });
-    let pass = sessionStorage.getItem("jvf-admin") || "", items = [];
-    // Příznak pro ostatní stránky webu, aby správci ukázaly odkaz sem. Heslo v něm není.
-    const mark = (on) => { try { on ? localStorage.setItem("jvf-admin-on", "1") : localStorage.removeItem("jvf-admin-on"); } catch { /* bez úložiště se odkaz jen neukáže */ } };
+    const until = new Intl.DateTimeFormat("cs-CZ", { dateStyle: "long" });
+    let items = [];
+    // úklid po starší verzi, která si heslo držela v záložce a příznak přihlášení v localStorage
+    try { sessionStorage.removeItem("jvf-admin"); localStorage.removeItem("jvf-admin-on"); } catch { /* nic k úklidu */ }
 
-    async function call(method, query = "") {
-      // hlavička unese jen základní znaky, heslo s háčky a čárkami se proto posílá zakódované
-      const res = await fetch(`/api/admin${query}`, { method, headers: { Authorization: `Bearer ${encodeURIComponent(pass)}` } });
+    // Přihlášení drží cookie, kterou prohlížeč posílá sám; heslo se odesílá jen jednou, při přihlášení.
+    async function call(method, query = "", body) {
+      const res = await fetch(`/api/admin${query}`, { method, headers: body ? { "Content-Type": "application/json" } : {}, body: body && JSON.stringify(body) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw Object.assign(new Error(data.error || "Něco se nepovedlo."), { status: res.status });
       return data;
@@ -93,8 +95,9 @@
     function fail(err) {
       $("error").textContent = err.message;
       $("error").hidden = false;
-      if (err.status === 401) { sessionStorage.removeItem("jvf-admin"); mark(false); pass = ""; $("app").hidden = true; $("login").hidden = false; }
+      if (err.status === 401) showLogin();
     }
+    function showLogin() { items = []; $("app").hidden = true; $("login").hidden = false; $("session").hidden = true; }
     // text od čtenářů vkládáme jen jako text, nikdy jako HTML
     function node(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
 
@@ -127,31 +130,40 @@
         return box;
       }));
     }
-    async function load() {
+    async function load(quiet) {
       $("error").hidden = true;
       try {
-        items = (await call("GET")).items;
+        const data = await call("GET");
+        items = data.items;
+        $("session").textContent = data.until ? `Přihlášení platí do ${until.format(new Date(data.until))}.` : "";
+        $("session").hidden = !data.until;
         const articles = [...new Set(items.map((it) => it.article))].sort(), keep = $("f-article").value;
         $("f-article").replaceChildren(new Option("Všechny články", ""), ...articles.map((a) => new Option(`${a} (${items.filter((it) => it.article === a).length})`, a)));
         if (articles.includes(keep)) $("f-article").value = keep;
         $("login").hidden = true; $("app").hidden = false;
-        mark(true);
         render();
-      } catch (err) { fail(err); }
+      } catch (err) {
+        // při prvním otevření bez přihlášení stačí ukázat formulář, bez chybové hlášky
+        if (quiet && err.status === 401) showLogin(); else fail(err);
+      }
     }
 
-    $("login").addEventListener("submit", (e) => { e.preventDefault(); pass = $("pass").value; sessionStorage.setItem("jvf-admin", pass); $("pass").value = ""; load(); });
+    $("login").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("error").hidden = true;
+      try { await call("POST", "", { action: "login", password: $("pass").value }); $("pass").value = ""; load(); } catch (err) { fail(err); }
+    });
     $("f-article").addEventListener("change", render);
     $("f-rating").addEventListener("change", render);
-    $("reload").addEventListener("click", load);
-    $("logout").addEventListener("click", () => { sessionStorage.removeItem("jvf-admin"); mark(false); pass = ""; items = []; $("app").hidden = true; $("login").hidden = false; });
+    $("reload").addEventListener("click", () => load());
+    $("logout").addEventListener("click", async () => { await call("POST", "", { action: "logout" }).catch(() => {}); showLogin(); });
     $("export").addEventListener("click", () => {
       const url = URL.createObjectURL(new Blob([JSON.stringify(items, null, 2)], { type: "application/json" }));
       const a = Object.assign(document.createElement("a"), { href: url, download: `zpetna-vazba-${new Date().toISOString().slice(0, 10)}.json` });
       a.click();
       URL.revokeObjectURL(url);
     });
-    if (pass) load();
+    load(true);
   })();
   </script>
 </body>

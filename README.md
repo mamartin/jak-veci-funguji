@@ -32,6 +32,8 @@ Web běží na Vercelu na adrese <https://jak-veci-funguji.vercel.app>. Každý 
 3. V levém menu projektu Environment Variables: `ADMIN_PASSWORD` (aspoň 8 znaků).
 4. Po změně nastavení znovu nasadit (Deployments → Redeploy), jinak se neprojeví.
 
+Přihlášení do administrace platí 30 dní, nebo do kliknutí na Odhlásit. Drží ho podepsaná cookie, heslo se v prohlížeči neukládá. Změna `ADMIN_PASSWORD` všechna přihlášení zruší.
+
 ## Lokální zkoušení
 
 ```bash
