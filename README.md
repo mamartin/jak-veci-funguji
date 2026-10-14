@@ -17,7 +17,7 @@
 
 ## Web jako aplikace (PWA)
 
-Service worker `sw.js` se negeneruje ručně: při nasazení ho z šablony `scripts/sw.template.js` vyrobí `scripts/build.mjs` (Vercel spouští `buildCommand` z `vercel.json`, lokálně `npm run build`). Do šablony doplní seznam všech stránek, stylů a písem s otiskem obsahu. Při první návštěvě se celý web uloží do telefonu a dál se načítá odtud, takže funguje i bez připojení. Po změně libovolného souboru se změní i `sw.js`, prohlížeč stáhne jen změněné soubory a stránka nabídne tlačítko *Aktualizovat*. Lokální server skládá `sw.js` za běhu.
+Service worker `sw.js` se negeneruje ručně: při nasazení ho z šablony `scripts/sw.template.js` vyrobí `scripts/build.mjs` (Vercel spouští `buildCommand` z `vercel.json`, lokálně `npm run build`). Do šablony doplní seznam všech stránek, stylů a písem s otiskem obsahu. Při první návštěvě se celý web uloží do prohlížeče, takže funguje i bez připojení. Stránky, styly a skripty se ale berou nejdřív ze serveru a uložená kopie se použije, jen když je čtenář offline nebo server do tří sekund neodpoví. Písma a obrázky jdou rovnou z uložené kopie. Po změně libovolného souboru se změní i `sw.js`, prohlížeč na pozadí stáhne jen změněné soubory a novou verzi hned zapne, bez ptaní. Lokální server skládá `sw.js` za běhu.
 
 Nové články jdou vždycky na začátek. Nový článek potřebuje kartu navrch stránky své kategorie, kartu navrch sekce Nově přidané na rozcestníku (nejstarší z šesti karet tam se smaže) a odkaz navrch seznamu témat své kategorie na rozcestníku. Řetěz odkazů „Další článek“ pod články se drží logického pořadí, ne data.
 

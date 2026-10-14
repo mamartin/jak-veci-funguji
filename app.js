@@ -280,7 +280,8 @@
     return seg;
   }
 
-  /* ---------- service worker: offline a nová verze ---------- */
+  /* ---------- service worker: čtení bez připojení ---------- */
+  // Novou verzi webu si service worker stáhne a zapne sám na pozadí, čtenáře se na nic neptá.
   if (
     "serviceWorker" in navigator &&
     (location.protocol === "https:" || location.hostname === "localhost")
@@ -292,35 +293,7 @@
       } catch {
         return;
       }
-      let wantReload = false;
-      const offerUpdate = (sw) =>
-        toast(
-          "Je k dispozici nová verze.",
-          [
-            {
-              label: "Aktualizovat",
-              primary: true,
-              onClick: () => {
-                wantReload = true;
-                sw.postMessage({ type: "SKIP_WAITING" });
-              },
-            },
-            { label: "Později" },
-          ],
-          { sticky: true }
-        );
-      if (reg.waiting && navigator.serviceWorker.controller)
-        offerUpdate(reg.waiting);
-      reg.addEventListener("updatefound", () => {
-        const sw = reg.installing;
-        sw?.addEventListener("statechange", () => {
-          if (sw.state === "installed" && navigator.serviceWorker.controller)
-            offerUpdate(sw);
-        });
-      });
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (wantReload) location.reload();
-      });
+      // kdo nechá web otevřený dlouho, dostane novou verzi i bez nového načtení
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible")
           reg.update().catch(() => {});

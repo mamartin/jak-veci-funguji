@@ -1,11 +1,14 @@
 /* Service worker: celý web (rozcestník, články, styl, písma) se při instalaci uloží do mezipaměti,
-   takže se stránky načítají okamžitě a fungují bez připojení. Seznam souborů s otisky obsahu
-   sem při nasazení doplní scripts/build.mjs; změní-li se jediný soubor, změní se i tenhle skript
-   a prohlížeč nainstaluje novou verzi. Nezměněné soubory se jen překopírují ze staré mezipaměti. */
+   aby fungoval bez připojení. Stránky, styly a skripty se přesto berou nejdřív ze serveru, takže čtenář
+   vidí vždy aktuální verzi; uložená kopie přijde na řadu, jen když je offline nebo server dlouho neodpovídá.
+   Seznam souborů s otisky obsahu sem při nasazení doplní scripts/build.mjs; změní-li se jediný soubor,
+   změní se i tenhle skript a prohlížeč nainstaluje novou verzi. Ta se zapne hned, bez ptaní.
+   Nezměněné soubory se jen překopírují ze staré mezipaměti. */
 const VERSION = "__VERSION__";
 const FILES = __FILES__;
 const CACHE = "jvf-" + VERSION;
 const LIST_KEY = "/__seznam__";
+const PATIENCE = 3000;          // jak dlouho čekat na server, než se sáhne po uložené kopii (ms)
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
@@ -27,6 +30,8 @@ self.addEventListener("install", (e) => {
       await cache.put(url, plain(res));
     }));
     await cache.put(LIST_KEY, new Response(JSON.stringify(FILES), { headers: { "Content-Type": "application/json" } }));
+    // nová verze nečeká, až čtenář zavře všechny záložky; rozečtená stránka zůstane, jak je, a změna se projeví při dalším kliknutí
+    await self.skipWaiting();
   })());
 });
 
@@ -37,27 +42,44 @@ self.addEventListener("activate", (e) => {
   })());
 });
 
-self.addEventListener("message", (e) => {
-  if (e.data && e.data.type === "SKIP_WAITING") self.skipWaiting();
-});
-
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== location.origin || url.pathname.startsWith("/api/") || url.pathname.startsWith("/admin/")) return;
-  e.respondWith((async () => {
-    const cache = await caches.open(CACHE);
-    const hit = await cache.match(normalize(url.pathname));
-    if (hit) return hit;
-    try {
-      return await fetch(req);
-    } catch (err) {
-      if (req.mode === "navigate") return offline();
-      throw err;
-    }
-  })());
+  const key = normalize(url.pathname);
+  // stránky, styly a skripty: nejdřív server; písma a obrázky se nemění, ty rovnou z mezipaměti
+  const fresh = req.mode === "navigate" || /\.(css|js|webmanifest)$/.test(key) || key.endsWith("/");
+  if (!fresh) return e.respondWith(cacheFirst(req, key));
+  // čerstvou odpověď uložit i tehdy, když stránka mezitím dostala uloženou kopii;
+  // přesměrování a chyby se neukládají, jen řádná odpověď z našeho webu
+  let saved = Promise.resolve();
+  const network = fetch(req).then((res) => {
+    if (res.ok && res.type === "basic" && !res.redirected) { const copy = res.clone(); saved = caches.open(CACHE).then((c) => c.put(key, copy)); }
+    return res;
+  });
+  e.waitUntil(network.then(() => saved).catch(() => {}));
+  e.respondWith(networkFirst(req, key, network));
 });
+
+async function networkFirst(req, key, network) {
+  const late = new Promise((resolve) => setTimeout(resolve, PATIENCE));
+  try {
+    const res = await Promise.race([network, late]);
+    if (res) return res;
+  } catch { /* bez připojení: zkusí se uložená kopie */ }
+  const hit = await (await caches.open(CACHE)).match(key);
+  if (hit) return hit;
+  try { return await network; } catch (err) {
+    if (req.mode === "navigate") return offline();
+    throw err;
+  }
+}
+
+async function cacheFirst(req, key) {
+  const hit = await (await caches.open(CACHE)).match(key);
+  return hit || fetch(req);
+}
 
 // /clanky/zamek i /clanky/zamek/index.html jsou v mezipaměti jako /clanky/zamek/
 function normalize(path) {
