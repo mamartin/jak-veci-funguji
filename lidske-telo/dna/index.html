@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje DNA</title>
+  <meta name="description" content="Jak se do čtyř písmen vejde návod na člověka, jak buňka čte geny po trojicích a proč jedno chybějící písmeno může způsobit nemoc. S modelem skutečného lidského genu, ve kterém můžete měnit písmena.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    /* barvy písmen podle zvyklosti: A zelená, T červená, C modrá, G žlutá */
+    .seq { display: flex; flex-wrap: wrap; gap: 0.9rem 0.55rem; justify-content: center; font-family: var(--font-mono); }
+    .codon { display: grid; gap: 3px; }
+    .codon .no { font-size: 0.66rem; color: var(--ink-3); text-align: center; line-height: 1; }
+    .codon .row { display: flex; }
+    .b { width: 1.45rem; height: 1.8rem; padding: 0; border: 1px solid rgba(20, 24, 30, 0.18); font: 600 1rem/1 var(--font-mono); color: #14181e; cursor: pointer; }
+    .b.A { background: #bfe6c8; } .b.T { background: #f6c3bd; } .b.C { background: #c6d8f6; } .b.G { background: #f3dfa6; }
+    .b.edit { box-shadow: inset 0 -4px 0 var(--bad); }
+    .b.gap { border-left: 3px solid var(--bad); }
+    .b.tail { opacity: 0.4; cursor: default; display: inline-grid; place-items: center; }
+    .b.sel { outline: 3px solid var(--ink); outline-offset: 1px; position: relative; z-index: 1; }
+    .b:focus-visible { outline: 3px solid var(--cat); outline-offset: 1px; position: relative; z-index: 1; }
+    .pair span { width: 1.45rem; text-align: center; font-size: 0.7rem; line-height: 1; color: var(--ink-3); }
+    .aa { padding: 0.2rem 0; border: 2px solid transparent; border-radius: 999px; text-align: center; font: 600 0.78rem/1.1 var(--font-mono); color: #14181e; }
+    .aa.h { background: #f2c46d; } .aa.p { background: #cfe3c4; } .aa.c { background: #9cc3f0; }
+    .aa.s { background: var(--ink); color: var(--paper); }
+    .aa.off { background: none; border: 1px dashed var(--rule); color: var(--ink-3); }
+    .aa.diff { border-color: var(--bad); }
+    .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.2rem; margin: 1.1rem 0 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-2); }
+    .legend li { display: flex; align-items: center; gap: 0.4rem; }
+    .legend i { width: 1.6rem; height: 0.9rem; border-radius: 999px; }
+    .legend i.edit { border-radius: 0; background: var(--surface); box-shadow: inset 0 -4px 0 var(--bad); border: 1px solid var(--rule); }
+    .edit-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .edit-row .seg button { min-width: 2.6rem; font-family: var(--font-mono); }
+    .words { font-family: var(--font-mono); letter-spacing: 0.04em; }
+    @media (max-width: 46rem) {
+      .seq { gap: 0.8rem 0.4rem; }
+      .b, .pair span { width: 1.5rem; }
+      .b { height: 2rem; }
+    }
+  </style>
+</head>
+<body data-cat="telo">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Lidské tělo</a><span aria-hidden="true">/</span><span>DNA</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Lidské tělo</a></p>
+      <h1 class="display">Jak funguje DNA</h1>
+      <p class="lede">V každé buňce vašeho těla je dvoumetrové vlákno popsané čtyřmi písmeny. Je to návod, podle kterého buňka vyrábí všechno, co potřebuje. A čte ho tak doslova, že jedno chybějící písmeno může pokazit celý zbytek.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>DNA má dvě vlákna a na každém je řada čtyř druhů písmen: A, C, G a T. Vlákna do sebe zapadají jako zip, A vždy proti T a C vždy proti G.</li>
+        <li><span class="hl">Gen je úsek DNA, který buňka čte po trojicích písmen. Každá trojice určí jeden článek bílkoviny.</span></li>
+        <li>Varianty genů, o kterých mluví článek o dědičnosti, jsou místa, kde se text liší. Často o jediné písmeno.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Začátek genu pro hemoglobin</p>
+        <span class="label">Vyberte písmeno a změňte ho, smažte nebo zdvojte</span>
+      </div>
+      <div class="fig-stage">
+        <div class="seq" id="seq" role="group" aria-label="Písmena genu seskupená po trojicích, pod každou trojicí aminokyselina, kterou určuje"></div>
+        <ul class="legend" aria-label="Legenda">
+          <li><i style="background:#f2c46d"></i>aminokyselina se vyhýbá vodě</li>
+          <li><i style="background:#cfe3c4"></i>drží se vody</li>
+          <li><i style="background:#9cc3f0"></i>má elektrický náboj</li>
+          <li><i class="edit"></i>upravené písmeno</li>
+        </ul>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-ex">Příklady</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-ex" id="ex-seg">
+            <button type="button" role="radio" data-v="orig" aria-checked="true">Původní gen</button>
+            <button type="button" role="radio" data-v="sickle" aria-checked="false">Srpkovitá anémie</button>
+            <button type="button" role="radio" data-v="silent" aria-checked="false">Tichá změna</button>
+            <button type="button" role="radio" data-v="stop" aria-checked="false">Předčasný konec</button>
+            <button type="button" role="radio" data-v="del" aria-checked="false">Chybí písmeno</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-sel">Vybrané písmeno</span>
+          <div class="edit-row">
+            <div class="seg" role="radiogroup" aria-labelledby="lbl-sel" id="base-seg">
+              <button type="button" role="radio" data-v="A" aria-checked="false">A</button>
+              <button type="button" role="radio" data-v="C" aria-checked="false">C</button>
+              <button type="button" role="radio" data-v="G" aria-checked="false">G</button>
+              <button type="button" role="radio" data-v="T" aria-checked="false">T</button>
+            </div>
+            <button type="button" class="btn ghost" id="del">Smazat</button>
+            <button type="button" class="btn ghost" id="dup">Zdvojit</button>
+          </div>
+        </div>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Písmen v úseku</span><span class="v" id="st-len"></span></li>
+          <li><span class="n">Jiných aminokyselin</span><span class="v" id="st-diff"></span></li>
+          <li><span class="n">Bílkovina</span><span class="v small" id="st-prot"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Úsek je skutečný začátek lidského genu pro beta-globin, jednu ze dvou bílkovin, ze kterých se skládá hemoglobin: prvních 60 písmen ze 444. Pod každým písmenem je drobně jeho protějšek z druhého vlákna. Když úprava změní délku úseku, poslední trojici doplní vybledlá písmena z pokračování genu. Na klávesnici přesouvají výběr šipky, písmena A, C, G a T ho mění a klávesa Delete ho smaže.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-pismena">
+      <div class="prose">
+        <h2 id="h-pismena">Čtyři písmena, dvě vlákna</h2>
+        <p>DNA je dlouhá a velmi tenká molekula. Tvoří ji dvě vlákna stočená kolem sebe do šroubovice. Každé vlákno je řetízek, na kterém jsou jedna za druhou navlečené čtyři druhy chemických skupin, takzvaných bází. Jmenují se adenin, cytosin, guanin a thymin a zkracují se počátečními písmeny A, C, G a T.</p>
+        <p>Báze jednoho vlákna se drží bází druhého, ale ne jakkoli. A pasuje jen k T a C jen ke G. Kdo zná jedno vlákno, zná tedy i druhé. <span class="hl">Druhé vlákno je otisk prvního, jako sádrový odlitek klíče.</span> To se hodí, když se DNA kopíruje.</p>
+        <p>Jedna sada lidské DNA má zhruba 3,1 miliardy párů písmen. V každé buňce jsou dvě sady, jedna od matky a jedna od otce, rozdělené do 46 chromozomů. Natažená by DNA z jedné buňky měřila asi dva metry, a přitom se vejde do jádra širokého pár tisícin milimetru. Jako by někdo nacpal dvacet kilometrů tenké nitě do tenisového míčku.</p>
+      </div>
+      <aside class="note" aria-label="DNA v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>3,1 miliardy</dt><dd>písmen má jedna sada lidské DNA</dd></div>
+          <div><dt>2 metry</dt><dd>by měřila DNA z jediné buňky, kdyby se natáhla</dd></div>
+          <div><dt>asi 20 000</dt><dd>genů je v ní zapsáno</dd></div>
+          <div><dt>1,5 %</dt><dd>DNA tvoří návody na bílkoviny, zbytek z velké části řídí, kdy a kde se který návod čte</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-trojice">
+      <div class="prose">
+        <h2 id="h-trojice">Gen se čte po trojicích</h2>
+        <p>Většina genů je návod na bílkovinu. Bílkoviny dělají v těle skoro všechnu práci: hemoglobin v krvi nese kyslík, keratin tvoří vlasy, enzymy ve střevě rozkládají jídlo. Každá bílkovina je řetízek z menších stavebních kamenů, aminokyselin. Druhů aminokyselin je dvacet a záleží na jejich pořadí. Hotový řetízek se sám složí do klubíčka určitého tvaru a tvar rozhoduje o tom, co bílkovina umí.</p>
+        <p>Buňka si z genu nejdřív udělá pracovní kopii z příbuzné molekuly RNA. Originál tak zůstává v bezpečí v jádře. Kopii pak čte drobné ústrojí zvané ribozom, a to po trojicích písmen. Každé trojici přiřadí jednu aminokyselinu a připojí ji k řetízku.</p>
+        <p>Ze čtyř písmen se dá složit 64 různých trojic. Na dvacet aminokyselin je to víc než dost, a tak mnohé trojice znamenají totéž. Tři trojice neznamenají žádnou aminokyselinu, ale konec: tady bílkovina končí. Trojice ATG naopak říká, kde začít.</p>
+        <p><span class="hl">Tenhle slovník je stejný u člověka, u kytky i u bakterie.</span> Proto může bakterie podle lidského genu vyrobit lidskou bílkovinu. Tak se dnes vyrábí třeba inzulín pro diabetiky.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Vyberte poslední písmeno některé trojice a změňte ho. Aminokyselina se často vůbec nezmění. Pak zkuste první písmeno té samé trojice.</p>
+        <span class="label">Na okraj</span>
+        <p>V kopii z RNA je místo T písmeno U, uracil. Pasuje k A stejně jako T, takže na čtení to nic nemění.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-anemie">
+      <div class="prose">
+        <h2 id="h-anemie">Jedno písmeno a nemoc</h2>
+        <p>Gen z obrázku je návod na beta-globin. Dvě jeho molekuly a dvě molekuly podobného alfa-globinu tvoří dohromady hemoglobin, který v červených krvinkách nese kyslík.</p>
+        <p>U srpkovité anémie je v tomhle genu jiné jediné písmeno. V sedmé trojici je místo GAG trojice GTG, a tak je v bílkovině místo kyseliny glutamové valin. První aminokyselinu ze startovní trojice buňka po dokončení odštípne, proto se v učebnicích ta změna uvádí jako šestá aminokyselina.</p>
+        <p>Kyselina glutamová nese elektrický náboj a na povrchu bílkoviny se obklopuje vodou. Valin je mastný a vodě se vyhýbá. Na povrchu hemoglobinu tak vznikne lepkavé místo. Když hemoglobin odevzdá kyslík, molekuly se jím chytají jedna druhé a slepí se do dlouhých vláken. <span class="hl">Ta zdeformují krvinku do tvaru srpu.</span> Srpkovité krvinky jsou tuhé, ucpávají drobné cévy a rychle se rozpadají.</p>
+        <p>Každý gen máme dvakrát, jak popisuje <a href="../dedicnost/">článek o dědičnosti</a>. Kdo má změněnou jen jednu kopii, bývá zdravý a navíc snáz přežije malárii. Proto je tahle varianta častá právě tam, kde je malárie doma: v Africe, kolem Středozemního moře a v Indii.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Zvolte Srpkovitou anémii. V sedmé trojici je jedno písmeno jinak a modrá aminokyselina s nábojem se změnila na žlutou, která se vyhýbá vodě.</p>
+        <p>Pak zvolte Tichou změnu. Písmeno je jiné, ale bílkovina vyjde úplně stejná.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-posun">
+      <div class="prose">
+        <h2 id="h-posun">Když písmeno chybí</h2>
+        <p>Ribozom čte trojice jednu za druhou a nemá žádné mezery ani čárky, podle kterých by se mohl zorientovat. Když v genu jedno písmeno chybí, posune se všechno za ním. Trojice se poskládají z jiných písmen a od toho místa vychází nesmysl. Dřív nebo později se náhodou objeví trojice pro konec a výroba se zastaví.</p>
+        <p>Je to jako věta z třípísmenných slov. Ve větě <span class="words">TEN PES MĚL RÁD SÝR</span> stačí vynechat jedno E a čtení po třech dá <span class="words">TEN PSM ĚLR ÁDS ÝR</span>.</p>
+        <p>Takhle vzniká krevní skupina 0. Gen pro krevní skupinu je návod na enzym, který na povrch červených krvinek přidává drobné značky. Varianta A přidává jeden druh, varianta B jiný, a od sebe se liší jen ve čtyřech aminokyselinách. Nejčastější varianta 0 je jinak skoro stejná jako A, ale v genu jí chybí jedno jediné písmeno G. Čtení se posune a místo enzymu vznikne krátký útržek, který nic neumí.</p>
+        <p>Proto je nula recesivní, jak to popisuje <a href="../dedicnost/#h-krev">článek o dědičnosti</a>. Sama nic nepřidává. Kdo má varianty A a 0, má jednu funkční kopii, ta stačí, a jeho krvinky nesou značky A. Skupinu 0 má jen ten, komu chybí funkční kopie obě.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Zvolte Chybí písmeno. Chybí stejné A, které se u srpkovité anémie mění na T. Od sedmé trojice dál jsou všechny aminokyseliny jiné a v devatenácté trojici čtení skončí. Tuhle změnu lidé skutečně mají a způsobuje beta-talasémii, chudokrevnost, při které se hemoglobinu vyrábí málo.</p>
+        <p>Pak dvakrát zmáčkněte Smazat. Se třemi chybějícími písmeny se čtení vrátí do správných trojic a bílkovině chybí jen jedna aminokyselina.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-kopie">
+      <div class="prose">
+        <h2 id="h-kopie">Kopie s překlepy</h2>
+        <p>Než se buňka rozdělí, musí celou svou DNA zkopírovat, aby obě nové buňky dostaly úplnou sadu. Vlákna se od sebe rozpojí jako zip a ke každému se podle pravidla A k T a C ke G doplní nové. Z jedné dvojice vláken jsou dvě, každá s jedním starým a jedním novým vláknem.</p>
+        <p>Kopírovací enzymy po sobě kontrolují a opravují. Přesto občas chyba projde, zhruba jedno špatné písmeno na miliardu. Na šest miliard písmen v buňce to dělá několik překlepů při každém dělení. Většina padne mimo geny nebo na místo, kde nic nezmění. Jen málokterý něco pokazí.</p>
+        <p>Překlepy v buňkách, ze kterých vznikají vajíčka a spermie, se dědí. <span class="hl">Každé dítě má v DNA kolem šedesáti písmen, která nemá ani jeden z rodičů.</span> Z takových překlepů za miliony let vznikly všechny varianty genů, ze kterých se skládá dědičnost, od krevních skupin po barvu očí. Dva lidé se v DNA liší zhruba v jednom písmenu z tisíce.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Když Mendel křížil hrách, o DNA nikdo nic nevěděl. Že dědičnost nese právě ona, se ukázalo až ve čtyřicátých letech 20. století. Tvar dvojité šroubovice popsali James Watson a Francis Crick v roce 1953, a to díky rentgenovému snímku, který pořídila Rosalind Franklinová. Slovník trojic byl celý rozluštěný v roce 1966.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../../vesmir/faze-mesice/" data-cat="vesmir">
+        <span class="label">Další článek · Vesmír</span>
+        <span class="t">Jak fungují fáze Měsíce</span>
+        <p>Proč Měsíc dorůstá a couvá a proč to není stín Země.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const $ = (id) => document.getElementById(id);
+
+    /* ---------- model ---------- */
+    // standardní genetický kód: pořadí písmen T, C, A, G pro první, druhé i třetí písmeno trojice
+    const CODE = "FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG";
+    const IDX = { T: 0, C: 1, A: 2, G: 3 };
+    const PAIR = { A: "T", T: "A", C: "G", G: "C" };
+    const amino = (c) => CODE[16 * IDX[c[0]] + 4 * IDX[c[1]] + IDX[c[2]]];
+    // zkratka, český název a vztah k vodě: h vyhýbá se jí, p drží se jí, c má náboj
+    const AA = {
+      A: ["Ala", "alanin", "h"], R: ["Arg", "arginin", "c"], N: ["Asn", "asparagin", "p"], D: ["Asp", "kyselina asparagová", "c"],
+      C: ["Cys", "cystein", "p"], Q: ["Gln", "glutamin", "p"], E: ["Glu", "kyselina glutamová", "c"], G: ["Gly", "glycin", "h"],
+      H: ["His", "histidin", "c"], I: ["Ile", "izoleucin", "h"], L: ["Leu", "leucin", "h"], K: ["Lys", "lysin", "c"],
+      M: ["Met", "methionin", "h"], F: ["Phe", "fenylalanin", "h"], P: ["Pro", "prolin", "h"], S: ["Ser", "serin", "p"],
+      T: ["Thr", "threonin", "p"], W: ["Trp", "tryptofan", "h"], Y: ["Tyr", "tyrosin", "p"], V: ["Val", "valin", "h"], "*": ["stop", "konec", "s"],
+    };
+    // začátek genu HBB (beta-globin) a jeho pokračování, ze kterého se doplňuje poslední trojice
+    const GENE = "ATGGTGCACCTGACTCCTGAGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAAC";
+    const TAIL = "GTGGATGAAGTTGGTGGTGAGGCCCTGGGCAGG";
+    const TOTAL = 147, MIN = 51, MAX = 69;        // aminokyselin v celém genu, nejkratší a nejdelší úsek v modelu
+    const translate = (s) => { const out = []; for (let i = 0; i + 3 <= s.length; i += 3) out.push(amino(s.slice(i, i + 3))); return out; };
+    const REF = translate(GENE + TAIL);
+    const fresh = () => [...GENE].map((b, o) => ({ b, o }));
+    const PRESETS = {
+      orig: { sel: 19, apply: () => {} },
+      sickle: { sel: 19, apply: (l) => { l[19].b = "T"; } },
+      silent: { sel: 11, apply: (l) => { l[11].b = "C"; } },
+      stop: { sel: 51, apply: (l) => { l[51].b = "T"; } },
+      del: { sel: 19, apply: (l) => { l.splice(19, 1); } },
+    };
+    const s = { letters: fresh(), sel: 19, preset: "orig" };
+
+    // co z úseku vyjde: trojice, aminokyseliny, kde čtení skončí a které aminokyseliny se liší od původních
+    function read() {
+      const seq = s.letters.map((l) => l.b).join(""), full = seq + TAIL;
+      const n = Math.ceil(seq.length / 3);
+      const codons = Array.from({ length: n }, (_, i) => full.slice(3 * i, 3 * i + 3));
+      const aa = codons.map(amino);
+      const started = codons[0] === "ATG";
+      const stop = started ? aa.indexOf("*") : -1;
+      const shift = seq.length - GENE.length, end = stop >= 0 ? stop + 1 : n;
+      const diff = aa.map(() => false);
+      if (started) {
+        let p = 0;
+        while (p < end && aa[p] === REF[p]) p++;
+        if (shift === 0) for (let i = 0; i < end; i++) diff[i] = aa[i] !== REF[i];
+        else if (shift % 3) for (let i = p; i < end; i++) diff[i] = true;
+        else {
+          // celá trojice navíc nebo pryč: za úpravou se čte zase správně, jen posunuté o jednu aminokyselinu
+          let q = end - 1;
+          while (q >= p && aa[q] === REF[q - shift / 3]) q--;
+          for (let i = p; i <= q; i++) diff[i] = true;
+        }
+      }
+      return { seq, codons, aa, started, stop, shift, diff, changed: diff.filter(Boolean).length };
+    }
+
+    /* ---------- kresba ---------- */
+    const seqBox = $("seq");
+    const ord = (i) => `${i + 1}.`;
+    function letterClass(l, i) {
+      const prev = s.letters[i - 1];
+      const gap = l.o !== null && (prev ? prev.o !== null && l.o > prev.o + 1 : l.o > 0);
+      return `b ${l.b}${l.o === null || l.b !== GENE[l.o] ? " edit" : ""}${gap ? " gap" : ""}${i === s.sel ? " sel" : ""}`;
+    }
+    function draw(r) {
+      const hadFocus = seqBox.contains(document.activeElement);
+      const blocks = r.codons.map((codon, c) => {
+        const block = document.createElement("div");
+        block.className = "codon";
+        const name = AA[r.aa[c]];
+        const off = !r.started || (r.stop >= 0 && c > r.stop);
+        block.setAttribute("role", "group");
+        block.setAttribute("aria-label", `${ord(c)} trojice ${codon}, ${off ? "nečte se" : name[1]}`);
+        let row = "", pair = "";
+        for (let k = 0; k < 3; k++) {
+          const i = 3 * c + k, l = s.letters[i];
+          if (l) row += `<button type="button" class="${letterClass(l, i)}" data-i="${i}" tabindex="${i === s.sel ? 0 : -1}" aria-label="${ord(i)} písmeno, ${l.b}" aria-pressed="${i === s.sel}">${l.b}</button>`;
+          else row += `<span class="b tail ${codon[k]}" aria-hidden="true">${codon[k]}</span>`;
+          pair += `<span>${PAIR[codon[k]]}</span>`;
+        }
+        block.innerHTML = `<span class="no" aria-hidden="true">${c + 1}</span><div class="row">${row}</div><div class="row pair" aria-hidden="true">${pair}</div>` +
+          `<span class="aa ${off ? "off" : name[2]}${!off && r.diff[c] ? " diff" : ""}" title="${off ? "nečte se" : name[1]}" aria-hidden="true">${off ? "·" : name[0]}</span>`;
+        return block;
+      });
+      seqBox.replaceChildren(...blocks);
+      if (hadFocus) seqBox.querySelector(`[data-i="${s.sel}"]`)?.focus();
+    }
+
+    let said = "";
+    function render() {
+      const r = read();
+      draw(r);
+      const cur = s.letters[s.sel];
+      $("lbl-sel").textContent = `Vybrané písmeno · ${ord(s.sel)} z ${s.letters.length}`;
+      $("base-seg").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === cur.b)));
+      $("del").disabled = s.letters.length <= MIN;
+      $("dup").disabled = s.letters.length >= MAX;
+      $("ex-seg").querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === s.preset)));
+
+      $("st-len").textContent = String(r.seq.length);
+      $("st-diff").textContent = r.started ? String(r.changed) : "–";
+      const codonsOff = Math.abs(r.shift / 3);
+      $("st-prot").textContent = !r.started ? "nezačne se vyrábět" : r.stop >= 0 ? `skončí po ${r.stop} ze ${TOTAL}`
+        : r.shift % 3 ? `nesmysl od ${ord(r.diff.indexOf(true))} trojice` : r.shift ? `o ${codonsOff} ${r.shift < 0 ? "kratší" : "delší"}`
+        : r.changed ? "celá, ale jiná" : "celá, beze změny";
+
+      const name = (a) => AA[a][1];
+      let status;
+      if (r.seq === GENE && s.letters.every((l, i) => l.o === i)) status = "<strong>Původní gen.</strong> Buňka čte písmena po trojicích od startovní trojice ATG. Každá trojice určí jednu aminokyselinu, pod písmeny je vidět, jakou. Vyberte libovolné písmeno a změňte ho.";
+      else if (!r.started) status = "<strong>Chybí start.</strong> První trojice už není ATG, signál, kde začít. Buňka by bílkovinu nezačala číst na správném místě a hemoglobinu by se vyrobilo málo, nebo vůbec žádný.";
+      else if (r.shift % 3) {
+        const first = r.diff.indexOf(true), what = Math.abs(r.shift) === 1 ? (r.shift < 0 ? "Jedno písmeno chybí" : "Jedno písmeno přebývá") : r.shift < 0 ? "Písmena chybí" : "Písmena přebývají";
+        status = `<strong>Posunuté čtení.</strong> ${what} a buňka, která čte pořád po trojicích, od ${ord(first)} trojice skládá písmena jinak. Všechno za tím je nesmysl` +
+          (r.stop >= 0 ? ` a v ${ord(r.stop)} trojici narazí na konec. Z bílkoviny zbude krátký útržek.` : ". Dřív nebo později narazí na náhodný konec.") +
+          (s.preset === "del" ? " Tuhle změnu lidé skutečně mají, způsobuje beta-talasémii." : "");
+      } else if (r.stop >= 0) {
+        status = `<strong>Předčasný konec.</strong> V ${ord(r.stop)} trojici je ${r.codons[r.stop]}, a to znamená konec. Bílkovina skončí po ${r.stop} ${r.stop === 1 ? "aminokyselině" : "aminokyselinách"} ze ${TOTAL} a z hemoglobinu zbude nepoužitelný útržek.` +
+          (s.preset === "stop" ? " Přesně tahle změna způsobuje jednu z častých forem beta-talasémie, chudokrevnosti, při které se hemoglobinu vyrábí málo." : "");
+      } else if (r.shift) {
+        const many = codonsOff === 1 ? "jednu aminokyselinu" : `${codonsOff} aminokyseliny`;
+        status = `<strong>${r.shift < 0 ? "Chybí" : "Přebývá"} ${codonsOff === 1 ? "celá trojice" : "celé trojice"}.</strong> Čtení zůstalo ve správných trojicích. Bílkovina je o ${many} ${r.shift < 0 ? "kratší" : "delší"}` +
+          (r.changed ? " a v místě úpravy je navíc jiná aminokyselina. Za ní je všechno jako dřív." : " a jinak je stejná jako dřív.");
+      } else if (!r.changed) status = "<strong>Tichá změna.</strong> Písmeno je jiné, ale nová trojice znamená tutéž aminokyselinu a bílkovina vyjde úplně stejná. Nejčastěji to vychází u třetího písmene trojice.";
+      else {
+        const list = r.diff.map((d, i) => (d ? i : -1)).filter((i) => i >= 0);
+        if (list.length === 1 && list[0] === 6 && r.aa[6] === "V") status = "<strong>Srpkovitá anémie.</strong> Jediné A se změnilo na T a ze trojice GAG je GTG. Místo kyseliny glutamové, která má náboj a drží se vody, je na povrchu hemoglobinu mastný valin. Molekuly se o něj lepí k sobě a deformují červené krvinky.";
+        else if (list.length === 1) status = `<strong>Jiná aminokyselina.</strong> V ${ord(list[0])} trojici: ${name(REF[list[0]])} → ${name(r.aa[list[0]])}. Zbytek bílkoviny zůstal stejný. Jestli to vadí, záleží na tom, kde v bílkovině změna je a jak moc se nová aminokyselina od původní liší.`;
+        else status = `<strong>Jiné aminokyseliny.</strong> Změnilo se jich ${list.length}, zbytek bílkoviny zůstal stejný. Čím víc změn, tím menší šance, že se bílkovina složí do správného tvaru.`;
+      }
+      if (status !== said) { said = status; $("status").innerHTML = status; }
+    }
+
+    /* ---------- ovládání ---------- */
+    const edited = () => { s.preset = null; render(); };
+    function setBase(b) { if (s.letters[s.sel].b === b) return; s.letters[s.sel].b = b; edited(); }
+    function remove() { if (s.letters.length <= MIN) return; s.letters.splice(s.sel, 1); s.sel = Math.min(s.sel, s.letters.length - 1); edited(); }
+    function duplicate() { if (s.letters.length >= MAX) return; s.letters.splice(s.sel + 1, 0, { b: s.letters[s.sel].b, o: null }); s.sel++; edited(); }
+    function select(i) { s.sel = Math.max(0, Math.min(s.letters.length - 1, i)); render(); }
+
+    seqBox.addEventListener("click", (e) => { const b = e.target.closest("button[data-i]"); if (b) select(Number(b.dataset.i)); });
+    seqBox.addEventListener("keydown", (e) => {
+      if (!e.target.closest("button[data-i]") || e.ctrlKey || e.metaKey || e.altKey) return;
+      const key = e.key.toUpperCase();
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") select(s.sel - 1);
+      else if (e.key === "ArrowRight" || e.key === "ArrowDown") select(s.sel + 1);
+      else if (e.key === "Home") select(0);
+      else if (e.key === "End") select(s.letters.length - 1);
+      else if (IDX[key] !== undefined && key.length === 1) setBase(key);
+      else if (e.key === "Delete" || e.key === "Backspace") remove();
+      else return;
+      e.preventDefault();
+    });
+    $("base-seg").addEventListener("click", (e) => { const b = e.target.closest("button[data-v]"); if (b) setBase(b.dataset.v); });
+    $("del").addEventListener("click", remove);
+    $("dup").addEventListener("click", duplicate);
+    $("ex-seg").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-v]");
+      if (!b) return;
+      const p = PRESETS[b.dataset.v];
+      s.letters = fresh(); p.apply(s.letters); s.sel = p.sel; s.preset = b.dataset.v;
+      render();
+    });
+    render();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>
