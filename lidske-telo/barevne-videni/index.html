@@ -13,7 +13,7 @@
     gtag('config', 'G-3FQVWCDJ6V');
   </script>
   <title>Jak vidíme barvy</title>
-  <meta name="description" content="Jak oko ze tří druhů čípků poskládá miliony barev, proč je červená a zelená dohromady žlutá, co vidí barvoslepí a proč jsou v noci všechny kočky šedé. Se spektrem, na které se můžete podívat cizíma očima.">
+  <meta name="description" content="Jak oko ze tří druhů čípků poskládá miliony barev, proč je červená a zelená dohromady žlutá, co vidí barvoslepí a proč jsou v noci všechny kočky šedé. Se spektrem, na které se můžete podívat cizíma očima, testem z barevných teček a paobrazem vlajky.">
   <link rel="stylesheet" href="/style.css?v=9">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
@@ -40,14 +40,31 @@
     .cones .bar i { display: block; height: 100%; }
     .cones .v { text-align: right; color: var(--ink); font-weight: 600; }
     .cones li.off { opacity: 0.4; }
+    .cones-note { margin: 0; font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-3); line-height: 1.4; }
     .axis { fill: var(--ink-3); font: 500 10.5px var(--font-mono); text-anchor: middle; }
     .cap { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
     .curve { fill: none; stroke-width: 2.4; }
     .curve.off { stroke-dasharray: 4 5; opacity: 0.35; }
-    .mark { stroke: var(--ink); stroke-width: 1.5; }
+    .curve.ghost { stroke-dasharray: 3 4; stroke-width: 1.5; opacity: 0.55; }
+    .cname { font: 600 11px var(--font-mono); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+    .cname.off { opacity: 0.4; }
+    .mark { stroke: var(--ink); }
+    .twin { stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
     .mark-dot { stroke: var(--surface); stroke-width: 1.5; }
-    .mark-tag { fill: var(--ink); font: 600 11.5px var(--font-mono); text-anchor: middle; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
-    @media (max-width: 46rem) { .axis { font-size: 15px; } .cap { font-size: 15px; } .mark-tag { font-size: 16px; } }
+    .mark-ring { fill: none; stroke-width: 1.5; }
+    .mark-tag, .dot-num { fill: var(--ink); font: 600 11.5px var(--font-mono); text-anchor: middle; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+    .dot-num { font-size: 10.5px; text-anchor: start; }
+    .legend-t { fill: var(--ink-2); font: 500 10.5px var(--font-mono); }
+    #plate, #flag { display: block; width: 100%; max-width: 22rem; margin: 0 auto; }
+    #flag { max-width: 30rem; }
+    .count { font: 700 15px var(--font-mono); }
+    @media (max-width: 46rem) {
+      .axis, .legend-t { font-size: 15px; }
+      .cap { font-size: 15px; }
+      .mark-tag { font-size: 16px; }
+      .dot-num { font-size: 15px; }
+      .cname { font-size: 15px; }
+    }
   </style>
 </head>
 <body data-cat="telo">
@@ -70,7 +87,7 @@
       <ul>
         <li>Na sítnici jsou tři druhy čípků. Každý reaguje na široký kus spektra, jeden nejvíc na modrou, druhý na zelenou a třetí na žlutozelenou až červenou.</li>
         <li><span class="hl">Barva je poměr jejich tří odpovědí.</span> Dvě různá světla, která vyvolají stejný poměr, vypadají úplně stejně.</li>
-        <li>Když jeden druh čípků chybí, část barev splyne. V šeru čípky nestačí a vidíme jen černobíle tyčinkami.</li>
+        <li>Když jeden druh čípků chybí nebo je posunutý, část barev splyne. V šeru čípky nestačí a vidíme jen černobíle tyčinkami.</li>
       </ul>
     </section>
 
@@ -80,7 +97,7 @@
         <span class="label">Posouvejte světlo a přepněte, čí oči se dívají</span>
       </div>
       <div class="fig-stage cv-stage">
-        <svg id="spec" viewBox="0 0 720 330" role="img" aria-label="Pruh barev spektra, pod ním křivky citlivosti tří druhů čípků a značka vybraného světla"></svg>
+        <svg id="spec" viewBox="0 0 720 330" role="img" aria-label="Pruh barev spektra, pod ním křivky citlivosti tří druhů čípků a tyčinek, svislá čára vybraného světla a tečky, které ukazují, jak silně na něj odpovídá který čípek"></svg>
         <div class="panel">
           <div class="swatches">
             <figure class="sw"><i id="sw-a"></i><span class="label" id="sw-a-n">Co vidíte</span></figure>
@@ -92,6 +109,7 @@
             <li id="row-l"><span>červené čípky</span><span class="bar"><i id="bar-l" style="background:#e03131"></i></span><span class="v" id="val-l"></span></li>
             <li id="row-r" class="off"><span>tyčinky</span><span class="bar"><i id="bar-r" style="background:#868e96"></i></span><span class="v" id="val-r"></span></li>
           </ul>
+          <p class="cones-note" id="cones-note"></p>
         </div>
       </div>
       <div class="fig-controls">
@@ -99,7 +117,8 @@
           <span class="label" id="lbl-light">Světlo</span>
           <div class="seg" role="radiogroup" aria-labelledby="lbl-light" id="light-seg">
             <button type="button" role="radio" data-v="one" aria-checked="true">Jedna barva spektra</button>
-            <button type="button" role="radio" data-v="mix" aria-checked="false">Červená a zelená dohromady</button>
+            <button type="button" role="radio" data-v="mix" aria-checked="false">Červená a zelená</button>
+            <button type="button" role="radio" data-v="purple" aria-checked="false">Červená a modrá</button>
           </div>
         </div>
         <div class="ctl ctl-grow">
@@ -113,16 +132,24 @@
           <span class="label" id="lbl-eyes">Dívá se</span>
           <div class="seg" role="radiogroup" aria-labelledby="lbl-eyes" id="eyes-seg">
             <button type="button" role="radio" data-v="normal" aria-checked="true">Běžné oko</button>
+            <button type="button" role="radio" data-v="anom" aria-checked="false">Posunuté zelené čípky</button>
             <button type="button" role="radio" data-v="protan" aria-checked="false">Bez červených čípků</button>
             <button type="button" role="radio" data-v="deutan" aria-checked="false">Bez zelených</button>
             <button type="button" role="radio" data-v="night" aria-checked="false">Oko v noci</button>
+          </div>
+        </div>
+        <div class="ctl ctl-grow" id="shift-ctl" hidden>
+          <label class="label" for="shift">Posun zelených čípků k červeným</label>
+          <div class="ctl-row">
+            <input type="range" id="shift" min="4" max="20" step="2" value="12">
+            <output class="val" id="shift-val" for="shift"></output>
           </div>
         </div>
       </div>
       <div class="fig-status">
         <p class="status" id="status" aria-live="polite"></p>
       </div>
-      <figcaption class="fig-caption">Zjednodušený model. Křivky citlivosti jsou vyhlazené a všechny tři nakreslené stejně vysoké. Barvy na obrazovce jsou jen přibližné, protože displej čisté barvy spektra zobrazit neumí. Pohled barvoslepého oka je výpočet podle běžně používaného postupu, ne něčí skutečný zážitek.</figcaption>
+      <figcaption class="fig-caption">Tečky na svislé čáře ukazují, jak silně na vybrané světlo odpoví každý druh čípku, stejně jako sloupce vpravo. U směsi dvou světel ukazují plné tečky, kolik přidá které světlo, a prázdné kroužky plnou citlivost čípku. Sloupce vpravo jsou součet. Zjednodušený model: křivky citlivosti jsou vyhlazené a všechny nakreslené stejně vysoké. Barvy na obrazovce jsou jen přibližné, protože displej čisté barvy spektra zobrazit neumí. Pohled barvoslepého oka je výpočet podle běžně používaného postupu, ne něčí skutečný zážitek.</figcaption>
     </figure>
 
     <section class="sec" aria-labelledby="h-cipky">
@@ -145,14 +172,15 @@
     <section class="sec" aria-labelledby="h-michani">
       <div class="prose">
         <h2 id="h-michani">Proč jde žlutou namíchat</h2>
-        <p>Žluté světlo ze spektra, třeba z pouliční sodíkové lampy, dráždí červené a zelené čípky zhruba stejně a modré vůbec. Mozek z toho poměru usoudí: žlutá.</p>
+        <p>Žluté světlo ze spektra, třeba z pouliční sodíkové lampy, dráždí červené čípky výrazně silněji než zelené a modré vůbec. Mozek z toho poměru usoudí: žlutá. Kdyby se červené a zelené čípky ozvaly stejně silně, viděli bychom žlutozelenou.</p>
         <p>Stejný poměr se ale dá vyrobit jinak. Posvítíte do oka zároveň červeným a zeleným světlem. Červené podráždí hlavně červené čípky, zelené hlavně zelené, a když je správně vyvážíte, odpovědí čípky stejně jako na čistou žlutou. Oko ten rozdíl nemá jak poznat. Žluté světlo tam není, a přesto ho vidíte.</p>
         <p>Na tomhle klamu stojí každý <a href="../../technika/lcd-oled/">displej</a>. Má jen tři barvy bodů a jejich mícháním dráždí čípky ve stejných poměrech jako skutečné barvy. Kdybychom měli druhy čípků čtyři, tři barvy by na obrazovku nestačily.</p>
-        <p>Některé barvy ve spektru dokonce vůbec nejsou. Purpurová vznikne, když se ozvou červené a modré čípky a zelené mlčí. To žádná jedna vlnová délka nedokáže, jen směs z obou konců spektra.</p>
+        <p>Některé barvy ve spektru dokonce vůbec nejsou. Purpurová vznikne, když se ozvou červené a modré čípky a zelené mlčí. To žádná jedna vlnová délka nedokáže: kde ve spektru světlo dráždí modré čípky, tam se vždycky ozvou i zelené. Purpurovou dá jen směs z obou konců spektra.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
-        <p>Přepněte světlo na Červená a zelená dohromady a hýbejte poměrem. Vpravo se objeví druhý vzorek: čistá barva spektra, na kterou by čípky odpověděly stejně. Kolem poloviny jsou obě žluté.</p>
+        <p>Přepněte světlo na Červená a zelená a hýbejte poměrem. Tečky na obou čarách ukazují, kolik které světlo přidá, a přerušovaná čára, kterou čistou barvu spektra směs napodobí. Kolem poloviny je to žlutá.</p>
+        <p>Pak zvolte Červená a modrá. Zelené čípky skoro mlčí a přerušovaná čára zmizí: takovou barvu ve spektru nenajdete.</p>
       </aside>
     </section>
 
@@ -161,13 +189,55 @@
         <h2 id="h-barvoslepost">Když jeden druh chybí</h2>
         <p>Asi každý dvanáctý muž má červené nebo zelené čípky pozměněné, nebo mu jeden z těch druhů chybí úplně. Říká se tomu barvoslepost, i když barvy takový člověk vidí. Jen jich rozliší míň.</p>
         <p>Se dvěma druhy čípků místo tří zbude oku jediné porovnání: modré proti těm druhým. Všechno od zelené po červenou pak dráždí zbylý čípek podobně a splývá do odstínů žluté a hnědé. Zralá a nezralá jahoda, červená a zelená na semaforu nebo kabely v zásuvce se liší jen světlostí.</p>
+        <p>Častěji ale čípek nechybí. Je jen posunutý: jeho citlivost leží blíž té druhé, takže se odpovědi červených a zelených čípků liší míň než obvykle. Nejběžnější jsou posunuté zelené čípky, mají je asi čtyři až pět mužů ze sta. Barvy vidí, jen méně výrazně, a pletou si hlavně bledé a tmavé odstíny mezi zelenou a červenou. Oční lékař to pozná na přístroji zvaném anomaloskop. Člověk v něm míchá červené a zelené světlo tak, aby vypadalo stejně jako žluté. S posunutými zelenými čípky musí přidat víc zelené než ostatní.</p>
         <p>Že to postihuje hlavně muže, je dané dědičností. Geny pro červený a zelený čípek leží na chromozomu X a <a href="../dedicnost/">dědí se</a> jinak než většina ostatních. Žena má dva, a když je jeden vadný, zaskočí druhý. Muž má jen jeden.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
         <p>Přepněte na oko Bez červených čípků a sledujte pruh spektra nahoře. Zelená, žlutá a oranžová splynou, červený konec ztmavne. Pak jezděte posuvníkem mezi 540 a 620: vzorek barvy se skoro nemění.</p>
+        <p>Zvolte Posunuté zelené čípky a posouvejte jejich křivku. Čím blíž je červené, tím víc barvy blednou. Se světlem Červená a zelená status ukáže, jak jinak směs vidí takové oko než běžné.</p>
         <span class="label">Na okraj</span>
         <p>Semafory mají kvůli tomu barvy vždycky ve stejném pořadí a zelená na nich bývá schválně trochu do modra.</p>
+      </aside>
+    </section>
+
+    <figure class="fig" id="obr2">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 2</b> Číslo z teček</p>
+        <span class="label">Vidíte číslo? Pak přepněte, kdo se dívá</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="plate" viewBox="0 0 320 320" role="img" aria-label="Kruh z barevných teček, ve kterém je číslo poskládané z teček jiné barvy"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-peye">Dívá se</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-peye" id="peye-seg">
+            <button type="button" role="radio" data-v="normal" aria-checked="true">Běžné oko</button>
+            <button type="button" role="radio" data-v="protan" aria-checked="false">Bez červených čípků</button>
+            <button type="button" role="radio" data-v="deutan" aria-checked="false">Bez zelených</button>
+          </div>
+        </div>
+        <button type="button" class="btn ghost" id="reveal" aria-pressed="false">Prozradit číslo</button>
+        <button type="button" class="btn" id="another">Jiné číslo</button>
+      </div>
+      <div class="fig-status">
+        <p class="status" id="p-status" aria-live="polite"></p>
+      </div>
+      <figcaption class="fig-caption">Tečky čísla a pozadí se liší jen tím, jak dráždí červené a zelené čípky. Jejich světlost se mění náhodně, aby číslo nešlo poznat podle toho, že je tmavší. Obrázek není lékařský test: každá obrazovka ukazuje barvy trochu jinak.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-tecky">
+      <div class="prose">
+        <h2 id="h-tecky">Test z barevných teček</h2>
+        <p>Barvoslepost se nejčastěji zjišťuje na tabulkách z barevných teček. Vymyslel je v roce 1917 japonský oční lékař Šinobu Išihara. Číslo i pozadí jsou poskládané z teček podobné světlosti, ale jiného odstínu. Číslo se liší od pozadí jen poměrem, v jakém dráždí červené a zelené čípky.</p>
+        <p>Běžné oko ho vidí na první pohled. Komu rozdíl mezi červenými a zelenými čípky chybí, tomu tečky splynou do jednolité skvrnité plochy. <span class="hl">Zdravý pozorovatel tu čte informaci, kterou barvoslepý vůbec nedostane, a ne naopak.</span> Existují i tabulky opačné, s číslem, které vidí jen barvoslepí, protože ho poskládá rozdíl ve světlosti, který běžnému oku přebije barva.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Přepněte na Bez červených čípků a pak Bez zelených. Číslo zmizí, zůstanou jen tečky různé světlosti.</p>
+        <span class="label">Na okraj</span>
+        <p>Kdo na obrázku číslo nevidí, nemusí být barvoslepý. Barvocit spolehlivě vyšetří oční lékař na tištěných tabulkách při denním světle.</p>
       </aside>
     </section>
 
@@ -186,11 +256,43 @@
       </aside>
     </section>
 
+    <figure class="fig" id="obr3">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 3</b> Vlajka, která tam není</p>
+        <span class="label">Dvacet sekund se dívejte na tečku, pak nehýbejte očima</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="flag" viewBox="0 0 300 200" role="img" aria-label="Vlajka v opačných barvách, než má česká: nahoře černá, dole azurová, u žerdi žlutý klín, uprostřed tečka k upření pohledu"></svg>
+      </div>
+      <div class="fig-controls">
+        <button type="button" class="btn" id="stare">Spustit</button>
+      </div>
+      <div class="fig-status">
+        <p class="status" id="f-status" aria-live="polite"></p>
+      </div>
+      <figcaption class="fig-caption">Po dvaceti sekundách se vlajka vymění za bílou plochu se stejnou tečkou. Nejlépe to funguje s jasnou obrazovkou a bez pohybu očí. Kdo bliká nebo uhne pohledem, paobraz rozmaže.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-paobraz">
+      <div class="prose">
+        <h2 id="h-paobraz">Barvy, které tam nejsou</h2>
+        <p>Když se půl minuty díváte na jednu barvu, čípky, které na ni reagují nejvíc, se unaví. Barvivo, které v nich zachytává světlo, se spotřebovává rychleji, než se stačí obnovit, a čípky odpovídají slaběji. Přenesete-li pak pohled na bílou plochu, odpočaté čípky se ozvou silněji než unavené a uvidíte opačnou barvu. Říká se tomu paobraz.</p>
+        <p>„Opačná barva“ tu má přesný smysl. Odpovědi tří druhů čípků se už v sítnici přepočítávají na tři porovnání: červená proti zelené, modrá proti žluté a světlá proti tmavé. Do mozku tak nejdou tři čísla za čípky, ale tři rozdíly. Proto si umíme představit žlutozelenou nebo červenomodrou, ale žádnou „červenozelenou“ ani „modrožlutou“. Ty dvojice leží na opačných koncích téhož porovnání a vylučují se. Tuhle myšlenku vyslovil v 70. letech 19. století německý fyziolog Ewald Hering.</p>
+        <p><span class="hl">Paobraz azurové je proto červený, žluté modrý a černé bílý.</span> Vlajka v obrázku má barvy české vlajky převrácené, a na bílé ploše se na chvíli objeví ta pravá.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Spusťte Obr. 3 a dvacet sekund se dívejte jen na tečku. Až vlajka zmizí, nehýbejte očima. Paobraz vydrží pár sekund a s každým mrknutím slábne.</p>
+        <span class="label">Na okraj</span>
+        <p>Jedno z vysvětlení, proč chirurgové nosí zelené nebo modrozelené oblečení: kdo se dlouho dívá na červenou krev, viděl by na bílých pláštích kolem zelené skvrny. Na zelené látce se ztratí.</p>
+      </aside>
+    </section>
+
     <section class="sec" aria-labelledby="h-jini">
       <div class="prose">
         <h2 id="h-jini">Jak to mají jiní</h2>
         <p>Tři druhy čípků jsou mezi savci výjimka. Psi, kočky i koně mají jen dva a vidí svět podobně jako člověk bez červených čípků. Červený míček na zelené trávě pes hledá čichem, ne očima.</p>
-        <p>Třetí druh čípku získali až předkové opic a lidí, nejspíš proto, že se jim hodilo rozeznat zralé plody a mladé listy mezi zelení.</p>
+        <p>Třetí druh čípku získali až předkové lidoopů a opic Starého světa, nejspíš proto, že se jim hodilo rozeznat zralé plody a mladé listy mezi zelení. Většina opic z Ameriky ho nemá.</p>
         <p>Ptáci, plazi a mnoho ryb mají druhy čtyři a vidí i ultrafialové světlo. Květy, které nám připadají jednobarevné, mají pro včely a ptáky kresbu. Jaké to je, vidět o jednu základní barvu víc, si představit neumíme, stejně jako si barvoslepý neumí představit rozdíl mezi červenou a zelenou.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
@@ -219,15 +321,30 @@
       return n;
     }
     const $ = (id) => document.getElementById(id);
-    const svg = $("spec");
 
-    /* ---------- model ---------- */
+    /* ---------- barvy: převod mezi obrazovkou a čípky ---------- */
+    const toLin = (v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    const toSrgb = (v) => { v = Math.max(0, Math.min(1, v)); return v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055; };
+    const TO_LMS = [[17.8824, 43.5161, 4.11935], [3.45565, 27.1554, 3.86714], [0.0299566, 0.184309, 1.46709]];
+    const TO_RGB = [[0.0809444, -0.130504, 0.116721], [-0.0102485, 0.0540193, -0.113615], [-0.000365297, -0.00412161, 0.693511]];
+    const mul = (M, v) => M.map((row) => row[0] * v[0] + row[1] * v[1] + row[2] * v[2]);
+    // oko se dvěma druhy čípků: chybějící odpověď se dopočítá ze zbylých dvou (lineární RGB → lineární RGB)
+    function dichromat(lms, kind) {
+      const [L, M, S] = lms;
+      return mul(TO_RGB, kind === "protan" ? [2.02344 * M - 2.52581 * S, M, S] : [L, 0.494207 * L + 1.24827 * S, S]);
+    }
+    const css = (c) => `rgb(${c.map((v) => Math.round(Math.max(0, Math.min(1, v)) * 255)).join(" ")})`;
+
+    /* ---------- Obr. 1: model ---------- */
+    const svg = $("spec");
     // vyhlazené křivky citlivosti: [vrchol v nm, šířka]
     const SENS = { s: [440, 24], m: [540, 40], l: [566, 44], r: [500, 38] };
-    const sens = (k, nm) => Math.exp(-0.5 * ((nm - SENS[k][0]) / SENS[k][1]) ** 2);
-    const RED = 630, GREEN = 532;                    // dvě světla, která se míchají
+    const GAP = SENS.l[0] - SENS.m[0];               // jak daleko jsou od sebe běžné zelené a červené čípky
+    const s = { light: "one", nm: 580, mix: 50, purple: 50, eyes: "normal", shift: 12 };
+    const shiftNow = () => (s.eyes === "anom" ? s.shift : 0);
+    const sens = (k, nm, shift = shiftNow()) => Math.exp(-0.5 * ((nm - SENS[k][0] - (k === "m" ? shift : 0)) / SENS[k][1]) ** 2);
+    const RED = 630, GREEN = 532, BLUE = 450;        // světla, která se míchají
     const RED_GAIN = 3;                              // oko je na 630 nm málo citlivé, červené světlo proto svítí silněji
-    const s = { light: "one", nm: 580, mix: 50, eyes: "normal" };
 
     // přibližná barva obrazovky pro vlnovou délku
     function rgbOf(nm) {
@@ -241,130 +358,293 @@
       const fade = nm < 420 ? 0.3 + (0.7 * (nm - 380)) / 40 : nm > 660 ? 0.35 + (0.65 * (700 - nm)) / 40 : 1;
       return [r, g, b].map((v) => Math.max(0, Math.min(1, v * fade)) ** 0.8);
     }
-    const toLin = (v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-    const toSrgb = (v) => { v = Math.max(0, Math.min(1, v)); return v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055; };
-    // převod barvy obrazovky na odpovědi čípků a zpět
-    const TO_LMS = [[17.8824, 43.5161, 4.11935], [3.45565, 27.1554, 3.86714], [0.0299566, 0.184309, 1.46709]];
-    const TO_RGB = [[0.0809444, -0.130504, 0.116721], [-0.0102485, 0.0540193, -0.113615], [-0.000365297, -0.00412161, 0.693511]];
-    const mul = (M, v) => M.map((row) => row[0] * v[0] + row[1] * v[1] + row[2] * v[2]);
-    // jak danou barvu obrazovky vidí vybrané oko; nm slouží jen pro noční vidění
-    function seen(rgb, nmList) {
+    // jak danou barvu obrazovky vidí vybrané oko; seznam světel slouží jen pro noční vidění
+    function seen(rgb, list) {
       if (s.eyes === "normal") return rgb;
       if (s.eyes === "night") {
-        const v = 0.92 * Math.max(...nmList.map(([nm, w]) => sens("r", nm) * w)) ** 0.7;
+        const v = 0.92 * Math.min(1, list.reduce((a, x) => a + sens("r", x.nm) * x.share, 0)) ** 0.7;
         return [v * 0.86, v * 0.92, v];
       }
-      const [L, M, S] = mul(TO_LMS, rgb.map(toLin));
-      const lms = s.eyes === "protan" ? [2.02344 * M - 2.52581 * S, M, S] : [L, 0.494207 * L + 1.24827 * S, S];
-      return mul(TO_RGB, lms).map(toSrgb);
+      const lin = rgb.map(toLin), lms = mul(TO_LMS, lin);
+      if (s.eyes === "anom") {
+        // posunuté čípky jsou mezi běžným okem a okem bez zelených čípků
+        const d = dichromat(lms, "deutan"), q = s.shift / GAP;
+        return lin.map((v, i) => toSrgb(v * (1 - q) + d[i] * q));
+      }
+      return dichromat(lms, s.eyes).map(toSrgb);
     }
-    const css = (c) => `rgb(${c.map((v) => Math.round(Math.max(0, Math.min(1, v)) * 255)).join(" ")})`;
-    // světlo jako seznam [vlnová délka, síla]
-    const lights = () => (s.light === "one" ? [[s.nm, 1, 1]] : [[RED, (RED_GAIN * s.mix) / 100, s.mix / 100], [GREEN, 1 - s.mix / 100, 1 - s.mix / 100]]);
+    // světlo jako seznam: vlnová délka, síla pro čípky a podíl ve směsi
+    function lights() {
+      if (s.light === "one") return [{ nm: s.nm, power: 1, share: 1 }];
+      if (s.light === "mix") return [{ nm: GREEN, power: 1 - s.mix / 100, share: 1 - s.mix / 100 }, { nm: RED, power: (RED_GAIN * s.mix) / 100, share: s.mix / 100 }];
+      return [{ nm: BLUE, power: 1 - s.purple / 100, share: 1 - s.purple / 100 }, { nm: RED, power: s.purple / 100, share: s.purple / 100 }];
+    }
     // čistá barva spektra, na kterou červené a zelené čípky odpoví ve stejném poměru jako na směs
-    function twin(resp) {
-      const want = resp.l / (resp.l + resp.m);
+    function twin(list, shift) {
+      const ratio = (nm) => sens("l", nm, shift) / (sens("l", nm, shift) + sens("m", nm, shift));
+      const l = list.reduce((a, x) => a + sens("l", x.nm, shift) * x.power, 0), m = list.reduce((a, x) => a + sens("m", x.nm, shift) * x.power, 0);
+      const want = l / (l + m);
       let lo = GREEN, hi = RED;
-      for (let i = 0; i < 30; i++) { const mid = (lo + hi) / 2; if (sens("l", mid) / (sens("l", mid) + sens("m", mid)) < want) lo = mid; else hi = mid; }
+      for (let i = 0; i < 30; i++) { const mid = (lo + hi) / 2; if (ratio(mid) < want) lo = mid; else hi = mid; }
       return Math.round((lo + hi) / 2);
     }
+    // barva směsi dvou světel na obrazovce
+    function mixRgb(list) {
+      const lin = [0, 1, 2].map((i) => list.reduce((a, x) => a + toLin(rgbOf(x.nm)[i]) * x.share, 0));
+      const top = Math.max(...lin) || 1;
+      return lin.map((v) => toSrgb(v / top));
+    }
 
-    /* ---------- scéna ---------- */
+    /* ---------- Obr. 1: scéna ---------- */
     const X0 = 36, W = 648, LO = 380, HI = 700, BASE = 268, TOP = 108;
     const X = (nm) => X0 + ((nm - LO) / (HI - LO)) * W;
+    const Y = (v) => BASE - v * (BASE - TOP);
     el("text", { x: X0, y: 18, class: "cap" }, svg).textContent = "SPEKTRUM, JAK HO VIDÍ VYBRANÉ OKO";
     const strip = [];
     for (let nm = LO; nm < HI; nm += 4) strip.push([nm, el("rect", { x: X(nm).toFixed(1), y: 26, width: (W / 80 + 0.6).toFixed(1), height: 40 }, svg)]);
     el("rect", { x: X0, y: 26, width: W, height: 40, fill: "none", stroke: "var(--rule)" }, svg);
-    el("text", { x: X0, y: 96, class: "cap" }, svg).textContent = "CITLIVOST ČIDEL";
+    el("text", { x: X0, y: 100, class: "cap" }, svg).textContent = "CITLIVOST ČIDEL";
     el("line", { x1: X0, y1: BASE, x2: X0 + W, y2: BASE, stroke: "var(--rule)" }, svg);
     for (let nm = 400; nm <= 700; nm += 50) {
       el("line", { x1: X(nm), y1: BASE, x2: X(nm), y2: BASE + 5, stroke: "var(--rule)" }, svg);
       el("text", { x: X(nm), y: BASE + 20, class: "axis" }, svg).textContent = nm;
     }
-    el("text", { x: X0 + W, y: BASE + 38, class: "axis", style: "text-anchor:end" }, svg).textContent = "vlnová délka v nanometrech";
+    el("text", { x: X0 + W, y: BASE + 40, class: "axis", style: "text-anchor:end" }, svg).textContent = "vlnová délka v nm";
+    const legend = el("text", { x: X0, y: BASE + 40, class: "legend-t" }, svg);
     const COLORS = { s: "#3b5bdb", m: "#2f9e44", l: "#e03131", r: "#868e96" };
+    const path = (k, shift) => { const pts = []; for (let nm = LO; nm <= HI; nm += 4) pts.push(`${X(nm).toFixed(1)} ${Y(sens(k, nm, shift)).toFixed(1)}`); return "M" + pts.join("L"); };
+    const ghostM = el("path", { d: path("m", 0), class: "curve ghost", stroke: COLORS.m }, svg);
     const curves = {};
-    Object.keys(SENS).forEach((k) => {
-      const pts = [];
-      for (let nm = LO; nm <= HI; nm += 4) pts.push(`${X(nm).toFixed(1)} ${(BASE - sens(k, nm) * (BASE - TOP)).toFixed(1)}`);
-      curves[k] = el("path", { d: "M" + pts.join("L"), class: "curve", stroke: COLORS[k] }, svg);
+    Object.keys(SENS).forEach((k) => { curves[k] = el("path", { d: path(k, 0), class: "curve", stroke: COLORS[k] }, svg); });
+    // jména křivek na jejich bocích, kde se nepřekrývají
+    const NAMES = { s: ["modré", 410, "end"], m: ["zelené", 495, "end"], l: ["červené", 655, "start"], r: ["tyčinky", 500, "middle"] };
+    const names = {};
+    Object.keys(NAMES).forEach((k) => {
+      const [t, nm, anchor] = NAMES[k];
+      names[k] = el("text", { x: X(nm) + (anchor === "end" ? -7 : anchor === "start" ? 7 : 0), y: k === "r" ? TOP - 6 : Y(sens(k, nm, 0)) - 4, class: "cname", fill: COLORS[k], style: `text-anchor:${anchor}` }, svg);
+      names[k].textContent = t;
     });
-    const markG = el("g", {}, svg);
+    const twinG = el("g", {}, svg), markG = el("g", {}, svg);
+    const mobile = matchMedia("(max-width: 46rem)");
 
+    let said = "";
     function render() {
-      const eyes = s.eyes, list = lights();
-      strip.forEach(([nm, r]) => r.setAttribute("fill", css(seen(rgbOf(nm + 2), [[nm + 2, 1]]))));
+      const eyes = s.eyes, list = lights(), shift = shiftNow();
+      strip.forEach(([nm, r]) => r.setAttribute("fill", css(seen(rgbOf(nm + 2), [{ nm: nm + 2, share: 1 }]))));
       const active = eyes === "night" ? ["r"] : ["s", "m", "l"].filter((k) => !(eyes === "protan" && k === "l") && !(eyes === "deutan" && k === "m"));
-      Object.keys(curves).forEach((k) => curves[k].classList.toggle("off", !active.includes(k)));
-      const resp = {};
-      Object.keys(SENS).forEach((k) => { resp[k] = list.reduce((a, [nm, w]) => a + sens(k, nm) * w, 0); });
-      const over = Math.max(1, ...Object.values(resp));
-      Object.keys(resp).forEach((k) => { resp[k] /= over; });
+      curves.m.setAttribute("d", path("m", shift));
+      ghostM.setAttribute("display", shift ? "" : "none");
+      names.m.setAttribute("x", X(495 + shift) - 7);
+      Object.keys(curves).forEach((k) => { curves[k].classList.toggle("off", !active.includes(k)); names[k].classList.toggle("off", !active.includes(k)); });
+
+      // odpovědi čípků na celé světlo; nejsilnější je nanejvýš 100 %
+      const raw = {};
+      Object.keys(SENS).forEach((k) => { raw[k] = list.reduce((a, x) => a + sens(k, x.nm) * x.power, 0); });
+      const over = Math.max(1, ...Object.values(raw));
       Object.keys(SENS).forEach((k) => {
-        const on = active.includes(k), v = on ? resp[k] : 0;
+        const on = active.includes(k), v = on ? raw[k] / over : 0;
         $("row-" + k).classList.toggle("off", !on);
         $("bar-" + k).style.width = `${Math.min(100, v * 100).toFixed(0)}%`;
         $("val-" + k).textContent = on ? `${Math.round(v * 100)} %` : "—";
       });
 
+      // svislé čáry světel, tečky s odpovědí čípků a u směsi kroužky s plnou citlivostí
+      const single = s.light === "one", big = mobile.matches;
       markG.textContent = "";
-      list.forEach(([nm, , w]) => {
-        if (w <= 0) return;
-        el("line", { x1: X(nm), y1: 22, x2: X(nm), y2: BASE, class: "mark", "stroke-opacity": (0.35 + 0.65 * w).toFixed(2) }, markG);
-        active.forEach((k) => el("circle", { cx: X(nm), cy: BASE - sens(k, nm) * (BASE - TOP), r: 5, fill: COLORS[k], class: "mark-dot" }, markG));
-        el("text", { x: Math.max(X0 + 26, Math.min(X0 + W - 26, X(nm))), y: 84, class: "mark-tag" }, markG).textContent = `${nm} nm`;
+      list.forEach((x) => {
+        if (x.share <= 0) return;
+        const cx = X(x.nm);
+        el("line", { x1: cx, y1: 22, x2: cx, y2: BASE, class: "mark", "stroke-width": single ? 1.5 : (1 + 3 * x.share).toFixed(1) }, markG);
+        const labels = [];
+        active.forEach((k) => {
+          const full = sens(k, x.nm), part = (full * x.power) / over;
+          if (!single && full > 0.02) el("circle", { cx, cy: Y(full), r: 5, class: "mark-ring", stroke: COLORS[k] }, markG);
+          el("circle", { cx, cy: Y(part), r: 5.5, fill: COLORS[k], class: "mark-dot" }, markG);
+          if (part >= 0.02) labels.push({ y: Y(part), t: `${Math.round(part * 100)}`, k });
+        });
+        // čísla u teček rozestoupit, aby se nepřekrývala
+        labels.sort((a, b) => a.y - b.y);
+        const step = big ? 17 : 12;
+        for (let i = 1; i < labels.length; i++) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + step);
+        const left = cx > X0 + W - 60;
+        labels.forEach((lb) => el("text", { x: cx + (left ? -10 : 10), y: lb.y + 4, class: "dot-num", fill: COLORS[lb.k], style: left ? "text-anchor:end" : "" }, markG).textContent = lb.t);
+        const tag = single ? `${x.nm} nm` : `${x.nm} nm · ${Math.round(x.share * 100)} %`;
+        const half = (tag.length * (big ? 9.6 : 7)) / 2 + 4;
+        el("text", { x: Math.max(X0 + half, Math.min(X0 + W - half, cx)), y: 84, class: "mark-tag" }, markG).textContent = tag;
       });
 
-      const mix = s.light === "mix";
-      $("knob-label").textContent = mix ? "Poměr červené a zelené" : "Vlnová délka";
-      $("knob-val").textContent = mix ? `${s.mix} : ${100 - s.mix}` : `${s.nm} nm`;
-      const match = mix && s.mix > 0 && s.mix < 100 ? twin(resp) : null;
-      // směs vypadá přesně jako čistá barva, na kterou čípky odpovídají stejně
-      const shown = mix ? (match || (s.mix ? RED : GREEN)) : s.nm;
-      $("sw-a").style.background = css(seen(rgbOf(shown), mix ? list : [[shown, 1]]));
-      $("sw-a-n").textContent = mix ? "Směs" : "Co vidíte";
+      const mix = s.light === "mix", purple = s.light === "purple", both = !single && list.every((x) => x.share > 0);
+      const trichromat = eyes === "normal" || eyes === "anom";
+      const match = mix && both && trichromat ? twin(list, shift) : null;
+      const normalMatch = match && shift ? twin(list, 0) : match;
+      twinG.textContent = "";
+      if (match) {
+        const tx = X(match), label = `vypadá jako ${match} nm`, half = (label.length * (big ? 9.6 : 7)) / 2 + 4;
+        el("line", { x1: tx, y1: 22, x2: tx, y2: BASE, class: "twin" }, twinG);
+        // popisek nad pruhem spektra, vpravo od nadpisu
+        el("text", { x: Math.max(X0 + (big ? 352 : 270) + half, Math.min(X0 + W - half, tx)), y: 15, class: "mark-tag" }, twinG).textContent = label;
+      }
+      legend.textContent = single ? "• tečka = jak silně se čípek ozve" : "• co přidá toto světlo   ○ plná citlivost";
+
+      $("knob-label").textContent = mix ? "Poměr červené a zelené" : purple ? "Poměr červené a modré" : "Vlnová délka";
+      $("knob-val").textContent = mix ? `${s.mix} : ${100 - s.mix}` : purple ? `${s.purple} : ${100 - s.purple}` : `${s.nm} nm`;
+      $("shift-ctl").hidden = eyes !== "anom";
+      $("shift-val").textContent = `o ${s.shift} nm`;
+      $("cones-note").textContent = single ? "Sloupce jsou stejná čísla jako tečky v grafu." : "Sloupce jsou součet obou světel, nejsilnější odpověď je 100 %.";
+
+      // vzorky: co oko vidí a čistá barva spektra se stejnou odpovědí čípků
+      let a;
+      if (single) a = rgbOf(s.nm);
+      else if (mix) a = match ? rgbOf(match) : mixRgb(list);
+      else a = mixRgb(list);
+      $("sw-a").style.background = css(seen(a, list));
+      $("sw-a-n").textContent = single ? `Co vidíte · ${s.nm} nm` : "Směs";
       $("sw-b-box").hidden = !match;
       if (match) {
-        $("sw-b").style.background = css(seen(rgbOf(match), [[match, 1]]));
+        $("sw-b").style.background = css(seen(rgbOf(match), [{ nm: match, share: 1 }]));
         $("sw-b-n").textContent = `Čistých ${match} nm`;
       }
 
       let status;
       if (eyes === "night") status = "<strong>V šeru pracují jen tyčinky.</strong> Jsou jednoho druhu, takže nemají s čím porovnávat a barvu nepoznají. Hlásí jen, jak moc světla přišlo. Nejcitlivější jsou na modrozelenou, červenou skoro nevidí.";
-      else if (eyes !== "normal") {
+      else if (eyes === "protan" || eyes === "deutan") {
         const gone = eyes === "protan" ? "červené" : "zelené";
-        status = `<strong>Chybí ${gone} čípky.</strong> Oku zbylo jediné porovnání: modré čípky proti těm druhým. Barvy od zelené po červenou dráždí zbylý čípek podobně a liší se už jen světlostí${eyes === "protan" ? ", a červený konec spektra je navíc tmavý" : ""}.`;
-      } else if (match) status = `<strong>Dvě světla, jedna barva.</strong> Směs červeného a zeleného světla podráždí červené a zelené čípky ve stejném poměru jako čisté světlo o vlnové délce ${match} nm. Oko mezi nimi nepozná rozdíl.`;
-      else if (mix) status = "<strong>Jen jedno ze dvou světel.</strong> Přidejte druhé a sledujte, jak se poměr odpovědí čípků posouvá.";
+        status = `<strong>Chybí ${gone} čípky.</strong> Oku zbylo jediné porovnání: modré čípky proti těm druhým. Barvy od zelené po červenou dráždí zbylý čípek podobně a liší se už jen světlostí${eyes === "protan" ? ", a červený konec spektra je navíc tmavý" : ""}.` +
+          (mix ? " Směs červené a zelené proto takové oko nerozezná od čisté žluté, zelené ani oranžové, když se srovná jas." : "");
+      } else if (eyes === "anom" && match) {
+        status = `<strong>Posunuté zelené čípky.</strong> Tahle směs vypadá pro takové oko jako čistých ${match} nm, běžnému oku jako ${normalMatch} nm. ` +
+          (match > normalMatch ? "Vidí ji červenější, a aby mu vypadala jako běžnému oku, musí přidat zelenou. Přesně tohle měří anomaloskop." : "Rozdíl je zatím malý.");
+      } else if (eyes === "anom") status = `<strong>Posunuté zelené čípky.</strong> Křivka zelených čípků je o ${s.shift} nm blíž červeným. Jejich odpovědi se liší míň, a tak jsou zelená, žlutá a červená méně výrazné a víc si podobají. Takové čípky má asi pět mužů ze sta.`;
+      else if (purple && both) status = "<strong>Purpurová.</strong> Ozvaly se modré a červené čípky, zelené skoro mlčí. Tenhle poměr nevyvolá žádná jedna barva spektra: kde světlo dráždí modré čípky, tam se ozvou i zelené. Proto ve spektru purpurová chybí.";
+      else if (match) status = `<strong>Dvě světla, jedna barva.</strong> Směs červeného a zeleného světla podráždí červené a zelené čípky ve stejném poměru jako čisté světlo o vlnové délce ${match} nm. Oko mezi nimi nepozná rozdíl.`;
+      else if (!single) status = "<strong>Jen jedno ze dvou světel.</strong> Přidejte druhé a sledujte, jak se tečky na čarách a sloupce vpravo posouvají.";
       else if (s.nm < 450) status = "<strong>Fialová a modrá.</strong> Ozývají se hlavně modré čípky. Je jich nejmíň ze všech tří druhů, a tak modrá vypadá tmavší než stejně silná zelená.";
       else if (s.nm < 500) status = "<strong>Modrá až modrozelená.</strong> Modré čípky slábnou a zelené s červenými nastupují. Barvu určuje poměr všech tří.";
-      else if (s.nm < 560) status = "<strong>Zelená.</strong> Nejvíc odpovídají zelené čípky, červené jen o něco míň. Jejich křivky se skoro kryjí, a přesto ten malý rozdíl stačí.";
-      else if (s.nm < 600) status = "<strong>Žlutá.</strong> Červené a zelené čípky odpovídají skoro stejně, modré mlčí. Tenhle poměr mozek čte jako žlutou.";
+      else if (s.nm < 545) status = "<strong>Zelená.</strong> Nejvíc odpovídají zelené čípky, červené jen o něco míň. Jejich křivky se skoro kryjí, a přesto ten malý rozdíl stačí.";
+      else if (s.nm < 560) status = "<strong>Žlutozelená.</strong> Červené a zelené čípky odpovídají skoro stejně silně, modré mlčí. Tady se jejich křivky kříží.";
+      else if (s.nm < 600) status = "<strong>Žlutá.</strong> Červené čípky odpovídají znatelně silněji než zelené, modré mlčí. Tenhle poměr mozek čte jako žlutou.";
       else status = "<strong>Oranžová a červená.</strong> Zelené čípky slábnou rychleji než červené. Čím větší je mezi nimi rozdíl, tím červenější barvu vidíte, a celkově jí ubývá na jasu.";
-      $("status").innerHTML = status;
+      if (status !== said) { said = status; $("status").innerHTML = status; }
     }
 
-    /* ---------- ovládání ---------- */
-    function bindSeg(id, apply) {
+    /* ---------- Obr. 1: ovládání ---------- */
+    function bindSeg(id, apply, after) {
       const seg = $(id);
       seg.addEventListener("click", (e) => {
         const b = e.target.closest("button[data-v]");
         if (!b) return;
         seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
         apply(b.dataset.v);
-        render();
+        after();
       });
     }
     const knob = $("knob");
     bindSeg("light-seg", (v) => {
       s.light = v;
-      const mix = v === "mix";
-      knob.min = mix ? 0 : 400; knob.max = mix ? 100 : 690; knob.step = 5; knob.value = mix ? s.mix : s.nm;
-    });
-    bindSeg("eyes-seg", (v) => { s.eyes = v; });
-    knob.addEventListener("input", () => { if (s.light === "mix") s.mix = Number(knob.value); else s.nm = Number(knob.value); render(); });
+      const one = v === "one";
+      knob.min = one ? 400 : 0; knob.max = one ? 690 : 100; knob.step = 5; knob.value = one ? s.nm : s[v];
+    }, render);
+    bindSeg("eyes-seg", (v) => { s.eyes = v; }, render);
+    knob.addEventListener("input", () => { if (s.light === "one") s.nm = Number(knob.value); else s[s.light] = Number(knob.value); render(); });
+    $("shift").addEventListener("input", (e) => { s.shift = Number(e.target.value); render(); });
+    mobile.addEventListener("change", render);
     render();
+
+    /* ---------- Obr. 2: číslo z teček ---------- */
+    const plate = $("plate");
+    const NUMBERS = [74, 12, 29, 45, 57, 6, 8, 15, 3, 42, 97, 26];
+    const p = { eyes: "normal", n: 0, reveal: false, dots: [] };
+    function rng(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+    // tečky číslice a pozadí: stejná světlost, liší se jen poměrem odpovědí červených a zelených čípků
+    const BASE_LMS = mul(TO_LMS, [0.62, 0.55, 0.36].map(toLin));
+    function buildPlate() {
+      const number = NUMBERS[p.n % NUMBERS.length], rand = rng(1000 + p.n * 7919);
+      // tvar čísla: vykreslit ho na skryté plátno a ptát se, které tečky padly dovnitř
+      const cv = document.createElement("canvas"); cv.width = cv.height = 320;
+      const cx = cv.getContext("2d");
+      cx.fillStyle = "#000"; cx.textAlign = "center"; cx.textBaseline = "middle";
+      cx.font = `800 ${number > 9 ? 190 : 240}px Archivo, "Arial Black", Arial, sans-serif`;
+      cx.fillText(String(number), 160, 172);
+      const mask = cx.getImageData(0, 0, 320, 320).data;
+      const inside = (x, y) => mask[(Math.round(y) * 320 + Math.round(x)) * 4 + 3] > 120;
+      // náhodné tečky různé velikosti, které se nepřekrývají
+      const dots = [], R = 148, cell = 20, grid = new Map();
+      const key = (x, y) => `${Math.floor(x / cell)},${Math.floor(y / cell)}`;
+      for (const [r0, tries] of [[7.2, 700], [6, 1600], [5, 3000], [4.1, 5000], [3.3, 7000], [2.6, 9000]]) {
+        for (let i = 0; i < tries; i++) {
+          const r = r0 * (0.9 + 0.2 * rand()), x = 160 + (rand() * 2 - 1) * R, y = 160 + (rand() * 2 - 1) * R;
+          if (Math.hypot(x - 160, y - 160) + r > R) continue;
+          let ok = true;
+          for (let gx = -1; gx <= 1 && ok; gx++) for (let gy = -1; gy <= 1 && ok; gy++) {
+            for (const d of grid.get(`${Math.floor(x / cell) + gx},${Math.floor(y / cell) + gy}`) || []) if (Math.hypot(d.x - x, d.y - y) < d.r + r + 1.1) { ok = false; break; }
+          }
+          if (!ok) continue;
+          // červené čípky číslo dráždí o kus víc a zelené o kus míň, pozadí naopak; jas f je náhodný
+          const fig = inside(x, y), sign = fig ? 1 : -1, a = 0.05 + 0.025 * rand(), f = 0.76 + 0.44 * rand();
+          const d = { x, y, r, fig, lms: [BASE_LMS[0] * (1 + sign * a) * f, BASE_LMS[1] * (1 - sign * a) * f, BASE_LMS[2] * f] };
+          dots.push(d);
+          const g = key(x, y); if (!grid.has(g)) grid.set(g, []); grid.get(g).push(d);
+        }
+      }
+      p.dots = dots; p.number = number;
+      plate.textContent = "";
+      el("circle", { cx: 160, cy: 160, r: R + 4, fill: "#efeadf", stroke: "var(--rule)" }, plate);
+      dots.forEach((d) => { d.node = el("circle", { cx: d.x.toFixed(1), cy: d.y.toFixed(1), r: d.r.toFixed(1) }, plate); });
+      paintPlate();
+    }
+    function paintPlate() {
+      p.dots.forEach((d) => {
+        const lin = p.eyes === "normal" ? mul(TO_RGB, d.lms) : dichromat(d.lms, p.eyes);
+        d.node.setAttribute("fill", css(lin.map(toSrgb)));
+        d.node.setAttribute("stroke", p.reveal && d.fig ? "#14181e" : "none");
+        d.node.setAttribute("stroke-width", "1.2");
+      });
+      $("reveal").setAttribute("aria-pressed", String(p.reveal));
+      $("reveal").textContent = p.reveal ? "Schovat číslo" : "Prozradit číslo";
+      const who = p.eyes === "protan" ? "bez červených čípků" : "bez zelených čípků";
+      $("p-status").innerHTML = p.reveal ? `<strong>Na talíři je číslo ${p.number}.</strong> Tečky, které ho tvoří, jsou teď obtažené.`
+        : p.eyes === "normal" ? "<strong>Vidíte číslo?</strong> Běžné oko ho rozezná podle toho, že jeho tečky dráždí červené čípky víc než zelené, a tečky pozadí naopak."
+        : `<strong>Takhle talíř vidí oko ${who}.</strong> Tečky čísla i pozadí se liší už jen světlostí, a ta je náhodná. Číslo zmizelo.`;
+    }
+    bindSeg("peye-seg", (v) => { p.eyes = v; }, paintPlate);
+    $("reveal").addEventListener("click", () => { p.reveal = !p.reveal; paintPlate(); });
+    $("another").addEventListener("click", () => { p.n++; p.reveal = false; buildPlate(); });
+    // písmo Archivo se může načíst až po prvním vykreslení; tvar čísla se pak spočítá znovu
+    buildPlate();
+    if (document.fonts) document.fonts.load('800 200px Archivo').then(buildPlate, () => {});
+
+    /* ---------- Obr. 3: paobraz ---------- */
+    const flag = $("flag");
+    const flagG = el("g", {}, flag);
+    el("rect", { x: 0, y: 0, width: 300, height: 100, fill: "#111111" }, flagG);
+    el("rect", { x: 0, y: 100, width: 300, height: 100, fill: "#00e0e0" }, flagG);
+    el("path", { d: "M0 0L150 100L0 200Z", fill: "#ffd200" }, flagG);
+    const blank = el("rect", { x: 0, y: 0, width: 300, height: 200, fill: "#ffffff", display: "none" }, flag);
+    el("rect", { x: 0.5, y: 0.5, width: 299, height: 199, fill: "none", stroke: "var(--rule)" }, flag);
+    const dot = el("circle", { cx: 150, cy: 100, r: 3.5, fill: "#7a7a7a", stroke: "#ffffff", "stroke-width": 1 }, flag);
+    const count = el("text", { x: 290, y: 22, class: "count", "text-anchor": "end", fill: "#ffffff", "aria-hidden": "true" }, flag);
+    let timer = null;
+    const STARE = 20, LOOK = 12;
+    function setFlag(phase, left) {
+      blank.setAttribute("display", phase === "look" ? "" : "none");
+      count.textContent = phase === "stare" ? String(left) : "";
+      $("stare").textContent = phase === "idle" || phase === "done" ? (phase === "done" ? "Znovu" : "Spustit") : "Zastavit";
+    }
+    function stop(phase) { clearInterval(timer); timer = null; setFlag(phase); }
+    $("stare").addEventListener("click", () => {
+      if (timer) { stop("idle"); $("f-status").innerHTML = "<strong>Zastaveno.</strong> Spusťte znovu a dvacet sekund se dívejte jen na tečku."; return; }
+      let left = STARE;
+      setFlag("stare", left);
+      $("f-status").innerHTML = "<strong>Dívejte se na šedou tečku uprostřed.</strong> Nehýbejte očima, dokud se vlajka nevymění za bílou plochu.";
+      timer = setInterval(() => {
+        left--;
+        if (left > 0) { setFlag("stare", left); return; }
+        if (left === 0) { setFlag("look"); $("f-status").innerHTML = "<strong>Teď dál na tečku.</strong> Co vidíte na bílé ploše?"; return; }
+        if (left <= -LOOK) { stop("done"); $("f-status").innerHTML = "<strong>Na bílé ploše se měla na pár sekund objevit česká vlajka v obvyklých barvách.</strong> Čípky unavené černou, azurovou a žlutou se na bílou ozvaly slaběji než odpočaté, a tak jste viděli bílou, červenou a modrou."; }
+      }, 1000);
+    });
+    setFlag("idle");
+    $("f-status").innerHTML = "<strong>Vlajka v opačných barvách.</strong> Zmáčkněte Spustit a dvacet sekund se dívejte na tečku uprostřed.";
   })();
   </script>
   <script src="/app.js" defer></script>
