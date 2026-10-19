@@ -226,6 +226,8 @@
     const ozone = (nm) => 0.04 * Math.exp(-(((nm - 600) / 62) ** 2));  // ozon pohlcuje oranžovou
     const TAU = LAMBDA.map((nm) => rayleigh(nm) + haze(nm) + ozone(nm));
     const ALBEDO = LAMBDA.map((nm, i) => rayleigh(nm) / TAU[i]);
+    // na zem dopadá světlo rozptýlené na molekulách i na prachu, který většinu světla rozptýlí a jen málo pohltí
+    const DIFFUSE = LAMBDA.map((nm, i) => (rayleigh(nm) + 0.9 * haze(nm)) / TAU[i]);
     // kolikrát víc vzduchu má světlo v cestě než při pohledu kolmo vzhůru
     function airMass(h) {
       if (h < 0) return 38 + -h * 45;
@@ -242,12 +244,13 @@
       });
     }
 
-    // světlo dopadající na vodorovnou zem: přímé ze Slunce a rozptýlené z oblohy, z něhož zhruba polovina míří dolů
+    // světlo dopadající na vodorovnou zem: přímé ze Slunce a rozptýlené z oblohy, z něhož víc než polovina
+    // nakonec míří dolů (polovina hned, něco po dalších rozptylech a odrazech od okolí)
     function ground(h, air) {
       const none = LAMBDA.map(() => 0);
       if (!air) return h <= 0 ? { lit: none, shade: none } : { lit: SUN.map((v) => v * Math.sin((h * Math.PI) / 180)), shade: none };
       const k = Math.sin((Math.max(h, 0.5) * Math.PI) / 180), ms = airMass(Math.max(h, 0.5));
-      const shade = LAMBDA.map((_, i) => SUN[i] * k * 0.5 * ALBEDO[i] * (1 - Math.exp(-TAU[i] * ms)));
+      const shade = LAMBDA.map((_, i) => SUN[i] * k * 0.6 * DIFFUSE[i] * (1 - Math.exp(-TAU[i] * ms)));
       return { lit: h > 0 ? shade.map((v, i) => v + SUN[i] * k * Math.exp(-TAU[i] * ms)) : shade, shade };
     }
 
@@ -296,8 +299,12 @@
     const glow = el("circle", { r: 46 }, sky), sun = el("circle", { r: 17 }, sky);
     const farHill = el("path", { d: `M0 ${HORIZON - 8} Q90 ${HORIZON - 44} 200 ${HORIZON - 14} T420 ${HORIZON - 22} T640 ${HORIZON - 6} V400 H0 Z` }, sky);
     const nearHill = el("path", { d: `M0 ${HORIZON + 14} Q140 ${HORIZON - 16} 300 ${HORIZON + 10} T640 ${HORIZON + 4} V400 H0 Z` }, sky);
-    const shadow = el("ellipse", { cy: HORIZON + 24, ry: 5 }, sky);
-    const rock = el("path", { d: `M444 ${HORIZON + 24} Q446 ${HORIZON + 2} 462 ${HORIZON - 2} Q480 ${HORIZON - 4} 486 ${HORIZON + 10} Q490 ${HORIZON + 20} 488 ${HORIZON + 24} Z` }, sky);
+    const shadow = el("path", { "stroke-width": 3, "stroke-linejoin": "round" }, sky);
+    const ROCK_D = `M444 ${HORIZON + 24} Q446 ${HORIZON + 2} 462 ${HORIZON - 2} Q480 ${HORIZON - 4} 486 ${HORIZON + 10} Q490 ${HORIZON + 20} 488 ${HORIZON + 24} Z`;
+    el("path", { d: ROCK_D }, el("clipPath", { id: "rock-clip" }, sky.querySelector("defs")));
+    const rock = el("path", { d: ROCK_D }, sky);
+    // Slunce svítí proti nám, takže na kámen se díváme ze stinné strany a osvětlený je jen okraj obrácený ke Slunci
+    const rockLit = el("circle", { r: 24, "clip-path": "url(#rock-clip)" }, sky);
 
     function spectrumChart(id) {
       const svg = document.getElementById(id), B = { x: 14, y: 12, w: 172, h: 92 };
@@ -328,7 +335,8 @@
     // expozice země: polední země se vzduchem vyjde jasná; bez vzduchu je oko přizpůsobené jako ve dne
     const NOON_GAIN = skyGain(90);
     const GROUND_C = 1 / (Math.max(...linear(toXYZ(ground(90, true).lit))) * NOON_GAIN);
-    const groundColor = (spec, gain, albedo) => srgb(linear(toXYZ(spec)).map((v, i) => v * gain * GROUND_C * albedo[i]));
+    // oko vidí stíny světlejší, než odpovídá poměru jasů, proto se jas země mírně stlačí
+    const groundColor = (spec, gain, albedo) => srgb(linear(toXYZ(spec)).map((v, i) => (v * gain * GROUND_C * albedo[i]) ** 0.75));
 
     function render() {
       const ms = airMass(s.h), dark = Math.max(0, Math.min(1, -s.h / 7));
@@ -343,18 +351,30 @@
       // bez vzduchu jsou hvězdy vidět jen v noci, ve dne oko oslní krajina
       starsG.setAttribute("opacity", s.air ? dark.toFixed(2) : s.h > 0 ? "0" : "1");
 
+      const sx = 96 + (Math.max(0, s.h) / 90) * 224, sy = HORIZON - (s.h / 90) * 262 + 4;
       const g = ground(s.h, s.air), ggain = s.air ? gain : NOON_GAIN, night = s.air ? dark : 0;
       let far = mix(groundColor(g.lit, ggain, FAR), NIGHT_GROUND, night);
       if (s.air) far = mix(far, skyColors[4], 0.3);       // vzdálený kopec zamlží vzduch mezi ním a vámi
       farHill.setAttribute("fill", css(far));
       nearHill.setAttribute("fill", css(mix(groundColor(g.lit, ggain, NEAR), NIGHT_GROUND, night)));
-      rock.setAttribute("fill", css(mix(groundColor(g.lit, ggain, ROCK), NIGHT_GROUND, night)));
-      const len = s.h > 0 ? Math.min(150, 26 / Math.tan((s.h * Math.PI) / 180)) : 0;
-      shadow.setAttribute("cx", (480 + len / 2).toFixed(1)); shadow.setAttribute("rx", (8 + len / 2).toFixed(1));
-      shadow.setAttribute("fill", css(mix(groundColor(g.shade, ggain, NEAR), NIGHT_GROUND, night)));
+      rock.setAttribute("fill", css(mix(groundColor(g.shade, ggain, ROCK), NIGHT_GROUND, night)));
+      rockLit.setAttribute("fill", css(mix(groundColor(g.lit, ggain, ROCK), NIGHT_GROUND, night)));
+      // stín míří od Slunce: v perspektivě leží na přímce z bodu obzoru pod Sluncem přes patu kamene
+      // a končí tam, kde ji protne paprsek ze Slunce přes vršek kamene
+      const foot = { x: 466, y: HORIZON + 24 }, top = { x: 464, y: HORIZON - 3 };
+      const ux = foot.x - sx, uy = foot.y - HORIZON, vx = top.x - sx, vy = top.y - sy;
+      const det = uy * vx - ux * vy, reach = det < 0 ? ((sy - HORIZON) * vx) / det : Infinity;
+      const a = Math.max(1, Math.min(4, reach));
+      const tip = { x: sx + a * ux, y: HORIZON + a * uy };
+      shadow.setAttribute("d", `M448 ${HORIZON + 21}L${tip.x.toFixed(1)} ${(tip.y - 1.5).toFixed(1)}L${(tip.x + 3).toFixed(1)} ${(tip.y + 1).toFixed(1)}L${tip.x.toFixed(1)} ${(tip.y + 3).toFixed(1)}L478 ${HORIZON + 29}L448 ${HORIZON + 27}Z`);
+      const shade = css(mix(groundColor(g.shade, ggain, NEAR), NIGHT_GROUND, night));
+      shadow.setAttribute("fill", shade); shadow.setAttribute("stroke", shade);
       shadow.setAttribute("opacity", s.h > 0 ? "1" : "0");
+      const toSun = Math.hypot(sx - 466, sy - 312), off = 22 * (1.15 - 0.9 * Math.sin((Math.max(0, s.h) * Math.PI) / 180));
+      rockLit.setAttribute("cx", (466 + ((sx - 466) / toSun) * off).toFixed(1));
+      rockLit.setAttribute("cy", (312 + ((sy - 312) / toSun) * off).toFixed(1));
+      rockLit.setAttribute("opacity", s.h > 0 ? "1" : "0");
 
-      const sx = 96 + (Math.max(0, s.h) / 90) * 224, sy = HORIZON - (s.h / 90) * 262 + 4;
       sun.setAttribute("cx", sx.toFixed(1)); sun.setAttribute("cy", sy.toFixed(1)); sun.setAttribute("fill", css(sunColor));
       glow.setAttribute("cx", sx.toFixed(1)); glow.setAttribute("cy", sy.toFixed(1)); glow.setAttribute("fill", css(sunColor));
       glow.setAttribute("opacity", s.air ? 0.28 : 0);
