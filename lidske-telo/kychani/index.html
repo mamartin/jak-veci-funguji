@@ -71,7 +71,7 @@
     <figure class="fig" id="obr1">
       <div class="fig-head">
         <p class="fig-num"><b>Obr. 1</b> Jedno kýchnutí</p>
-        <span class="label">Dráždi nos, dokud to nepřijde</span>
+        <span class="label">Drážděte nos, dokud to nepřijde</span>
       </div>
       <div class="fig-stage">
         <svg id="scene" viewBox="0 0 940 380" role="img" aria-label="Postava z profilu, která kýchne, a kapénky letící do vzdálenosti několika metrů"></svg>
@@ -252,7 +252,7 @@
         const big = Math.random() < 0.32;
         const a = (Math.random() - 0.55) * 0.5;
         if (big) {
-          const v = (2.6 + Math.random() * 3.6) * c.range;
+          const v = (2 + Math.random() * 2.6) * c.range;
           s.drops.push({ big, x: 0, y: 1.52, vx: v * Math.cos(a), vy: v * Math.sin(a) + 0.6, r: 2.4 + Math.random() * 1.6, t: 0 });
         } else {
           // drobné kapénky nese oblak: rychle zpomalí, ale daleko doputují

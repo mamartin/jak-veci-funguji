@@ -131,7 +131,7 @@
           <li><span class="n" id="st-flow-n">Ledviny posílají</span><span class="v" id="st-flow"></span></li>
         </ul>
       </div>
-      <figcaption class="fig-caption">Schéma, ne v měřítku: ledviny leží mnohem výš, u zad pod žebry. Čas běží zrychleně podle volby, močení jen pětkrát rychleji než ve skutečnosti. Žluté tečky na nervech nesou zprávy o natažení stěny, červené povel ke stažení stěny a modré povel svěrači v pánevním dnu. Graf dole ukazuje, kolik moči bylo v měchýři za posledních 12 hodin, modré tečky pod ním jsou chvíle, kdy jste pili. Měchýř batolete je nakreslený zvětšeně, pojme jen asi 70 mililitrů.</figcaption>
+      <figcaption class="fig-caption">Schéma, ne v měřítku: ledviny leží mnohem výš, u zad pod žebry. Čas běží zrychleně podle volby, močení jen pětkrát rychleji než ve skutečnosti. Žluté tečky na nervech nesou zprávy o natažení stěny, červené povel ke stažení stěny a modré povel svěrači v pánevním dnu. Graf dole ukazuje, kolik moči bylo v měchýři za posledních 12 hodin, modré tečky pod ním jsou chvíle, kdy jste pili. Měchýř batolete je nakreslený zvětšeně, pojme jen asi 100 mililitrů.</figcaption>
     </figure>
 
     <section class="sec" aria-labelledby="h-ledviny">
@@ -193,7 +193,7 @@
         <span class="label">Zkuste</span>
         <p>Jděte na záchod a sledujte tlak. Z několika centimetrů vody vyskočí na desítky. Kolik vyteklo a jak dlouho to trvalo, model ukáže na konci.</p>
         <span class="label">Na okraj</span>
-        <p>Fyzici z Georgijského technologického institutu v roce 2014 natáčeli, jak močí zvířata v zoo. Slon, kráva, koza i pes vyprázdnili měchýř zhruba stejně rychle, za 21 sekund. Větší zvíře má větší měchýř, ale i delší a širší močovou trubici, ve které proud víc zrychlí. Dostali za to Ig Nobelovu cenu.</p>
+        <p>Fyzici z Georgijského technologického institutu natáčeli, jak močí zvířata v zoo, a v roce 2014 o tom vydali studii. Slon, kráva, koza i pes vyprázdnili měchýř zhruba stejně rychle, za 21 sekund. Větší zvíře má větší měchýř, ale i delší a širší močovou trubici, ve které proud víc zrychlí. O rok později za to dostali Ig Nobelovu cenu.</p>
       </aside>
     </section>
 
@@ -206,7 +206,7 @@
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
-        <p>Přepněte na Batole. Kůra je šedá, brzdit ještě neumí. Měchýř pojme jen asi 65 mililitrů. Jakmile se naplní, vyprázdní se sám, ať je dítě zrovna kdekoli.</p>
+        <p>Přepněte na Batole. Kůra je šedá, brzdit ještě neumí. Měchýř pojme jen asi 100 mililitrů. Jakmile se naplní, vyprázdní se sám, ať je dítě zrovna kdekoli.</p>
         <p>U dospělého zrychlete čas a na záchod nechoďte. Kolem 700 mililitrů nevydrží ani dospělá brzda.</p>
       </aside>
     </section>
@@ -252,8 +252,8 @@
         seed: { V: 170, events: [[-650, "drink"], [-560, "void"], [-420, "drink"], [-310, "void"], [-190, "drink"], [-80, "void"]] },
       },
       child: {
-        prod: 15, drink: 100, cap: 70, max: 65, qmax: 6, push: 50,
-        scale: 70, top: 90, ticks: [0, 30, 60], lines: [[65, "reflex"]],
+        prod: 15, drink: 100, cap: 110, max: 100, qmax: 8, push: 50,
+        scale: 110, top: 130, ticks: [0, 50, 100], lines: [[100, "reflex"]],
         seed: { V: 30, events: [[-560, "drink"], [-250, "drink"]] },
       },
     };
@@ -459,7 +459,7 @@
       const tail = s.gut > 20 ? " Vypitá voda se teprve vstřebává ve střevech." : s.extra > 25 ? " Ledviny teď posílají víc, zbavují se vypité vody." : "";
       if (s.who === "child") {
         if (V < 0.6 * p.max) return "<strong>Plnění.</strong> Čidla ve stěně posílají zprávy do míchy a mozkového kmene. Kůra je ale ještě neumí přečíst a spínač zabrzdit." + tail;
-        return "<strong>Skoro plno.</strong> Signál z čidel sílí. Až bude v měchýři kolem 65 mililitrů, spínač se přepne sám." + tail;
+        return "<strong>Skoro plno.</strong> Signál z čidel sílí. Až bude v měchýři kolem 100 mililitrů, spínač se přepne sám." + tail;
       }
       if (V < p.first) return "<strong>Nic necítíte.</strong> Moč přitéká po dávkách a stěna měchýře povoluje, takže tlak uvnitř skoro nestoupá. Čidla ve stěně posílají jen slabý signál." + tail;
       if (V < p.urge) return "<strong>První pocit.</strong> Signál z natažené stěny už dojde až do mozkové kůry. Víte o měchýři, ale v klidu ještě dlouho vydržíte." + tail;

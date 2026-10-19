@@ -175,7 +175,7 @@
         <p>Žluté světlo ze spektra, třeba z pouliční sodíkové lampy, dráždí červené čípky výrazně silněji než zelené a modré vůbec. Mozek z toho poměru usoudí: žlutá. Kdyby se červené a zelené čípky ozvaly stejně silně, viděli bychom žlutozelenou.</p>
         <p>Stejný poměr se ale dá vyrobit jinak. Posvítíte do oka zároveň červeným a zeleným světlem. Červené podráždí hlavně červené čípky, zelené hlavně zelené, a když je správně vyvážíte, odpovědí čípky stejně jako na čistou žlutou. Oko ten rozdíl nemá jak poznat. Žluté světlo tam není, a přesto ho vidíte.</p>
         <p>Na tomhle klamu stojí každý <a href="../../technika/lcd-oled/">displej</a>. Má jen tři barvy bodů a jejich mícháním dráždí čípky ve stejných poměrech jako skutečné barvy. Kdybychom měli druhy čípků čtyři, tři barvy by na obrazovku nestačily.</p>
-        <p>Některé barvy ve spektru dokonce vůbec nejsou. Purpurová vznikne, když se ozvou červené a modré čípky a zelené mlčí. To žádná jedna vlnová délka nedokáže: kde ve spektru světlo dráždí modré čípky, tam se vždycky ozvou i zelené. Purpurovou dá jen směs z obou konců spektra.</p>
+        <p>Některé barvy ve spektru dokonce vůbec nejsou. Purpurová vznikne, když se ozvou červené a modré čípky a zelené mlčí. To žádná jedna vlnová délka nedokáže. Kde ve spektru světlo dráždí modré čípky, tam se červené ozvou nanejvýš slaběji než zelené, a kde se červené ozvou silně, modré už mlčí. Purpurovou dá jen směs z obou konců spektra.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
@@ -291,7 +291,7 @@
     <section class="sec" aria-labelledby="h-jini">
       <div class="prose">
         <h2 id="h-jini">Jak to mají jiní</h2>
-        <p>Tři druhy čípků jsou mezi savci výjimka. Psi, kočky i koně mají jen dva a vidí svět podobně jako člověk bez červených čípků. Červený míček na zelené trávě pes hledá čichem, ne očima.</p>
+        <p>Tři druhy čípků jsou mezi savci výjimka. Psi, kočky i koně mají jen dva a vidí svět podobně jako člověk, kterému chybějí červené nebo zelené čípky. Červený míček na zelené trávě pes hledá čichem, ne očima.</p>
         <p>Třetí druh čípku získali až předkové lidoopů a opic Starého světa, nejspíš proto, že se jim hodilo rozeznat zralé plody a mladé listy mezi zelení. Většina opic z Ameriky ho nemá.</p>
         <p>Ptáci, plazi a mnoho ryb mají druhy čtyři a vidí i ultrafialové světlo. Květy, které nám připadají jednobarevné, mají pro včely a ptáky kresbu. Jaké to je, vidět o jednu základní barvu víc, si představit neumíme, stejně jako si barvoslepý neumí představit rozdíl mezi červenou a zelenou.</p>
       </div>
@@ -514,8 +514,8 @@
       } else if (eyes === "anom" && match) {
         status = `<strong>Posunuté zelené čípky.</strong> Tahle směs vypadá pro takové oko jako čistých ${match} nm, běžnému oku jako ${normalMatch} nm. ` +
           (match > normalMatch ? "Vidí ji červenější, a aby mu vypadala jako běžnému oku, musí přidat zelenou. Přesně tohle měří anomaloskop." : "Rozdíl je zatím malý.");
-      } else if (eyes === "anom") status = `<strong>Posunuté zelené čípky.</strong> Křivka zelených čípků je o ${s.shift} nm blíž červeným. Jejich odpovědi se liší míň, a tak jsou zelená, žlutá a červená méně výrazné a víc si podobají. Takové čípky má asi pět mužů ze sta.`;
-      else if (purple && both) status = "<strong>Purpurová.</strong> Ozvaly se modré a červené čípky, zelené skoro mlčí. Tenhle poměr nevyvolá žádná jedna barva spektra: kde světlo dráždí modré čípky, tam se ozvou i zelené. Proto ve spektru purpurová chybí.";
+      } else if (eyes === "anom") status = `<strong>Posunuté zelené čípky.</strong> Křivka zelených čípků je o ${s.shift} nm blíž červeným. Jejich odpovědi se liší míň, a tak jsou zelená, žlutá a červená méně výrazné a víc si podobají. Takové čípky mají asi čtyři až pět mužů ze sta.`;
+      else if (purple && both) status = "<strong>Purpurová.</strong> Ozvaly se modré a červené čípky, zelené skoro mlčí. Tenhle poměr nevyvolá žádná jedna barva spektra: kde světlo dráždí modré čípky, tam červené nepřeválcují zelené. Proto ve spektru purpurová chybí.";
       else if (match) status = `<strong>Dvě světla, jedna barva.</strong> Směs červeného a zeleného světla podráždí červené a zelené čípky ve stejném poměru jako čisté světlo o vlnové délce ${match} nm. Oko mezi nimi nepozná rozdíl.`;
       else if (!single) status = "<strong>Jen jedno ze dvou světel.</strong> Přidejte druhé a sledujte, jak se tečky na čarách a sloupce vpravo posouvají.";
       else if (s.nm < 450) status = "<strong>Fialová a modrá.</strong> Ozývají se hlavně modré čípky. Je jich nejmíň ze všech tří druhů, a tak modrá vypadá tmavší než stejně silná zelená.";

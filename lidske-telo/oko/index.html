@@ -178,7 +178,7 @@
         <h2 id="h-vady">Moc dlouhé a moc krátké oko</h2>
         <p>Optika oka a jeho délka si musejí odpovídat s přesností na zlomky milimetru. U většiny lidí si aspoň trochu neodpovídají.</p>
         <p>Krátkozraké oko je na svou optiku moc dlouhé. Paprsky z dálky se sejdou už před sítnicí a na ni dopadnou zase rozběhnuté. Nablízko takové oko vidí dobře, do dálky rozmazaně. Pomáhá rozptylka, která paprsky před okem trochu rozevře. Jeden milimetr délky navíc znamená asi tři dioptrie.</p>
-        <p>Dalekozraké oko je naopak krátké a obraz by vznikl až za sítnicí. Mladý člověk to dožene tím, že čočku napíná i při pohledu do dálky, takže vidí ostře, jen se dřív unaví a nablízko mu síla dojde. Pomáhá spojka.</p>
+        <p>Dalekozraké oko je naopak krátké a obraz by vznikl až za sítnicí. Mladý člověk to dožene tím, že sval zabírá i při pohledu do dálky a čočka přidává, takže vidí ostře, jen se dřív unaví a nablízko mu síla dojde. Pomáhá spojka.</p>
         <p>Krátkozrakých rychle přibývá, v některých asijských městech je to už většina mladých. Zdá se, že nejlíp chrání obyčejná věc: děti, které tráví víc času venku na denním světle, mají krátkozrakost méně často.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
@@ -199,7 +199,7 @@
       <div class="prose">
         <h2 id="h-dirka">Proč pomáhá mhouřit</h2>
         <p>Kdo zapomněl brýle, přimhouří oči. Funguje to, a ne náhodou. Rozmazání vzniká tím, že paprsky procházející okrajem zornice dopadnou na sítnici jinam než ty prostředkem. Když okraj zakryjete, zbudou jen paprsky blízko středu a skvrnka na sítnici se zmenší.</p>
-        <p>Stejně funguje dírka propíchnutá špendlíkem do papíru: podívejte se skrz ni bez brýlí. A ze stejného důvodu vidí lidé líp na ostrém slunci, kdy je zornice stažená, než za šera.</p>
+        <p>Stejně funguje dírka propíchnutá špendlíkem do papíru: podívejte se skrz ni bez brýlí. A ze stejného důvodu vidí lidé s vadou zraku líp na ostrém slunci, kdy je zornice stažená, než za šera.</p>
       </div>
     </section>
 
@@ -246,7 +246,6 @@
       const power = P_REST + acc;
       const image = (N_EYE / (power + vergence)) * 1000;           // kde se paprsky sejdou, v mm za čočkou
       const nearV = P_REST + E.max - N_EYE / (E.axial / 1000);     // nejbližší ostrý bod
-      const near = nearV - G > 0 ? 1 / (nearV + G) : Infinity;
       return { E, u, G, acc, error: power - need, image, near: nearV + G > 0 ? 1 / (nearV + G) : Infinity };
     }
 
@@ -334,9 +333,9 @@
 
       let status;
       if (blur < 0.2 && o.acc < 0.2) {
-        status = `<strong>Ostré, sval odpočívá.</strong> Paprsky z dálky přicházejí rovnoběžně a ${E.name}${G ? " s brýlemi" : ""} je svede přesně na sítnici, aniž by čočka musela cokoli přidat.`;
+        status = `<strong>Ostré, sval odpočívá.</strong> ${o.u === Infinity ? "Paprsky z dálky přicházejí rovnoběžně" : "Paprsky z předmětu se rozbíhají"} a ${E.name}${G ? " s brýlemi" : ""} je svede přesně na sítnici, aniž by čočka musela cokoli přidat.${o.u !== Infinity && !G && s.eye === "myopic" ? " Na tuhle vzdálenost vidí krátkozraký ostře bez námahy." : ""}`;
       } else if (blur < 0.2 && o.u === Infinity) {
-        status = `<strong>Ostré, ale sval pracuje i do dálky.</strong> Oko je na svou optiku krátké. Čočka musí přidat ${fmt1.format(o.acc)} dioptrie už jen na to, aby viděla obzor, a nablízko jí pak síla chybí.`;
+        status = `<strong>Ostré, ale sval pracuje i do dálky.</strong> Oko je na svou optiku krátké. Čočka musí přidat ${fmt1.format(o.acc)} dioptrie už jen na to, aby oko vidělo ostře obzor, a nablízko jí pak síla chybí.`;
       } else if (blur < 0.2) {
         status = `<strong>Ostré, sval pracuje.</strong> Paprsky z blízkého předmětu se rozbíhají. Sval se stáhl, čočka se vyboulila a přidala ${fmt1.format(o.acc)} dioptrie, aby se sešly na sítnici.`;
       } else if (o.error > 0) {

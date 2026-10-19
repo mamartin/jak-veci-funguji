@@ -68,7 +68,7 @@
     <section class="tldr" aria-labelledby="h-zkratka">
       <h2 class="label" id="h-zkratka">Ve zkratce</h2>
       <ul>
-        <li>Každou dědičnou vlastnost řídí gen a každý z nás má od každého genu dvě kopie: jednu od matky, jednu od otce.</li>
+        <li>Dědičné vlastnosti řídí geny a každý z nás má od každého genu dvě kopie: jednu od matky, jednu od otce.</li>
         <li><span class="hl">Dítěti předá rodič jen jednu ze svých dvou kopií a kterou, to rozhodne náhoda.</span></li>
         <li>Některé varianty genu přebijí ty druhé. Přebitá varianta se neprojeví, ale nezmizí a může se ukázat u vnuků.</li>
       </ul>
@@ -287,7 +287,7 @@
         else status = "<strong>Všichni fialoví.</strong> Aspoň jeden rodič má obě kopie A, takže každý potomek dostane aspoň jedno A a to stačí. Z barvy květu nepoznáte, který potomek nese schovanou variantu a.";
       } else if (s.trait === "blood") {
         const kinds = odds.size;
-        if (kinds === 4) status = "<strong>Čtyři různé skupiny z jedněch rodičů.</strong> Matka má skupinu A a otec B, oba ale nesou schovanou nulu. Dítě může dostat A i B, jen jedno z nich, nebo dvě nuly.";
+        if (kinds === 4) status = "<strong>Čtyři různé skupiny z jedněch rodičů.</strong> Jeden rodič má skupinu A, druhý B, oba ale nesou schovanou nulu. Dítě může dostat A i B, jen jedno z nich, nebo dvě nuly.";
         else if (odds.has("skupina 0") && !same(m, ["0", "0"]) && !same(f, ["0", "0"])) status = "<strong>Skupina 0, kterou nemá ani jeden rodič.</strong> Oba nesou nulu schovanou za dominantní variantou. Když ji dítě dostane od obou, nemá ji co přebít.";
         else if (kinds === 1) status = `<strong>Všechny děti mají stejnou skupinu.</strong> Ať dítě dostane od každého rodiče kteroukoli z jeho dvou kopií, vyjde vždycky ${[...odds.keys()][0]}.`;
         else status = "<strong>Krevní skupina dítěte se dá jen odhadnout.</strong> Tabulka říká, které skupiny přicházejí v úvahu a s jakou šancí. Podle skupin rodičů se dá některá možnost vyloučit úplně, a toho se dřív využívalo při sporech o otcovství.";
