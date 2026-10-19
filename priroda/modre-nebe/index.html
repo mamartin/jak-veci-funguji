@@ -36,8 +36,6 @@
       .side { grid-template-columns: minmax(0, 1fr); }
     }
     #sky { border: 1px solid var(--rule); }
-    .hill { fill: #14181e; }
-    .hill.far { fill: #232a33; }
     .star { fill: #dfe6f5; }
     .sp-axis { stroke: #6b727d; stroke-width: 1; }
     .sp-text { fill: #aab1bb; font: 500 10.5px var(--font-mono); }
@@ -113,7 +111,7 @@
           <li><span class="n">Barva Slunce</span><span class="v"><i class="swatch" id="sw-sun"></i></span></li>
         </ul>
       </div>
-      <figcaption class="fig-caption">Barvy nejsou namalované, ale spočítané: sluneční světlo se v modelu rozptyluje a pohlcuje podle vlnové délky a výsledek se převádí na barvu obrazovky. Model počítá jen s jedním rozptylem v čistém vzduchu, skutečné červánky bývají díky prachu a mrakům pestřejší. Sloupce vpravo ukazují, kolik které barvy ve světle je, vždy v poměru k té nejsilnější.</figcaption>
+      <figcaption class="fig-caption">Barvy oblohy, Slunce i krajiny nejsou namalované, ale spočítané: sluneční světlo se v modelu rozptyluje a pohlcuje podle vlnové délky a výsledek se převádí na barvu obrazovky. Krajinu osvětluje přímé Slunce a rozptýlené světlo z oblohy, stín jen to z oblohy. Model počítá jen s jedním rozptylem v čistém vzduchu, skutečné červánky bývají díky prachu a mrakům pestřejší. Sloupce vpravo ukazují, kolik které barvy ve světle je, vždy v poměru k té nejsilnější.</figcaption>
     </figure>
 
     <section class="sec" aria-labelledby="h-smes">
@@ -135,13 +133,14 @@
     <section class="sec" aria-labelledby="h-rozptyl">
       <div class="prose">
         <h2 id="h-rozptyl">Vzduch rozhazuje modrou</h2>
-        <p>Vzduch je z molekul dusíku a kyslíku. Jsou asi tisíckrát menší než vlnová délka světla, a světlo je proto většinou mine. Občas ale některá molekula kousek světla zachytí a hned ho zase vyšle, jenže náhodným směrem. Tomu se říká rozptyl.</p>
+        <p>Vzduch je z molekul dusíku a kyslíku. Jsou asi tisíckrát menší než vlnová délka světla, a světlo je proto většinou mine. Občas ale světlo rozkmitá elektrony v molekule a ta pak sama vyzáří kousek světla do stran, nejvíc dopředu a dozadu. Tomu se říká rozptyl.</p>
         <p>Takhle malé částice nerozptylují všechny barvy stejně. Čím kratší vlna, tím větší šance, a ta závislost je prudká: s čtvrtou mocninou. Modré světlo se rozptýlí zhruba čtyřikrát snáz než červené.</p>
         <p>Červená a žlutá proto letí vzduchem skoro rovně. Modrá se cestou rozptyluje do všech stran, rozlétne se po celé obloze a do oka vám nakonec přiletí odkudkoli. <span class="hl">Když se díváte na oblohu mimo Slunce, vidíte právě tohle zbloudilé modré světlo.</span></p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
-        <p>Přepněte vzduch na Žádný. Světlo nemá co rozptylovat, a tak z oblohy nepřichází nic. Je černá i ve dne. Tak vypadá nebe z Měsíce.</p>
+        <p>Přepněte vzduch na Žádný. Světlo nemá co rozptylovat, a tak z oblohy nepřichází nic a je černá i ve dne. Krajina na slunci ale svítí dál skoro stejně jasně. Úplně černý je jen stín kamene, protože ho neprosvětlí modré světlo z oblohy. Tak to vypadá na Měsíci.</p>
+        <p>Hvězdy na černé obloze jsou, jenže oko oslněné krajinou je nevidí. Na fotkách z Měsíce nejsou ze stejného důvodu.</p>
       </aside>
     </section>
 
@@ -149,7 +148,7 @@
       <div class="prose">
         <h2 id="h-fialova">Proč tedy ne fialové</h2>
         <p>Fialové světlo má vlnu ještě kratší než modré a rozptyluje se ještě víc. Nebe by mělo být fialové.</p>
-        <p>Jsou tři důvody, proč není. Slunce fialové svítí míň než modré. Část jí pohltí vysoké vrstvy atmosféry. A hlavně: lidské oko je na fialovou <a href="../../lidske-telo/barevne-videni/">málo citlivé</a>. Ze směsi, která z oblohy přichází, tedy hodně fialové, hodně modré a trocha všeho ostatního, si mozek poskládá modrou.</p>
+        <p>Jsou dva důvody, proč není. Slunce fialové svítí míň než modré. A hlavně: lidské oko je na fialovou <a href="../../lidske-telo/barevne-videni/">málo citlivé</a>. Ze směsi, která z oblohy přichází, tedy hodně fialové, hodně modré a trocha všeho ostatního, si mozek poskládá modrou.</p>
       </div>
     </section>
 
@@ -158,7 +157,7 @@
         <h2 id="h-zapad">Kam se modrá ztratí večer</h2>
         <p>Co se rozptýlí, to v původním paprsku chybí. V poledne jde sluneční světlo vzduchem nejkratší cestou, kolmo dolů, a přijde jen o trochu modré. Slunce proto vypadá lehce nažloutle místo čistě bíle.</p>
         <p>Když Slunce klesá k obzoru, prochází jeho světlo vzduchem šikmo a cesta se prodlužuje. Těsně nad obzorem je skoro čtyřicetkrát delší než v poledne. Modrá se cestou rozptýlí skoro všechna, po ní zelená, a k vám dorazí jen to, co vzduch nechá být: oranžová a červená.</p>
-        <p>Červánky jsou tedy stejný jev jako modrá obloha, jen z druhé strany. V poledne vidíte světlo, které se rozptýlilo. Večer to, které zbylo. A modrá, která vám večer chybí, zrovna dělá modré nebe lidem o tisíc kilometrů dál na západ.</p>
+        <p>Červánky jsou tedy stejný jev jako modrá obloha, jen z druhé strany. V poledne vidíte světlo, které se rozptýlilo. Večer to, které zbylo. A modrá, která vám večer chybí, zrovna dělá modré nebe lidem pár set kilometrů na západ, kde je Slunce ještě o kus výš.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
@@ -174,7 +173,7 @@
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Na okraj</span>
-        <p>Moře není modré kvůli odrazu oblohy. Voda sama slabě pohlcuje červené světlo. Po pár metrech v ní zbude hlavně modrá.</p>
+        <p>Moře není modré jen kvůli odrazu oblohy. Voda sama slabě pohlcuje červené světlo. Po pár metrech v ní zbude hlavně modrá.</p>
       </aside>
     </section>
 
@@ -189,8 +188,8 @@
     <section class="sec" aria-labelledby="h-historie">
       <div class="prose">
         <h2 id="h-historie">Kdo na to přišel</h2>
-        <p>Že jemné částice rozptylují modré světlo víc než červené, ukázal v roce 1859 irský fyzik John Tyndall, když svítil do skleněné trubice s kouřem. O dvanáct let později spočítal Angličan lord Rayleigh, jak přesně rozptyl závisí na vlnové délce. Dodnes se mu říká Rayleighův.</p>
-        <p>Jedna věc ale zůstávala nejasná: jsou těmi částicemi prach a kapičky, nebo samotný vzduch? Že stačí molekuly vzduchu a že rozptyl způsobuje jejich neustálé náhodné hemžení, dopočítal v roce 1910 Albert Einstein.</p>
+        <p>Že jemné částice rozptylují modré světlo víc než červené, ukázal v roce 1869 irský fyzik John Tyndall, když svítil do skleněné trubice s kouřem. O dva roky později spočítal Angličan lord Rayleigh, jak přesně rozptyl závisí na vlnové délce. Dodnes se mu říká Rayleighův.</p>
+        <p>Jedna věc ale zůstávala nejasná: jsou těmi částicemi prach a kapičky, nebo samotný vzduch? Rayleigh v roce 1899 spočítal, že na modrou oblohu stačí samotné molekuly. Proč se světlo rozptýlené od miliard molekul navzájem nevyruší, vysvětlili v letech 1908 až 1910 Marian Smoluchowski a Albert Einstein: molekuly se neustále náhodně hemží, a vzduch proto není všude přesně stejně hustý.</p>
       </div>
     </section>
 
@@ -243,6 +242,15 @@
       });
     }
 
+    // světlo dopadající na vodorovnou zem: přímé ze Slunce a rozptýlené z oblohy, z něhož zhruba polovina míří dolů
+    function ground(h, air) {
+      const none = LAMBDA.map(() => 0);
+      if (!air) return h <= 0 ? { lit: none, shade: none } : { lit: SUN.map((v) => v * Math.sin((h * Math.PI) / 180)), shade: none };
+      const k = Math.sin((Math.max(h, 0.5) * Math.PI) / 180), ms = airMass(Math.max(h, 0.5));
+      const shade = LAMBDA.map((_, i) => SUN[i] * k * 0.5 * ALBEDO[i] * (1 - Math.exp(-TAU[i] * ms)));
+      return { lit: h > 0 ? shade.map((v, i) => v + SUN[i] * k * Math.exp(-TAU[i] * ms)) : shade, shade };
+    }
+
     // spektrum -> barva: křivky citlivosti oka (přibližné vzorce) a převod do sRGB
     const lobe = (x, mu, s1, s2) => Math.exp(-0.5 * ((x - mu) / (x < mu ? s1 : s2)) ** 2);
     const cmf = (nm) => [
@@ -262,16 +270,20 @@
       const X = (xyz[0] / WHITE[0]) * 0.9505, Y = xyz[1] / WHITE[1], Z = (xyz[2] / WHITE[2]) * 1.089;
       return [3.2406 * X - 1.5372 * Y - 0.4986 * Z, -0.9689 * X + 1.8758 * Y + 0.0415 * Z, 0.0557 * X - 0.204 * Y + 1.057 * Z].map((v) => Math.max(0, v));
     }
+    const srgb = (lin) => lin.map((v) => Math.min(1, Math.max(0, v))).map((v) => Math.round(255 * (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055)));
     function toRGB(xyz, gain) {
       let rgb = linear(xyz).map((v) => v * gain);
       const peak = Math.max(...rgb);
       if (peak > 1) rgb = rgb.map((v) => v / peak);
-      return rgb.map((v) => Math.round(255 * (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055)));
+      return srgb(rgb);
     }
     const css = (rgb) => `rgb(${rgb.join(",")})`;
     const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
-    const NIGHT = [9, 13, 24];
-    const BAR_COLORS = LAMBDA.map((nm) => { const x = cmf(nm); const m = Math.max(...x); return css(toRGB([x[0] / m * WHITE[0], x[1] / m * WHITE[1], x[2] / m * WHITE[2]], 0.9)); });
+    const NIGHT = [9, 13, 24], NIGHT_GROUND = [8, 10, 12];
+    // odrazivost země v jednotlivých barevných kanálech: tráva, vzdálenější kopec, kámen
+    const NEAR = [0.1, 0.14, 0.06], FAR = [0.12, 0.15, 0.09], ROCK = [0.3, 0.28, 0.25];
+    // přibližné křivky oka jsou za 660 nm nepřesné a čistá červená by vyšla oranžová
+    const BAR_COLORS = LAMBDA.map((nm) => { const x = cmf(Math.min(nm, 660)); const m = Math.max(...x); return css(toRGB([x[0] / m * WHITE[0], x[1] / m * WHITE[1], x[2] / m * WHITE[2]], 0.9)); });
 
     /* ---------- scéna ---------- */
     const HORIZON = 300;
@@ -282,8 +294,10 @@
     const starsG = el("g", {}, sky);
     for (let i = 0; i < 46; i++) el("circle", { cx: (i * 137.5) % 640, cy: (i * 61.3) % (HORIZON - 20), r: 0.6 + (i % 3) * 0.45, class: "star" }, starsG);
     const glow = el("circle", { r: 46 }, sky), sun = el("circle", { r: 17 }, sky);
-    el("path", { d: `M0 ${HORIZON - 8} Q90 ${HORIZON - 44} 200 ${HORIZON - 14} T420 ${HORIZON - 22} T640 ${HORIZON - 6} V400 H0 Z`, class: "hill far" }, sky);
-    el("path", { d: `M0 ${HORIZON + 14} Q140 ${HORIZON - 16} 300 ${HORIZON + 10} T640 ${HORIZON + 4} V400 H0 Z`, class: "hill" }, sky);
+    const farHill = el("path", { d: `M0 ${HORIZON - 8} Q90 ${HORIZON - 44} 200 ${HORIZON - 14} T420 ${HORIZON - 22} T640 ${HORIZON - 6} V400 H0 Z` }, sky);
+    const nearHill = el("path", { d: `M0 ${HORIZON + 14} Q140 ${HORIZON - 16} 300 ${HORIZON + 10} T640 ${HORIZON + 4} V400 H0 Z` }, sky);
+    const shadow = el("ellipse", { cy: HORIZON + 24, ry: 5 }, sky);
+    const rock = el("path", { d: `M444 ${HORIZON + 24} Q446 ${HORIZON + 2} 462 ${HORIZON - 2} Q480 ${HORIZON - 4} 486 ${HORIZON + 10} Q490 ${HORIZON + 20} 488 ${HORIZON + 24} Z` }, sky);
 
     function spectrumChart(id) {
       const svg = document.getElementById(id), B = { x: 14, y: 12, w: 172, h: 92 };
@@ -310,20 +324,35 @@
       if (html) node.innerHTML = str; else node.textContent = str;
     }
     const s = { h: 50, air: true, setting: false };
+    const skyGain = (h) => (0.86 / Math.max(...linear(toXYZ(scattered(airMass(h), 1))), 1e-9)) * Math.max(0.2, Math.min(1, 0.5 + (h / 12) * 0.5));
+    // expozice země: polední země se vzduchem vyjde jasná; bez vzduchu je oko přizpůsobené jako ve dne
+    const NOON_GAIN = skyGain(90);
+    const GROUND_C = 1 / (Math.max(...linear(toXYZ(ground(90, true).lit))) * NOON_GAIN);
+    const groundColor = (spec, gain, albedo) => srgb(linear(toXYZ(spec)).map((v, i) => v * gain * GROUND_C * albedo[i]));
 
     function render() {
       const ms = airMass(s.h), dark = Math.max(0, Math.min(1, -s.h / 7));
       // expozice jako u oka nebo foťáku: řídí se jasem oblohy nad hlavou, k večeru se stmívá
-      const zenith = linear(toXYZ(scattered(ms, 1)));
-      const dusk = Math.max(0.2, Math.min(1, 0.5 + (s.h / 12) * 0.5));
-      const gain = (0.86 / Math.max(...zenith, 1e-9)) * dusk;
+      const gain = skyGain(s.h);
       let skyColors = VIEW.map(([view]) => mix(toRGB(toXYZ(scattered(ms, airMass(view))), gain), NIGHT, dark));
       const sunLin = linear(toXYZ(direct(ms)));
       let sunColor = toRGB(toXYZ(direct(ms)), 1 / Math.max(...sunLin, 1e-9));
       const zenithSpec = scattered(ms, 1), sunSpec = direct(ms);
       if (!s.air) { skyColors = VIEW.map(() => [4, 5, 8]); sunColor = [255, 255, 255]; }
       stops.forEach((st, i) => st.setAttribute("stop-color", css(skyColors[i])));
-      starsG.setAttribute("opacity", s.air ? dark.toFixed(2) : "1");
+      // bez vzduchu jsou hvězdy vidět jen v noci, ve dne oko oslní krajina
+      starsG.setAttribute("opacity", s.air ? dark.toFixed(2) : s.h > 0 ? "0" : "1");
+
+      const g = ground(s.h, s.air), ggain = s.air ? gain : NOON_GAIN, night = s.air ? dark : 0;
+      let far = mix(groundColor(g.lit, ggain, FAR), NIGHT_GROUND, night);
+      if (s.air) far = mix(far, skyColors[4], 0.3);       // vzdálený kopec zamlží vzduch mezi ním a vámi
+      farHill.setAttribute("fill", css(far));
+      nearHill.setAttribute("fill", css(mix(groundColor(g.lit, ggain, NEAR), NIGHT_GROUND, night)));
+      rock.setAttribute("fill", css(mix(groundColor(g.lit, ggain, ROCK), NIGHT_GROUND, night)));
+      const len = s.h > 0 ? Math.min(150, 26 / Math.tan((s.h * Math.PI) / 180)) : 0;
+      shadow.setAttribute("cx", (480 + len / 2).toFixed(1)); shadow.setAttribute("rx", (8 + len / 2).toFixed(1));
+      shadow.setAttribute("fill", css(mix(groundColor(g.shade, ggain, NEAR), NIGHT_GROUND, night)));
+      shadow.setAttribute("opacity", s.h > 0 ? "1" : "0");
 
       const sx = 96 + (Math.max(0, s.h) / 90) * 224, sy = HORIZON - (s.h / 90) * 262 + 4;
       sun.setAttribute("cx", sx.toFixed(1)); sun.setAttribute("cy", sy.toFixed(1)); sun.setAttribute("fill", css(sunColor));
@@ -339,7 +368,9 @@
 
       let status;
       if (!s.air) {
-        status = "<strong>Bez vzduchu.</strong> Světlo letí rovně a nic ho nerozptýlí do stran. Slunce je čistě bílé a všude kolem něj je černo, i ve dne.";
+        status = s.h > 0
+          ? "<strong>Bez vzduchu.</strong> Světlo letí rovně a nic ho nerozptýlí do stran. Obloha je černá i ve dne a Slunce čistě bílé. Krajina na slunci ale svítí skoro stejně jako se vzduchem, jen stín je úplně černý."
+          : "<strong>Bez vzduchu a za obzorem.</strong> Noc přišla naráz. Bez vzduchu nemá vysoko nad vámi co rozptýlit světlo zapadlého Slunce, a tak není žádný soumrak.";
       } else if (s.h < -1) {
         status = "<strong>Slunce je pod obzorem.</strong> Přímé světlo k vám už nedojde. Obloha ještě chvíli svítí tím, které se rozptýlilo vysoko nad vámi, kam Slunce pořád dosvítí.";
       } else if (s.h < 7) {
@@ -347,7 +378,7 @@
       } else if (s.h < 25) {
         status = "<strong>Slunce je nízko.</strong> Cesta vzduchem se prodlužuje a Slunce žloutne, protože přichází o čím dál víc modré. Obloha nad hlavou je pořád modrá.";
       } else {
-        status = "<strong>Den.</strong> Sluneční světlo jde vzduchem krátkou cestou a ztratí jen trochu modré. Ta se rozlétne po obloze a přichází ze všech stran. Slunce samo je skoro bílé.";
+        status = "<strong>Den.</strong> Sluneční světlo jde vzduchem krátkou cestou a ztratí jen trochu modré. Ta se rozlétne po obloze a přichází ze všech stran. Slunce samo je skoro bílé a stín kamene není černý, prosvětluje ho modré světlo z oblohy.";
       }
       put($("status"), status, true);
     }
