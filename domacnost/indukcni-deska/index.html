@@ -96,7 +96,7 @@
     <section class="tldr" aria-labelledby="h-zkratka">
       <h2 class="label" id="h-zkratka">Ve zkratce</h2>
       <ul>
-        <li>Pod sklem je cívka. Teče jí proud, který desítkytisíckrát za sekundu mění směr, a kolem cívky vzniká stejně rychle se měnící magnetické pole.</li>
+        <li>Pod sklem je cívka. Teče jí proud, který desítky tisíckrát za sekundu mění směr, a kolem cívky vzniká stejně rychle se měnící magnetické pole.</li>
         <li><span class="hl">Měnící se pole rozproudí ve dně hrnce elektrický proud a ten dno rozpálí.</span> Hrnec je topné těleso, deska jen vysílač.</li>
         <li>Funguje to jen v železe a magnetické oceli. Hliník a měď vedou proud až moc dobře a skoro se nezahřejí.</li>
       </ul>
@@ -180,7 +180,7 @@
     <section class="sec" aria-labelledby="h-civka">
       <div class="prose">
         <h2 id="h-civka">Cívka a hrnec</h2>
-        <p>Pod sklem leží plochá spirála z měděného drátu. Když jí teče proud, chová se jako magnet. Elektronika desky ten proud žene střídavě tam a zpátky, asi pětadvacettisíckrát za sekundu, a magnetické pole nad deskou se stejně rychle otáčí naruby.</p>
+        <p>Pod sklem leží plochá spirála z měděného drátu. Když jí teče proud, chová se jako magnet. Elektronika desky ten proud žene střídavě tam a zpátky, asi pětadvacettisíckrát za sekundu, a magnetické pole nad deskou stejně rychle obrací směr.</p>
         <p>Michael Faraday zjistil už roku 1831, co se stane, když do měnícího se magnetického pole vložíte kus kovu: začne v něm téct proud. Nikdo ho tam nepřivádí drátem, vyrobí ho pole samo. Ve dně hrnce ten proud krouží v kruzích, pořád dokola, a říká se mu vířivý.</p>
         <p><span class="hl">Proud, který teče kovem, kov zahřívá.</span> Stejně hřeje spirála ve fénu nebo vlákno v žárovce. Tady je topnou spirálou samo dno hrnce. Deska s hrncem dohromady tvoří transformátor, jehož druhé vinutí je spojené nakrátko a celé se vaří.</p>
       </div>
@@ -414,7 +414,7 @@
     /* ---------- běh ---------- */
     let last = 0, running = false;
     function tick(now) {
-      const dt = Math.min(0.1, (now - last) / 1000), sim = dt * SPEED;
+      const dt = Math.max(0, Math.min(0.1, (now - last) / 1000)), sim = dt * SPEED;
       last = now;
       if (s.hob === "cer") {
         s.glow += ((s.on ? 1 : 0) - s.glow) * (1 - Math.exp(-sim / LAG));

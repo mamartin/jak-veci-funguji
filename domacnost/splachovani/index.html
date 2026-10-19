@@ -158,7 +158,7 @@
         <h2 id="h-proteka">Když záchod protéká</h2>
         <p>Klapka vypouštěcího ventilu časem ztvrdne nebo se na ni usadí vodní kámen a přestane těsnit. Voda pak tenkým pramínkem teče do mísy, hladina v nádržce pomalu klesá, plovák to pozná a čas od času ji dopustí. Slyšet je jen občasné zasyčení.</p>
         <p>Vypadá to nevinně, ale teče to dnem i nocí. Protékající záchod spotřebuje klidně několik set litrů denně, tedy víc než celá domácnost dohromady.</p>
-        <p>Poznáte to snadno. Kápněte do nádržky trochu potravinářského barviva a čtvrt hodiny nesplachujte. Když se barva objeví v míse, ventil netěsní. Nová klapka stojí pár desítek korun.</p>
+        <p>Poznáte to snadno. Kápněte do nádržky trochu potravinářského barviva a čtvrt hodiny nesplachujte. Když se barva objeví v míse, ventil netěsní. Nové těsnění ventilu stojí pár desítek korun.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
@@ -395,7 +395,7 @@
 
     let prev = performance.now();
     function frame(now) {
-      let dt = Math.min(0.1, (now - prev) / 1000);
+      let dt = Math.max(0, Math.min(0.1, (now - prev) / 1000));
       prev = now;
       // samotné protékání je pomalé, proto se čekání mezi dopouštěním zrychluje
       if (s.leak && !s.open && !s.filling) dt *= LEAK_SPEED;

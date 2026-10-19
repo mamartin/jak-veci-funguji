@@ -254,7 +254,7 @@
         <h2 id="h-dvirka">Proč vlny neutečou dvířky</h2>
         <p>Ve skle dvířek je plech s dírkami o průměru jeden až dva milimetry. Vlna dlouhá 12 centimetrů se do tak malého otvoru „nevejde“ a plech se pro ni chová jako plná stěna. Světlo má vlnovou délku asi půl tisíciny milimetru, a tak dírkami projde bez potíží. Vy vidíte dovnitř, mikrovlny nevidí ven.</p>
         <p>Trochu vln přece jen uniká, hlavně kolem těsnění. Norma dovoluje nejvýš 5 miliwattů na čtvereční centimetr ve vzdálenosti 5 centimetrů od trouby, což je hluboko pod hranicí, kdy by vás to mohlo znatelně ohřát. Dvířka navíc mají několik spínačů, které magnetron vypnou dřív, než se stačí otevřít.</p>
-        <p>Mikrovlny nejsou radioaktivita. Foton mikrovlny, tedy nejmenší možná dávka záření, nese asi dvěstětisíckrát méně energie než foton viditelného světla. Na rozbití chemické vazby zdaleka nestačí. Umí jen ohřívat. Jídlo po nich nezáří a ve chvíli, kdy trouba vypne, jsou vlny pryč.</p>
+        <p>Mikrovlny nejsou radioaktivita. Foton mikrovlny, tedy nejmenší možná dávka záření, nese asi dvě stě tisíckrát méně energie než foton viditelného světla. Na rozbití chemické vazby zdaleka nestačí. Umí jen ohřívat. Jídlo po nich nezáří a ve chvíli, kdy trouba vypne, jsou vlny pryč.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Na okraj</span>
@@ -576,7 +576,7 @@
 
     let prev = performance.now(), wall = 0;
     function frame(now) {
-      const dt = Math.min(0.1, (now - prev) / 1000);
+      const dt = Math.max(0, Math.min(0.1, (now - prev) / 1000));
       prev = now;
       wall += dt;
       step(dt * SPEED);

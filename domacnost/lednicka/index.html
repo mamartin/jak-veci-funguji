@@ -216,7 +216,7 @@
       <div class="prose">
         <h2 id="h-var">Trik je v bodu varu</h2>
         <p>Když se kapalina vypařuje, bere si teplo z okolí. Znáte to z ruky namočené v lihu nebo z mokrého trička ve větru. Když pára zase zkapalní, stejné teplo vrátí.</p>
-        <p>Teplota, při které kapalina vře, navíc záleží na tlaku. Voda vře u moře při 100 °C, na vrcholu Mount Everestu už asi při 70 °C. Chladivo v dnešních ledničkách, isobutan, vře za běžného tlaku při −12 °C. Když tlak snížíte na 0,7 baru, vře už při −20 °C. Když ho stlačíte na 5 barů, zůstane kapalné až do 38 °C.</p>
+        <p>Teplota, při které kapalina vře, navíc záleží na tlaku, jak to využívá i <a href="../tlakovy-hrnec/">tlakový hrnec</a>. Voda vře u moře při 100 °C, na vrcholu Mount Everestu už asi při 70 °C. Chladivo v dnešních ledničkách, isobutan, vře za běžného tlaku při −12 °C. Když tlak snížíte na 0,7 baru, vře už při −20 °C. Když ho stlačíte na 5 barů, zůstane kapalné až do 38 °C.</p>
         <p>Lednička tedy dělá jedinou věc: <span class="hl">mění tlak chladiva.</span> Tam, kde má teplo brát, ho nechá vařit při nízkém tlaku. Tam, kde má teplo odevzdat, ho stlačí, aby zkapalnělo.</p>
       </div>
       <aside class="note" aria-label="Lednička v číslech">
@@ -605,7 +605,7 @@
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let prev = performance.now(), waveOff = 0;
     function frame(now) {
-      const dt = Math.min(0.1, (now - prev) / 1000);
+      const dt = Math.max(0, Math.min(0.1, (now - prev) / 1000));
       prev = now;
       step(dt);
       if (!reduced) {

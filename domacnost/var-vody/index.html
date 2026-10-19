@@ -198,7 +198,7 @@
       <div class="prose">
         <h2 id="h-zarodek">Proč bublina nevznikne jen tak</h2>
         <p>Dalo by se čekat, že při sto stupních se voda začne měnit v páru všude najednou. Nezačne. V cestě stojí povrchové napětí, stejná síla, která drží pohromadě kapku.</p>
-        <p>Hladina vody se chová jako napnutá blána, která se snaží co nejvíc smrštit. Bublina je kulatá díra ve vodě a její stěna je taková blána. Stahuje se a páru uvnitř mačká. Čím menší bublina, tím je stěna zakřivenější a tím silněji tlačí. U bubliny o průměru milimetru je to zanedbatelné. U bubliny velké tisícinu milimetru už tlak navíc dělá víc než jednu atmosféru. A bublina, která by se teprve rodila z několika molekul, by na sebe tlačila silou stovek atmosfér.</p>
+        <p>Hladina vody se chová jako napnutá blána, která se snaží co nejvíc smrštit. Bublina je kulatá díra ve vodě a její stěna je taková blána. Stahuje se a páru uvnitř mačká. Čím menší bublina, tím je stěna zakřivenější a tím silněji tlačí. U bubliny o průměru milimetru je to zanedbatelné. U bubliny velké tisícinu milimetru už tlak navíc dělá víc než jednu atmosféru. A bublina, která by se teprve rodila z několika molekul, by na sebe tlačila tlakem stovek atmosfér.</p>
         <p>Pára o sto stupních takový tlak nemá. Maličkou bublinku proto blána okamžitě rozmáčkne dřív, než stačí vyrůst. <span class="hl">Bublina nemůže začít z ničeho.</span> Musí začít z něčeho, co už je dost velké.</p>
       </div>
       <aside class="note" aria-label="Var v číslech">
@@ -636,7 +636,7 @@
 
     let prev = performance.now();
     function frame(now) {
-      const dt = Math.min(0.1, (now - prev) / 1000);
+      const dt = Math.max(0, Math.min(0.1, (now - prev) / 1000));
       prev = now;
       steamT += dt;
       step(dt);

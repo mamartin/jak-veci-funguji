@@ -49,6 +49,7 @@
     .push-head { fill: var(--cat); }
     .dial { fill: var(--surface); stroke: var(--metal-line); stroke-width: 1.4; }
     .needle { stroke: var(--hot); stroke-width: 2.4; stroke-linecap: round; }
+    .rd-bg { fill: var(--surface); opacity: 0.7; }
     .rd-val { fill: var(--ink); font: 800 46px var(--font-display); font-stretch: 112%; font-variant-numeric: tabular-nums; text-anchor: middle; }
     .rd-cap { fill: var(--ink-2); font: 500 12px var(--font-mono); letter-spacing: 0.06em; text-anchor: middle; }
     .lbl { fill: var(--ink-2); font: 500 12px var(--font-mono); }
@@ -275,6 +276,7 @@
     // šipky: pára tlačí na pokličku
     const pushes = [150, 190, 262].map((x) => { const g = el("g", {}, lid); el("line", { x1: x, y1: 176, x2: x, y2: 160, class: "push" }, g); el("path", { d: `M${x - 5} 162L${x} 152L${x + 5} 162Z`, class: "push-head" }, g); return g; });
     const steam = [0, 1, 2].map((i) => el("path", { class: "jet" }, pot));    // pára z otevřeného hrnce
+    el("rect", { x: 152, y: 242, width: 156, height: 74, rx: 6, class: "rd-bg" }, pot);    // podklad, ať bubliny nepřekrývají údaj
     const tVal = el("text", { x: 230, y: 304, class: "rd-val" }, pot), tCap = el("text", { x: 230, y: 258, class: "rd-cap" }, pot);
     tCap.textContent = "VODA VŘE PŘI";
     const airT = el("text", { x: 20, y: 36, class: "lbl" }, pot), inT = el("text", { x: 20, y: 56, class: "lbl" }, pot);

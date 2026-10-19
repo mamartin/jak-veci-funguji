@@ -51,7 +51,7 @@
     .legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; margin: 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-2); }
     .legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
     .legend i { width: 0.7rem; height: 0.7rem; }
-    @media (max-width: 46rem) { .tag { display: none; } .c-text { font-size: 17px; } }
+    @media (max-width: 46rem) { .tag { display: none; } .c-text { font-size: 22px; } .c-minor { display: none; } }
   </style>
 </head>
 <body data-cat="domacnost">
@@ -155,7 +155,7 @@
         <span class="label">V číslech</span>
         <dl class="facts">
           <div><dt>≈ 70 °C</dt><dd>má čaj v dobré termosce po dvanácti hodinách</dd></div>
-          <div><dt>půl hodiny</dt><dd>stačí, aby tentýž čaj v hrnku zvlažněl</dd></div>
+          <div><dt>hodina</dt><dd>stačí, aby tentýž čaj v hrnku zvlažněl</dd></div>
           <div><dt>1892</dt><dd>rok, kdy skotský chemik James Dewar postavil první termosku</dd></div>
         </dl>
       </aside>
@@ -192,7 +192,7 @@
         <h2 id="h-zatka">Slabé místo je nahoře</h2>
         <p>Úplně oddělit dvě nádoby nejde. Někudy se musí nalévat a někde na sobě musejí držet. To místo je hrdlo. Vnitřní a vnější stěna se tam potkávají a teplo po tenkém plechu pomalu přeleze ven. Zátka ucpává otvor, ale sama je z plastu a trochu vede.</p>
         <p>U dobré termosky tudy odchází většina tepla. Proto mají termosky úzké hrdlo a proto drží teplo hůř termohrnky se širokým víkem, ze kterého se dá pít.</p>
-        <p>A proto se vyplatí neotvírat ji zbytečně. Otevřená termoska je hrnec bez pokličky. Z hladiny horkého čaje stoupá pára a s každým gramem vypařené vody odchází spousta tepla.</p>
+        <p>A proto se vyplatí neotvírat ji zbytečně. Otevřená termoska je hrnec bez pokličky. Z hladiny horkého čaje stoupá pára a s každým gramem vypařené vody odchází <a href="../var-vody/">spousta tepla</a>.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Na okraj</span>
@@ -245,7 +245,7 @@
     /* ---------- model: kolik wattů uteče na každý stupeň rozdílu ---------- */
     const ROOM = 22, START = { hot: 92, cold: 4 };
     const HEAT_CAP = 0.75 * 4186;                    // tři čtvrtě litru vody, J/K
-    const MUG = (0.25 * 4186) / 1.2 / 3600;          // časová konstanta hrnku v hodinách
+    const MUG = (0.25 * 4186) / 0.6 / 3600;          // časová konstanta hrnku v hodinách
     const s = { vacuum: true, mirror: true, cork: true, fill: "hot", hours: 0 };
     function paths() {
       return {
@@ -312,7 +312,7 @@
       el("line", { x1: G.x, y1: gy(t), x2: G.x + G.w, y2: gy(t), class: t ? "c-grid" : "c-axis" }, svg);
       el("text", { x: G.x - 8, y: gy(t) + 4, "text-anchor": "end", class: "c-text" }, svg).textContent = `${t}°`;
     });
-    [0, 6, 12, 18, 24].forEach((h) => el("text", { x: gx(h), y: G.y + G.h + 20, "text-anchor": "middle", class: "c-text" }, svg).textContent = `${h} h`);
+    [0, 6, 12, 18, 24].forEach((h) => el("text", { x: gx(h), y: G.y + G.h + 20, "text-anchor": "middle", class: h % 12 ? "c-text c-minor" : "c-text" }, svg).textContent = `${h} h`);
     el("line", { x1: G.x, y1: G.y, x2: G.x, y2: G.y + G.h, class: "c-axis" }, svg);
     el("line", { x1: G.x, y1: gy(ROOM), x2: G.x + G.w, y2: gy(ROOM), class: "c-room" }, svg);
     el("text", { x: G.x + G.w, y: gy(ROOM) - 6, "text-anchor": "end", class: "c-text" }, svg).textContent = "pokoj";

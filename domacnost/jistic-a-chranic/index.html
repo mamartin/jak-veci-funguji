@@ -180,7 +180,7 @@
         <h2 id="h-clovek">Proč jistič člověka nezachrání</h2>
         <p>Když se dotknete živého drátu a stojíte přitom na zemi, proud poteče přes vás do země. Lidské tělo mu klade odpor kolem dvou tisíc ohmů, takže při 230 voltech jím projde asi 115 miliampérů. To je desetina ampéru.</p>
         <p>Jistič na šestnáct ampérů takový proud nezaznamená. Je to pro něj totéž jako rozsvícená žárovka. Pro srdce je to ale víc než dost. Už od deseti miliampérů křeč sevře ruku tak, že se člověk nedokáže pustit. Kolem třiceti přestává stačit dech. Sto miliampérů po dobu jedné sekundy rozhodí srdeční rytmus.</p>
-        <p><span class="hl">Jistič tedy člověka před úrazem proudem neochrání.</span> Chrání dráty. Na lidi je potřeba něco, co pozná proud tisíckrát menší.</p>
+        <p><span class="hl">Jistič tedy člověka před úrazem proudem neochrání.</span> Chrání dráty. Na lidi je potřeba něco, co pozná proud několiksetkrát menší.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
@@ -304,13 +304,20 @@
     // proud ve vodičích jako běžící tečky
     const flowL = el("path", { d: `M72 ${Y.l}H${END.n}`, class: "flow" }, svg), flowN = el("path", { d: `M72 ${Y.n}H${END.n}`, class: "flow back" }, svg);
     // spotřebiče
+    const labels = [];
     const apps = APPS.map((a, i) => {
       const x = APP_X[i];
       el("path", { d: `M${x} ${Y.l}V176`, class: "w l thin" }, svg);
       el("path", { d: `M${x} 220V${Y.n}`, class: "w n thin" }, svg);
-      el("text", { x, y: i % 2 ? 106 : 120, class: "t mid" }, svg).textContent = a.name;
+      labels.push(el("text", { x, class: "t mid" }, svg));
+      labels[i].textContent = a.name;
       return el("rect", { x: x - 20, y: 176, width: 40, height: 44, rx: 5, class: "app" }, svg);
     });
+    // názvy spotřebičů ve dvou řadách, na úzkém displeji s větším písmem ve čtyřech, aby se nepřekrývaly
+    const narrow = window.matchMedia("(max-width: 46rem)");
+    const placeLabels = () => labels.forEach((t, i) => t.setAttribute("y", narrow.matches ? 116 - i * 20 : i % 2 ? 106 : 120));
+    narrow.addEventListener("change", placeLabels);
+    placeLabels();
     // jistič: páčka, bimetal a cívka
     el("rect", { x: MCB.x, y: 86, width: MCB.w, height: 74, rx: 5, class: "box" }, svg);
     el("text", { x: MCB.x + MCB.w / 2, y: 50, class: "t strong mid" }, svg).textContent = "JISTIČ";
