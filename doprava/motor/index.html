@@ -106,7 +106,7 @@
         </figure>
       </div>
       <div class="fig-controls">
-        <button type="button" class="btn" id="play" aria-pressed="false">Zastavit</button>
+        <button type="button" class="btn" id="play">Zastavit</button>
         <button type="button" class="btn ghost" id="next">Další doba</button>
         <div class="ctl ctl-grow">
           <label class="label" for="speed">Rychlost</label>
@@ -156,7 +156,7 @@
       <div class="prose">
         <h2 id="h-doby">Čtyři doby</h2>
         <ol class="steps">
-          <li><div><b>Sání.</b> Píst jde dolů a sací ventil je otevřený. Ve válci se dělá místo a tlak okolního vzduchu do něj natlačí čerstvou směs vzduchu s benzinovou mlhou.</div></li>
+          <li><div><b>Sání.</b> Píst jde dolů a sací ventil je otevřený. Ve válci se dělá místo a tlak okolního vzduchu do něj natlačí čerstvou směs vzduchu s benzínovou mlhou.</div></li>
           <li><div><b>Stlačení.</b> Oba ventily jsou zavřené a píst jde nahoru. Směs zmáčkne na desetinu původního objemu. Stlačený plyn se zahřeje na několik set stupňů a po zapálení hoří mnohem prudčeji než volně.</div></li>
           <li><div><b>Hoření.</b> Těsně před horní polohou přeskočí na svíčce jiskra. Směs shoří za pár tisícin sekundy, teplota vyletí ke dvěma tisícům stupňů a tlak na desítky atmosfér. Plyn tlačí píst dolů. Tohle je jediná doba, která dává sílu.</div></li>
           <li><div><b>Výfuk.</b> Otevře se výfukový ventil a píst cestou nahoru vytlačí spálené plyny ven. Nahoře se výfukový ventil zavře, sací otevře a jede se znovu.</div></li>
@@ -164,7 +164,7 @@
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
-        <p>Zastavte motor a mačkejte Další doba. U každé si všimněte, který ventil je otevřený a kterým směrem jde píst. Pak sledujte graf tlaku: tři doby se drží u dna a třetí vystřelí.</p>
+        <p>Zastavte motor a mačkejte Další doba. U každé si všimněte, který ventil je otevřený a kterým směrem jde píst. Pak sledujte graf tlaku: při sání a výfuku se drží u dna, při stlačení stoupá a při hoření vystřelí nahoru.</p>
       </aside>
     </section>
 
@@ -189,13 +189,13 @@
     <section class="sec" aria-labelledby="h-nafta">
       <div class="prose">
         <h2 id="h-nafta">Nafta: bez svíčky</h2>
-        <p>Naftový motor má stejné čtyři doby, ale zapaluje jinak. Nasává čistý vzduch, bez paliva, a stlačí ho skoro dvakrát víc než benzínový. Vzduch se tím zahřeje na šest set stupňů. Teprve do toho rozžhaveného vzduchu vstřikovač nastříkne naftu, a ta se vznítí sama.</p>
+        <p>Naftový motor má stejné čtyři doby, ale zapaluje jinak. Nasává čistý vzduch, bez paliva, a stlačí ho skoro dvakrát víc než benzínový. Vzduch se tím zahřeje na víc než pět set stupňů. Teprve do toho rozžhaveného vzduchu vstřikovač nastříkne naftu, a ta se vznítí sama.</p>
         <p>Benzínový motor si takhle silné stlačení dovolit nemůže. Směs by se vznítila dřív, než má, ještě když píst jde nahoru. Tomu se říká klepání a motor to ničí.</p>
         <p>Silnější stlačení znamená, že se z paliva vytěží víc práce. Proto mají naftové motory menší spotřebu. Musejí ale vydržet větší tlaky, jsou těžší a hlučnější.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
-        <p>Přepněte na Naftu. Píst v horní poloze zajede blíž k hlavě, tlak na konci stlačení je několikrát vyšší a místo svíčky je nahoře vstřikovač.</p>
+        <p>Přepněte na Naftu. Píst v horní poloze zajede blíž k hlavě, tlak na konci stlačení je víc než dvakrát vyšší a místo svíčky je nahoře vstřikovač.</p>
       </aside>
     </section>
 
@@ -391,7 +391,6 @@
       ][g.st];
       put($("status"), text, true);
       put($("play"), s.playing ? "Zastavit" : "Spustit");
-      $("play").setAttribute("aria-pressed", String(!s.playing));
       put($("speed-val"), `${s.speed} ot/min`);
     }
 

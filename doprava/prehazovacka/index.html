@@ -66,7 +66,7 @@
     <section class="tldr" aria-labelledby="h-zkratka">
       <h2 class="label" id="h-zkratka">Ve zkratce</h2>
       <ul>
-        <li>Převod je poměr zubů vpředu a vzadu. Říká, kolikrát se zadní kolo otočí na jedno šlápnutí.</li>
+        <li>Převod je poměr zubů vpředu a vzadu. Říká, kolikrát se zadní kolo otočí, když pedály opíšou jedno celé kolo.</li>
         <li>Lehký převod znamená <span class="hl">míň síly, ale víc šlapání.</span> Těžký naopak. Práce je stejná.</li>
         <li>Přehazovačka řetěz jen postrčí do strany. Přelézt na sousední kolečko mu pomůže to, že se točí.</li>
       </ul>
@@ -111,7 +111,7 @@
         </div>
         <ul class="stats" aria-label="Stav modelu">
           <li><span class="n">Převod</span><span class="v" id="st-ratio"></span></li>
-          <li><span class="n">Jedno šlápnutí</span><span class="v" id="st-dev"></span></li>
+          <li><span class="n">Jedna otáčka pedálů</span><span class="v" id="st-dev"></span></li>
           <li><span class="n">Rychlost</span><span class="v" id="st-speed"></span></li>
         </ul>
       </div>
@@ -129,7 +129,7 @@
         <span class="label">V číslech</span>
         <dl class="facts">
           <div><dt>12,7 mm</dt><dd>rozteč článků řetězu, půl palce</dd></div>
-          <div><dt>≈ 98 %</dt><dd>síly z pedálů přenese čistý řetěz na kolo</dd></div>
+          <div><dt>≈ 98 %</dt><dd>výkonu z pedálů přenese čistý řetěz na kolo</dd></div>
           <div><dt>80–90</dt><dd>otáček za minutu točí nohama trénovaní cyklisté</dd></div>
         </dl>
       </aside>
@@ -138,8 +138,8 @@
     <section class="sec" aria-labelledby="h-zuby">
       <div class="prose">
         <h2 id="h-zuby">Stačí počítat zuby</h2>
-        <p>Řetěz je ozubený převod natažený do délky. Každý zub převodníku vpředu posune řetěz o jeden článek a každý článek pootočí kolečko vzadu o jeden zub. Když má převodník 50 zubů a kolečko 25, otočí se zadní kolo na jedno šlápnutí dvakrát.</p>
-        <p>Menší kolečko vzadu znamená víc otáček kola na šlápnutí, tedy těžší převod. Ujedete dál, ale musíte víc tlačit. Větší kolečko je lehčí převod: tlačíte míň a ujedete míň.</p>
+        <p>Řetěz je ozubený převod natažený do délky. Každý zub převodníku vpředu posune řetěz o jeden článek a každý článek pootočí kolečko vzadu o jeden zub. Když má převodník 50 zubů a kolečko 25, otočí se zadní kolo na jednu otáčku pedálů dvakrát.</p>
+        <p>Menší kolečko vzadu znamená víc otáček kola na jednu otáčku pedálů, tedy těžší převod. Ujedete dál, ale musíte víc tlačit. Větší kolečko je lehčí převod: tlačíte míň a ujedete míň.</p>
         <p>Zadarmo to není ani jedním směrem. <span class="hl">Co ušetříte na síle, zaplatíte počtem šlápnutí.</span> Na kopec vyvezete stejnou váhu do stejné výšky a práce je to pořád stejná. Lehký převod ji jen rozdělí na víc menších kousků, které nohy zvládnou.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
@@ -345,15 +345,15 @@
       put($("st-speed"), `${fmt0.format(Math.round(speed))} km/h`);
       put($("rear-val"), `${nr} z.`);
       const push = (20 * CRANK_MM) / WHEEL_R_MM / ratio;
-      put($("force"), `kolo se na jedno šlápnutí otočí <b>${fmt2.format(ratio)}×</b> · když na pedál tlačíte vahou 20 kg, zadní kolo se do silnice opírá silou <b>${fmt1.format(push)} kg</b>`, true);
+      put($("force"), `kolo se na jednu otáčku pedálů otočí <b>${fmt2.format(ratio)}×</b> · když na pedál tlačíte vahou 20 kg, zadní kolo se do silnice opírá silou <b>${fmt1.format(push)} kg</b>`, true);
 
       let status;
       if ((s.front === 1 && s.rear <= 1) || (s.front === 0 && s.rear >= 6)) {
         status = "<strong>Řetěz se kříží.</strong> Vpředu běží po jedné straně, vzadu po opačné. Ve skutečnosti by šel šikmo, dřel o boky zubů a drnčel. Stejný převod jde zařadit i s druhým převodníkem.";
       } else if (ratio < 1.6) {
-        status = "<strong>Lehký převod do kopce.</strong> Zadní kolo se na jedno šlápnutí sotva otočí, zato se do silnice opírá velkou silou. Nohy se točí, i když kolo skoro stojí.";
+        status = "<strong>Lehký převod do kopce.</strong> Zadní kolo se na jednu otáčku pedálů sotva otočí, zato se do silnice opírá velkou silou. Nohy se točí, i když kolo skoro stojí.";
       } else if (ratio > 3.2) {
-        status = "<strong>Těžký převod z kopce.</strong> Na jedno šlápnutí ujedete hodně metrů, ale síla na zadním kole je malá. Do kopce byste s ním nohy neprotočili.";
+        status = "<strong>Těžký převod z kopce.</strong> Na jednu otáčku pedálů ujedete hodně metrů, ale síla na zadním kole je malá. Do kopce byste s ním nohy neprotočili.";
       } else {
         status = "<strong>Střední převod na rovinu.</strong> Nohy se točí pohodlným tempem a kolo jede cestovní rychlostí.";
       }

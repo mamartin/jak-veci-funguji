@@ -153,7 +153,7 @@
         <h2 id="h-povetru">Po větru to umí každý</h2>
         <p>Nejjednodušší plachta je prostěradlo napnuté napříč lodi. Vítr se do něj opře a tlačí loď před sebou. Tak pluly vory, egyptské čluny i vikingské lodě, když měly štěstí na směr.</p>
         <p>Má to dvě vady. Loď může plout jen zhruba tam, kam fouká. A nikdy nepopluje rychleji než vítr, dokonce ani stejně rychle. Čím rychleji jede, tím slabší vítr na palubě cítí, a kdyby vítr dohnala, plachta by zplihla.</p>
-        <p>Velké plachetnice s příčnými plachtami je uměly natočit a plout i napříč větru, proti němu ale jen velmi tupě. Jejich kapitáni proto čekali v přístavech i týdny na příznivý vítr a přes oceány pluli po oklikách, kterými vanou stálé pasáty.</p>
+        <p>Velké plachetnice s příčnými plachtami je uměly natočit a plout i napříč větru. Proti němu ale moc nezvládly: ostřeji než asi šedesát stupňů od větru nepluly. Jejich kapitáni proto čekali v přístavech i týdny na příznivý vítr a přes oceány pluli po oklikách, kterými vanou stálé pasáty.</p>
       </div>
       <aside class="note" aria-label="Plachtění v číslech">
         <span class="label">V číslech</span>
@@ -422,6 +422,10 @@
         status = "<strong>Plachta je moc přitažená.</strong> Stojí větru v cestě, proud vzduchu se od ní odtrhl a místo tahu vpřed zbyl hlavně tlak do boku. Povolte ji.";
       } else if (s.course >= 150) {
         status = "<strong>Po větru.</strong> Vítr se do plachty jen opírá. Loď jede pomaleji než vítr a čím rychleji jede, tím slabší vítr na palubě cítí.";
+      } else if (s.course >= 80 && !s.keel) {
+        status = "<strong>Bez kýlu loď jede, ale klouže bokem.</strong> Síla na plachtu míří dost dopředu, takže se loď rozjede. Boční část síly ji ale zároveň snáší po větru a nic ji nezachytí.";
+      } else if (s.course >= 110) {
+        status = "<strong>Zadoboční vítr.</strong> Vítr přichází šikmo zezadu. Plachta je povolená daleko do strany a síla na ni míří skoro celá dopředu. Zdánlivý vítr ale s rychlostí slábne, a tak loď jede o kousek pomaleji než s bočním větrem.";
       } else if (s.course >= 80) {
         status = "<strong>Boční vítr.</strong> Nejrychlejší kurz. Síla na plachtu míří hodně dopředu a zdánlivý vítr je silný. Kýl drží jen mírný boční tlak.";
       } else {

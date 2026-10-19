@@ -340,7 +340,8 @@
       put($("st-left"), `${fmt0.format(Math.round(toRpm(o.left)))}/min`);
       put($("st-right"), `${fmt0.format(Math.round(toRpm(o.right)))}/min`);
       put($("st-car"), o.car > 0.1 ? `${fmt0.format(Math.round(o.car * 3.6))} km/h` : "stojí");
-      put($("turn-val"), Math.abs(s.turn) < 3 ? "rovně" : s.turn > 0 ? "doprava" : "doleva");
+      // na ledu auto jede jen rovně a volant je vypnutý
+      put($("turn-val"), s.road === "ice" || Math.abs(s.turn) < 3 ? "rovně" : s.turn > 0 ? "doprava" : "doleva");
 
       let status;
       if (s.road === "ice" && !s.lock) {
@@ -361,7 +362,7 @@
     }
 
     /* ---------- ovládání ---------- */
-    $("turn").addEventListener("input", (e) => { s.turn = Number(e.target.value); });
+    $("turn").addEventListener("input", (e) => { s.turn = Number(e.target.value); render(solve()); });
     function bindSeg(id, apply) {
       const seg = $(id);
       seg.addEventListener("click", (e) => {
@@ -369,6 +370,7 @@
         if (!b) return;
         seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
         apply(b.dataset.v);
+        render(solve());
       });
     }
     bindSeg("road-seg", (v) => { s.road = v; $("turn").disabled = v === "ice"; });

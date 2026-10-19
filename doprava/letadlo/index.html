@@ -53,6 +53,7 @@
     .c-line { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linejoin: round; }
     .c-zone { fill: var(--bad); opacity: 0.12; }
     .c-dot { fill: var(--cat); stroke: var(--surface); stroke-width: 1.5; }
+    .c-need { stroke: var(--ink-2); stroke-width: 1.4; stroke-dasharray: 4 3; }
     .c-text { fill: var(--ink-2); font: 500 10.5px var(--font-mono); }
     .c-text.red { fill: var(--bad); }
     @media (max-width: 46rem) { .force text { font-size: 20px; stroke-width: 6px; } }
@@ -125,7 +126,7 @@
           <li><span class="n">Letadlo</span><span class="v small" id="st-state"></span></li>
         </ul>
       </div>
-      <figcaption class="fig-caption">Proudění je spočítané pro ideální vzduch bez tření, takže odtržení při velkém náklonu je v modelu jen naznačené. Síly platí pro malé čtyřmístné letadlo o hmotnosti jedné tuny s křídlem o ploše 16 m². Tlačítko Vypustit kouř pošle do proudu svislou řadu teček.</figcaption>
+      <figcaption class="fig-caption">Proudění je spočítané pro ideální vzduch bez tření, takže odtržení při velkém náklonu je v modelu jen naznačené. Síly platí pro malé čtyřmístné letadlo o hmotnosti jedné tuny s křídlem o ploše 16 m². Přerušovaná čára v grafu ukazuje, kolik vztlaku je při dané rychlosti potřeba, aby křídlo letadlo uneslo. Tlačítko Vypustit kouř pošle do proudu svislou řadu teček.</figcaption>
     </figure>
 
     <section class="sec" aria-labelledby="h-dolu">
@@ -167,7 +168,7 @@
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
-        <p>Stáhněte rychlost na 100 km/h. Vztlak spadne hluboko pod tíhu letadla. Pak přidávejte úhel náběhu, dokud se zase nevyrovnají. Kolem 11 stupňů to vyjde.</p>
+        <p>Stáhněte rychlost na 100 km/h. Vztlak spadne hluboko pod tíhu letadla a přerušovaná čára tíhy v grafu vyskočí nahoru. Pak přidávejte úhel náběhu, dokud tečka na čáru nedosáhne. Kolem 11 stupňů to vyjde.</p>
       </aside>
     </section>
 
@@ -202,7 +203,7 @@
         <h2 id="h-tvar">Tak k čemu je ten tvar</h2>
         <p>Když by stačila nakloněná deska, proč mají křídla složitý profil s oblým nosem, vypouklým hřbetem a ostrou zadní hranou?</p>
         <p>Kvůli odporu a kvůli přetažení. Rovná deska nese, ale proud se od ní utrhne už při pár stupních a brzdí jako vrata. Oblý nos dovolí vzduchu obtéct křídlo hladce i při větším náklonu. Vypouklý hřbet dá vztlak už při nulovém náklonu, takže letadlo může letět rovně a s malým odporem. Ostrá zadní hrana zařídí, aby proud opouštěl křídlo čistě a jedním směrem.</p>
-        <p>Dobré křídlo dopravního letadla dá osmnáctkrát víc vztlaku než odporu. Letadlo, kterému ve výšce deseti kilometrů vysadí všechny motory, tak doplachtí skoro dvě stě kilometrů daleko. Stejné křídlo, jen postavené na výšku, používá <a href="../plachetnice/">plachetnice, když pluje proti větru</a>.</p>
+        <p>Dopravní letadlo s dobrým křídlem má vztlak osmnáctkrát větší než odpor. Letadlo, kterému ve výšce deseti kilometrů vysadí všechny motory, tak doplachtí skoro dvě stě kilometrů daleko. Stejné křídlo, jen postavené na výšku, používá <a href="../plachetnice/">plachetnice, když pluje proti větru</a>.</p>
       </div>
     </section>
 
@@ -321,6 +322,10 @@
     el("text", { x: G.x, y: G.y + G.h + 14, class: "c-text" }, curve).textContent = "−4°";
     el("text", { x: G.x + G.w, y: G.y + G.h + 14, "text-anchor": "end", class: "c-text" }, curve).textContent = "20°";
     el("text", { x: G.x + 5, y: G.y + 9, class: "c-text" }, curve).textContent = "vztlak";
+    // kolik vztlaku je potřeba, aby křídlo neslo tíhu letadla; závisí na rychlosti
+    const needLine = el("line", { x1: G.x, x2: G.x + G.w, class: "c-need" }, curve);
+    const needText = el("text", { x: gx(4), "text-anchor": "middle", class: "c-text" }, curve);
+    needText.textContent = "tíha";
     const dot = el("circle", { r: 5, class: "c-dot" }, curve);
 
     /* ---------- výpis ---------- */
@@ -352,6 +357,10 @@
       liftHead.setAttribute("d", `M${CX - 10} ${tip.toFixed(1)} l-9 ${16 * Math.sign(len)} h18 Z`);
       liftText.setAttribute("y", (tip + (len > 0 ? 4 : 12)).toFixed(1));
       dot.setAttribute("cx", gx(s.alpha).toFixed(1)); dot.setAttribute("cy", gy(liftCoef(s.alpha)).toFixed(1));
+      const needY = Math.max(G.y, gy(WEIGHT / (0.5 * RHO * v * v * AREA)));
+      needLine.setAttribute("y1", needY.toFixed(1)); needLine.setAttribute("y2", needY.toFixed(1));
+      needText.setAttribute("y", (needY < G.y + 14 ? needY + 12 : needY - 4).toFixed(1));
+      needText.textContent = needY <= G.y ? "tíha ↑" : "tíha";
 
       put($("st-lift"), `${fmt0.format(Math.round(lift / 100) * 100)} N`);
       put($("st-share"), `${fmt0.format(Math.round(share * 100))} %`);
@@ -396,14 +405,21 @@
     }
 
     /* ---------- ovládání ---------- */
-    $("alpha").addEventListener("input", (e) => { s.alpha = Number(e.target.value); $("alpha-val").textContent = `${String(s.alpha).replace("-", "−")}°`; s.smoke = []; renderStatic(); });
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // bez animace: proud spočítáme naráz a ukážeme ho jako ustálený
+    function settle() { streaks.forEach((p) => seed(p, true)); for (let i = 0; i < 60; i++) frame(0.03); }
+    $("alpha").addEventListener("input", (e) => { s.alpha = Number(e.target.value); $("alpha-val").textContent = `${String(s.alpha).replace("-", "−")}°`; s.smoke = []; renderStatic(); if (reduced) settle(); });
     $("speed").addEventListener("input", (e) => { s.speed = Number(e.target.value); $("speed-val").textContent = `${s.speed} km/h`; renderStatic(); });
     $("smoke").addEventListener("click", () => {
       const a = rad(s.alpha);
       s.smoke = Array.from({ length: 21 }, (_, k) => { const [x, y] = fromScreen(70, 74 + k * 14, a); return { x, y }; });
+      if (reduced) {
+        // kouř posuneme rovnou do chvíle, kdy horní tečky minuly zadní hranu a spodní ještě ne
+        const behind = () => s.smoke.some((p) => { const [zx, zy] = toWing(p.x, p.y); return toScreen(zx, zy, rad(s.alpha))[0] > CX + 190; });
+        for (let i = 0; i < 400 && !behind(); i++) frame(0.02);
+      }
     });
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let prev = performance.now();
     function loop(now) {
       const dt = Math.min(0.05, (now - prev) / 1000);
@@ -412,7 +428,7 @@
       requestAnimationFrame(loop);
     }
     renderStatic();
-    if (reduced) { for (let i = 0; i < 60; i++) frame(0.03); } else requestAnimationFrame(loop);
+    if (reduced) settle(); else requestAnimationFrame(loop);
   })();
   </script>
   <script src="/app.js" defer></script>

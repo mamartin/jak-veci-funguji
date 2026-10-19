@@ -328,7 +328,7 @@
       else if (s.mode === "wave" && s.kmh > 50) status = "<strong>Rychleji to nejde.</strong> Auta ujedou vlně, k další křižovatce dorazí před zelenou a musejí počkat, až je dožene. Na konec ulice dojedou stejně jako při padesátce.";
       else if (s.mode === "wave") status = "<strong>Pomalá auta z vlny vypadnou.</strong> Na každé křižovatce jsou o kus pozdě. Chvíli se v zelené ještě udrží, pak dojedou až po jejím konci.";
       else if (s.mode === "sync") status = "<strong>Všechny naráz.</strong> Zelená padne všude ve stejnou chvíli. Kolona projede, kam za jednu zelenou stihne dojet, a tam zůstane stát do dalšího kola.";
-      else status = "<strong>Každý jinak.</strong> Semafory mají stejný cyklus, ale začínají bez ohledu na sousedy. Jestli auto dojede na zelenou, je náhoda, a ta se na pěti křižovatkách po sobě nepodaří.";
+      else status = "<strong>Každý jinak.</strong> Semafory mají stejný cyklus, ale začínají bez ohledu na sousedy. Jestli auto dojede na zelenou, je náhoda, a ta se na pěti křižovatkách po sobě podaří jen výjimečně.";
       $("status").innerHTML = status;
       draw();
     }
