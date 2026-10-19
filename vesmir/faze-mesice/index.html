@@ -127,7 +127,7 @@
             <button type="button" role="radio" data-v="s" aria-checked="false">Jižní</button>
           </div>
         </div>
-        <button type="button" class="btn" id="play" aria-pressed="false">Zastavit</button>
+        <button type="button" class="btn" id="play" aria-pressed="true">Zastavit</button>
       </div>
       <div class="fig-status mn-status">
         <p class="status" id="status" aria-live="polite"></p>
@@ -212,7 +212,7 @@
     <section class="sec" aria-labelledby="h-tvar">
       <div class="prose">
         <h2 id="h-tvar">Pořád stejná tvář</h2>
-        <p>Ať je fáze jakákoli, skvrny na Měsíci jsou pořád na stejných místech. Měsíc se totiž otočí kolem osy přesně za stejnou dobu, za jakou oběhne Zemi, a ukazuje nám tak stále jednu stranu. Zařídily to <a href="../priliv/">slapové síly</a>, kterými ho Země po miliardy let brzdila.</p>
+        <p>Ať je fáze jakákoli, skvrny na Měsíci jsou pořád na stejných místech. Měsíc se totiž otočí kolem osy přesně za stejnou dobu, za jakou oběhne Zemi, a ukazuje nám tak stále jednu stranu. Zařídily to <a href="../priliv/">slapové síly</a>, kterými ho Země brzdila, dokud se jeho otáčení nesladilo s oběhem. Stalo se to brzy po jeho vzniku.</p>
         <p>Druhé straně se říká odvrácená, ne temná. Slunce na ni svítí stejně často jako na tu naši. Při novu je dokonce osvětlená celá. Poprvé ji lidé viděli až v roce 1959 na snímcích sovětské sondy Luna 3.</p>
       </div>
     </section>
@@ -221,7 +221,7 @@
       <div class="prose">
         <h2 id="h-jih">Na jihu naruby</h2>
         <p>Pomůcka s písmeny D a C platí jen na severní polokouli. V Austrálii nebo v Chile se lidé na Měsíc dívají z opačné strany, vzhůru nohama oproti nám. Dorůstající srpek tam má tvar C a skvrny na úplňku jsou otočené o půl kruhu.</p>
-        <p>Blízko rovníku leží srpek na boku. Večer vypadá jako loďka nebo úsměv, ráno jako obrácená miska.</p>
+        <p>Blízko rovníku leží srpek na boku. Večer po západu i ráno před východem Slunce vypadá jako loďka nebo úsměv. Osvětlená strana míří dolů, ke Slunci schovanému pod obzorem.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
@@ -353,6 +353,7 @@
       const md = moonDir(s.age), [mx, my] = at(md, ORBIT), idx = phaseIndex(s.age);
       moon.setAttribute("transform", `translate(${mx.toFixed(1)} ${my.toFixed(1)})`);
       moonHandle.setAttribute("aria-valuenow", s.age.toFixed(1));
+      moonHandle.setAttribute("aria-valuetext", `${PHASES[idx]}, ${fmt1.format(s.age)} dne`);
 
       // polovina Měsíce přivrácená k Zemi: oblouk o 180° se středem ve směru k Zemi
       const toEarth = md + Math.PI, r = MOON_R + 6;
@@ -379,6 +380,7 @@
 
       put(statusEl, `<strong>${PHASES[idx][0].toUpperCase()}${PHASES[idx].slice(1)}.</strong> ${TEXT[idx]}`, true);
       put(playBtn, s.playing ? "Zastavit" : "Spustit oběh");
+      playBtn.setAttribute("aria-pressed", String(s.playing));
     }
 
     /* ---------- ovládání ---------- */
@@ -392,7 +394,7 @@
       s.south = b.dataset.v === "s";
       render();
     });
-    playBtn.addEventListener("click", () => { s.playing = !s.playing; playBtn.setAttribute("aria-pressed", String(!s.playing)); render(); });
+    playBtn.addEventListener("click", () => { s.playing = !s.playing; render(); });
 
     let dragging = false;
     moonHandle.addEventListener("pointerdown", (e) => { dragging = true; moonHandle.setPointerCapture(e.pointerId); moonHandle.style.cursor = "grabbing"; });
@@ -415,7 +417,7 @@
       render();
     });
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { s.playing = false; playBtn.setAttribute("aria-pressed", "true"); }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) s.playing = false;
     let prev = performance.now();
     function frame(now) {
       const dt = Math.min(0.1, (now - prev) / 1000);

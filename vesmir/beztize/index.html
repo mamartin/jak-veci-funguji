@@ -113,7 +113,7 @@
           <li><span class="n">Doba letu</span><span class="v" id="st-time"></span></li>
         </ul>
       </div>
-      <figcaption class="fig-caption">Země a výška dráhy jsou ve správném měřítku: 400 kilometrů je ten tenký proužek nad povrchem. Dělo střílí vodorovně z výšky, ve které létá Mezinárodní vesmírná stanice. Odpor vzduchu model nepočítá a čas běží několiksetkrát rychleji.</figcaption>
+      <figcaption class="fig-caption">Země a výška dráhy jsou ve správném měřítku: 400 kilometrů je ten tenký proužek nad povrchem. Dělo střílí vodorovně z výšky, ve které létá Mezinárodní vesmírná stanice. Odpor vzduchu model nepočítá. Čas běží několiksetkrát rychleji, daleko od Země ještě víc.</figcaption>
     </figure>
 
     <section class="sec" aria-labelledby="h-je">
@@ -174,7 +174,7 @@
       <div class="prose">
         <h2 id="h-telo">Co na to tělo</h2>
         <p>Tělo je stavěné na to, že ho něco táhne dolů, a když to přestane, začne se měnit. Krev a tekutiny, které gravitace držela v nohou, se přelijí k hlavě. Kosmonauti mají první dny opuchlý obličej, ucpaný nos a hubené nohy.</p>
-        <p>Kosti a svaly, které nemusejí nic nést, slábnou. Bez cvičení ubývá z nosných kostí víc než procento hmoty za měsíc. Posádka proto cvičí dvě hodiny denně na strojích s gumovými lany a pružinami, protože činky by tam nic nevážily.</p>
+        <p>Kosti a svaly, které nemusejí nic nést, slábnou. Bez cvičení ubývá z nosných kostí víc než procento hmoty za měsíc. Posádka proto cvičí dvě hodiny denně. Na běžícím pásu ji k podložce přitahují gumové popruhy a v posilovacím stroji dělají odpor místo závaží písty s podtlakem, protože činky by tam nic nevážily.</p>
         <p>Páteř, kterou nic nestlačuje, se natáhne. Kosmonauti jsou na stanici o několik centimetrů vyšší. Po návratu se zase smrsknou.</p>
       </div>
     </section>
@@ -182,13 +182,13 @@
     <section class="sec" aria-labelledby="h-veci">
       <div class="prose">
         <h2 id="h-veci">Věci, které přestanou fungovat</h2>
-        <p>Plamen svíčky má na Zemi tvar slzy, protože horký vzduch stoupá a táhne ho nahoru. Na stanici nestoupá nic. Plamen je modrá kulička a brzy se udusí vlastními zplodinami.</p>
+        <p>Plamen svíčky má na Zemi tvar slzy, protože horký vzduch stoupá a táhne ho nahoru. Na stanici nestoupá nic. Plamen je slabá modrá kulička. Kyslík k němu jen pomalu prosakuje a zplodiny od něj pomalu odcházejí, takže hoří líně a snadno zhasne.</p>
         <p>Ze stejného důvodu musejí na stanici pořád běžet ventilátory. Vydechnutý vzduch by jinak zůstal viset kolem hlavy spícího kosmonauta a ten by se probudil s bolestí hlavy.</p>
         <p>Voda neteče. Drží pohromadě povrchovým napětím a dělá koule, které se dají chytat ústy. Pot nestéká a slzy zůstanou na oku jako bublina. Pije se brčkem z pytlíku a drobky jsou nepřítel, protože nespadnou na zem, ale do přístrojů a do očí.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Na okraj</span>
-        <p>Odborně se místo beztíže říká mikrogravitace. Úplná nula to není: stanici lehce brzdí zbytek atmosféry a chvějí s ní čerpadla i cvičící posádka. Jde ale o miliontiny pozemské tíhy.</p>
+        <p>Odborně se místo beztíže říká mikrogravitace. Úplná nula to není: stanici lehce brzdí zbytek atmosféry a chvějí s ní čerpadla i cvičící posádka. Jde ale o miliontiny, nanejvýš tisíciny pozemské tíhy.</p>
       </aside>
     </section>
 
@@ -218,12 +218,12 @@
     const RE = 6371, ALT = 400, R0 = RE + ALT;
     const G0 = (GM / (RE * RE)) * 1000; // m/s² na povrchu
     const C = { x: 300, y: 262 }, PX = 128 / RE;   // střed Země a měřítko: poloměr Země je 128 jednotek
-    const s = { v0: 5, flying: false, x: 0, y: R0, vx: 0, vy: 0, t: 0, swept: 0, trail: [], old: [], result: "" };
+    const s = { v0: 5, flying: false, x: 0, y: R0, vx: 0, vy: 0, t: 0, swept: 0, low: ALT, trail: [], old: [], result: "" };
     const toScreen = (x, y) => [C.x + x * PX, C.y - y * PX];
 
     function fire() {
       if (s.trail.length > 1) { s.old.push(s.trail); if (s.old.length > 5) s.old.shift(); }
-      Object.assign(s, { flying: true, x: 0, y: R0, vx: s.v0, vy: 0, t: 0, swept: 0, trail: [[0, R0]], result: "" });
+      Object.assign(s, { flying: true, x: 0, y: R0, vx: s.v0, vy: 0, t: 0, swept: 0, low: ALT, trail: [[0, R0]], result: "" });
     }
 
     function step(dt) {
@@ -240,6 +240,7 @@
         s.swept += Math.atan2(s.x * ny - s.y * nx, s.x * nx + s.y * ny) * -1;
         s.x = nx; s.y = ny; s.t += h;
         const rn = Math.hypot(nx, ny);
+        s.low = Math.min(s.low, rn - RE);
         if (rn <= RE) { s.flying = false; s.result = "hit"; }
         else if (s.swept >= 2 * Math.PI) { s.flying = false; s.result = "orbit"; }
         else if (rn > 120000 && 0.5 * (s.vx ** 2 + s.vy ** 2) - GM / rn >= 0) { s.flying = false; s.result = "escape"; }
@@ -326,9 +327,11 @@
           ? "<strong>Spadla rovnou dolů.</strong> Bez vodorovné rychlosti střela prostě padá. Ze 400 kilometrů jí to trvá pár minut."
           : `<strong>Dopadla po ${fmt0.format(km)} kilometrech.</strong> Padala celou cestu. Jen letěla do strany dost rychle na to, aby kus Země stihla přeletět. Na oběžnou dráhu to nestačilo.`;
       } else if (s.result === "orbit") {
-        status = Math.abs(s.v0 - V_CIRC) < 0.12
+        status = Math.abs(s.v0 - V_CIRC) < 0.05
           ? `<strong>Oběžná dráha.</strong> Střela obletěla Zemi za ${clock(s.t)} a je zpátky u děla. Padala celou dobu, ale povrch pod ní uhýbal stejně rychle. Takhle létá stanice.`
-          : `<strong>Protáhlá oběžná dráha.</strong> Střela měla rychlosti navíc, vyletěla dál od Země a vrátila se po elipse za ${clock(s.t)}. Kdyby nenarazila na dělo, obíhala by dál.`;
+          : s.v0 < V_CIRC
+            ? `<strong>Oběžná dráha těsně nad zemí.</strong> Na kruhovou dráhu chyběl kousek rychlosti, a tak se střela po elipse snížila až na ${fmt0.format(Math.round(s.low / 10) * 10)} km nad povrch a za ${clock(s.t)} se vrátila. Ve skutečnosti by ji v té výšce už brzdil vzduch.`
+            : `<strong>Protáhlá oběžná dráha.</strong> Střela měla rychlosti navíc, vyletěla dál od Země a vrátila se po elipse za ${clock(s.t)}. Kdyby nenarazila na dělo, obíhala by dál.`;
       } else if (s.result === "escape") {
         status = "<strong>Uletěla.</strong> Nad 10,9 km/s už Země střelu nedokáže otočit zpátky. Zpomaluje, ale nezastaví se nikdy.";
       } else {

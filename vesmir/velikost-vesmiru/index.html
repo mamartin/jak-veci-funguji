@@ -64,7 +64,7 @@
     <header class="art-head">
       <p class="eyebrow"><a href="../">Vesmír</a></p>
       <h1 class="display">Jak velký je vesmír</h1>
-      <p class="lede">K Měsíci letí světlo vteřinu, ke Slunci osm minut, k nejbližší hvězdě čtyři roky. A to jsme pořád doma. Hvězd je v naší Galaxii několik set miliard a galaxií je zhruba stejně jako hvězd v té naší.</p>
+      <p class="lede">K Měsíci letí světlo o něco víc než vteřinu, ke Slunci osm minut, k nejbližší hvězdě čtyři roky. A to jsme pořád doma. Hvězd je v naší Galaxii několik set miliard a galaxií je zhruba stejně jako hvězd v té naší.</p>
     </header>
 
     <section class="tldr" aria-labelledby="h-zkratka">
@@ -140,7 +140,7 @@
       <div class="prose">
         <h2 id="h-prazdno">Skoro všude nic není</h2>
         <p>Zmenšete Slunce na pomeranč o průměru deset centimetrů. Země je pak zrnko písku necelý milimetr velké a krouží jedenáct metrů od něj. Neptun, nejvzdálenější planeta, je zrnko pepře o tři sta metrů dál. Mezi tím není nic.</p>
-        <p>Sonda Voyager 1 letí od roku 1977 rychlostí 17 kilometrů za sekundu. Dostala se dál než cokoli jiného, co člověk vyrobil, a v tomhle měřítku je necelé dva kilometry od pomeranče. Skutečné světlo k ní letí skoro celý den.</p>
+        <p>Sonda Voyager 1 letí od roku 1977 rychlostí 17 kilometrů za sekundu. Dostala se dál než cokoli jiného, co člověk vyrobil, a v tomhle měřítku je necelé dva kilometry od pomeranče. Skutečné světlo k ní letí zhruba den.</p>
         <p>Nejbližší hvězda, Proxima Centauri, je další pomeranč. Leží 2 900 kilometrů daleko, zhruba jako z Prahy na jih Maroka. Mezi oběma pomeranči je jen pár zrnek písku a řídký oblak komet. Voyager by k ní letěl 75 tisíc let.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
@@ -284,7 +284,7 @@
 
     // jednotlivé body se jménem
     const points = [
-      { name: "Voyager 1", d: 170 * AU, ang: 40 },
+      { name: "Voyager 1", d: 172 * AU, ang: 40 },
       { name: "Alfa Centauri", d: 4.3 * LY, ang: 215 }, { d: 5.96 * LY, ang: 75 }, { name: "Sirius", d: 8.6 * LY, ang: 320 }, { d: 11.5 * LY, ang: 350 },
       { name: "Vega", d: 25 * LY, ang: 110 }, { name: "Arcturus", d: 37 * LY, ang: 165 }, { name: "Polárka", d: 430 * LY, ang: 95 },
       { name: "střed Galaxie", d: MW.off, ang: 0, quiet: true },
@@ -308,12 +308,14 @@
 
     /* ---------- čísla ---------- */
     const sig = (v) => Number(v.toPrecision(2)).toLocaleString("cs-CZ", { maximumFractionDigits: 2 });
+    // 1 rok, 2–4 roky, 1,5 roku
+    const yearsText = (v) => { const t = sig(v); return `${t} ${t === "1" ? "rok" : /^[234]$/.test(t) ? "roky" : "roku"}`; };
     function distance(km) {
       if (km < 1e6) return `${sig(km / 1e3)} tis. km`;
       if (km < 1e9) return `${sig(km / 1e6)} mil. km`;
       if (km < 0.1 * LY) return `${sig(km / 1e9)} mld. km`;
       const ly = km / LY;
-      if (ly < 5) return `${sig(ly)} sv. roku`;
+      if (ly < 5) return yearsText(ly).replace(" ", " sv. ");
       if (ly < 1e3) return `${sig(ly)} sv. let`;
       if (ly < 1e6) return `${sig(ly / 1e3)} tis. sv. let`;
       if (ly < 1e9) return `${sig(ly / 1e6)} mil. sv. let`;
@@ -325,7 +327,7 @@
       if (sec < 5400) return `${sig(sec / 60)} min`;
       if (sec < 172800) return `${sig(sec / 3600)} h`;
       if (years < 1.5) { const d = sig(sec / 86400); return `${d} ${d.includes(",") ? "dne" : Number(d) < 5 ? "dny" : "dní"}`; }
-      if (years < 5) return `${sig(years)} roku`;
+      if (years < 5) return yearsText(years);
       if (years < 1e3) return `${sig(years)} let`;
       if (years < 1e6) return `${sig(years / 1e3)} tis. let`;
       if (years < 1e9) return `${sig(years / 1e6)} mil. let`;
@@ -433,13 +435,13 @@
       if (s.exp < 6.6) status = "<strong>Země a Měsíc.</strong> Dál než sem se žádný člověk nedostal. Světlo z Měsíce k nám letí 1,3 sekundy.";
       else if (s.exp < 8.75) status = "<strong>Ke Slunci.</strong> Slunce je 150 milionů kilometrů daleko a jeho světlo je na cestě osm minut. Vidíte ho tam, kde bylo před osmi minutami.";
       else if (s.exp < 10.2) status = "<strong>Planety.</strong> Neptun obíhá třicetkrát dál od Slunce než Země a světlo k němu letí přes čtyři hodiny.";
-      else if (s.exp < 11.6) status = "<strong>Okraj Sluneční soustavy.</strong> Sonda Voyager 1 letí od roku 1977 a je necelý světelný den daleko. Nic vyrobeného člověkem se nedostalo dál.";
+      else if (s.exp < 11.6) status = "<strong>Za planetami.</strong> Sonda Voyager 1 letí od roku 1977 a je zhruba světelný den daleko. Nic vyrobeného člověkem se nedostalo dál.";
       else if (s.exp < 13.6) status = "<strong>Prázdno.</strong> Za planetami je jen řídký oblak komet a pak roky cesty světla skoro nic.";
       else if (s.exp < 15.4) status = "<strong>Nejbližší hvězdy.</strong> Každá tečka je slunce. I ta nejbližší jsou od sebe světelné roky.";
       else if (s.exp < 17.0) status = "<strong>Hvězdy viditelné okem.</strong> Skoro všechno, co vidíte za jasné noci, leží uvnitř čárkovaného kruhu. Je to nepatrný kousek Galaxie.";
       else if (s.exp < 18.85) status = "<strong>Mléčná dráha.</strong> Naše Galaxie je disk sto tisíc světelných let široký a je v něm několik set miliard hvězd. Slunce leží asi v polovině cesty od středu k okraji.";
       else if (s.exp < 20.6) status = "<strong>Sousední galaxie.</strong> Nejbližší velká, ta v Andromedě, je 2,5 milionu světelných let daleko. Světlo, které z ní dnes vidíte, vyletělo dávno před prvními lidmi dnešního typu.";
-      else if (s.exp < 22.7) status = "<strong>Galaxie, kam se podíváte.</strong> Každá tečka je teď celá galaxie se stovkami miliard hvězd. Shlukují se do kup a mezi nimi jsou obrovské prázdné bubliny.";
+      else if (s.exp < 22.7) status = "<strong>Galaxie, kam se podíváte.</strong> Každá tečka je teď celá galaxie s miliardami až stovkami miliard hvězd. Shlukují se do kup a mezi nimi jsou obrovské prázdné bubliny.";
       else status = "<strong>Pozorovatelný vesmír.</strong> Dál nevidíme, protože světlo z větší dálky k nám za 13,8 miliardy let ještě nedoletělo. Fialová čára je náš obzor, ne okraj vesmíru.";
       if (status !== said) { said = status; $("status").innerHTML = status; }
     }

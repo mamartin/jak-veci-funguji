@@ -194,15 +194,15 @@
       <div class="prose">
         <h2 id="h-zpozdeni">Proč je nejtepleji až v červenci</h2>
         <p>Nejvíc slunečního světla dostáváme 21. června. Nejtepleji ale bývá o měsíc později a nejchladněji až koncem ledna, ne o Vánocích.</p>
-        <p>Je to stejné jako s hrncem na plotně. Voda není nejteplejší ve chvíli, kdy plotnu pustíte naplno, ale až po čase. Půda a hlavně moře se ohřívají pomalu. Po slunovratu sice sluneční energie ubývá, ale pořád jí přichází víc, než kolik Země stihne vyzářit zpátky, a tak teplota roste dál.</p>
-        <p>Proto je také u moře podzim teplejší než jaro, i když Slunce svítí v říjnu stejně jako v únoru.</p>
+        <p>Je to stejné jako s hrncem na plotně. Když plotnu začnete stahovat, voda se ještě chvíli ohřívá dál, dokud do ní teče víc tepla, než stihne vydat. Půda a hlavně moře se ohřívají i chladnou pomalu. Po slunovratu sice sluneční energie ubývá, ale pořád jí přichází víc, než kolik Země stihne vyzářit zpátky, a tak teplota roste dál.</p>
+        <p>Proto je také říjen mnohem teplejší než únor, i když Slunce svítí v obou měsících zhruba stejně. U moře je ten rozdíl ještě větší.</p>
       </div>
     </section>
 
     <section class="sec" aria-labelledby="h-jinde">
       <div class="prose">
         <h2 id="h-jinde">Jinde na Zemi je to jinak</h2>
-        <p>Na rovníku trvá den celý rok dvanáct hodin a Slunce je v poledne vždycky vysoko. Čtyři roční období tam neznají, rok se dělí na období dešťů a sucha. Přímo nad hlavou tam Slunce stojí dvakrát ročně, o rovnodennostech.</p>
+        <p>Na rovníku trvá den celý rok dvanáct hodin a Slunce je v poledne vždycky vysoko. Čtyři roční období tam neznají, místo nich se tam často střídají období dešťů a sucha. Přímo nad hlavou tam Slunce stojí dvakrát ročně, o rovnodennostech.</p>
         <p>Za polárním kruhem, tedy dál než 66,6 stupně od rovníku, naopak sklon osy vyhrává úplně. V létě tam Slunce celé dny až měsíce nezapadne, v zimě stejně dlouho nevyjde. Na samotném pólu trvá den půl roku a noc druhou půlku.</p>
         <p>Na jižní polokouli je všechno o půl roku posunuté. Červenec je tam uprostřed zimy.</p>
       </div>
@@ -433,7 +433,7 @@
       const share = top > 0 ? Math.round((e / top) * 100) : 0;
       const north = s.lat >= 0, quarter = Math.floor((((sun.lon + 0.7 + (north ? 0 : 180)) % 360) / 90));
       let status;
-      if (s.tilt === 0) status = "<strong>Bez sklonu žádná roční období.</strong> Slunce chodí celý rok stejně vysoko a den trvá všude dvanáct hodin. Vzdálenost od Slunce se přitom mění dál.";
+      if (s.tilt === 0) status = "<strong>Bez sklonu žádná roční období.</strong> Slunce chodí celý rok stejně vysoko a den trvá skoro všude dvanáct hodin. Vzdálenost od Slunce se přitom mění dál.";
       else if (len >= 24) status = "<strong>Polární den.</strong> Celá rovnoběžka je na světle, Slunce dnes vůbec nezapadne a jen obchází obzor.";
       else if (len <= 0) status = "<strong>Polární noc.</strong> Celá rovnoběžka je ve stínu, Slunce se dnes nad obzor nedostane.";
       else if (Math.abs(s.lat) <= 10) status = "<strong>U rovníku.</strong> Den trvá celý rok zhruba dvanáct hodin a Slunce je v poledne vždycky vysoko. Roční období se tu poznají podle dešťů, ne podle tepla.";
