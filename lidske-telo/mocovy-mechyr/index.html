@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje močový měchýř</title>
+  <meta name="description" content="Jak se měchýř plní, proč o půl litru moči dlouho nevíte, jak mozek drží reflex močení na uzdě a proč ho miminka ještě neumí zabrzdit. S modelem měchýře, který plníte pitím.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    :root { --urine: #ecc84a; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) { --urine: #c9a534; }
+    }
+    :root[data-theme="dark"] { --urine: #c9a534; }
+
+    .kidney { fill: var(--hot); fill-opacity: 0.3; stroke: var(--metal-line); stroke-width: 1.4; }
+    .duct { fill: none; stroke: var(--metal-line); stroke-width: 9; stroke-linecap: round; }
+    .duct-in { fill: none; stroke: var(--surface); stroke-width: 5.5; stroke-linecap: round; }
+    .drop { fill: var(--urine); stroke: var(--metal-line); stroke-width: 0.8; }
+    .wall-bg { fill: var(--surface); }
+    .wall { fill: var(--hot); stroke: var(--metal-line); stroke-width: 1.4; }
+    .lumen { fill: var(--urine); stroke: #d88a95; stroke-width: 2.2; stroke-linejoin: round; }
+    .neck { fill: var(--pin-key); stroke: var(--metal-line); stroke-width: 1.2; }
+    .floor { fill: var(--hot); stroke: var(--metal-line); stroke-width: 1.2; }
+    .stream { stroke: var(--urine); stroke-linecap: round; }
+    .nerve { fill: none; stroke: #d9981a; stroke-width: 2.4; stroke-linecap: round; }
+    .p-in { fill: #ffd84a; stroke: var(--metal-line); stroke-width: 1; }
+    .p-out { fill: var(--hot); stroke: var(--metal-line); stroke-width: 1; }
+    .p-hold { fill: var(--cold); stroke: var(--metal-line); stroke-width: 1; }
+    .ctr rect { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
+    .ctr.on rect { stroke: var(--cat); stroke-width: 2.5; }
+    .ctr.off { opacity: 0.5; }
+    .ctr.off rect { stroke-dasharray: 5 4; }
+    .ctr .t1 { fill: var(--ink); font: 600 14px var(--font-mono); text-anchor: middle; }
+    .ctr .t2 { fill: var(--ink-2); font: 500 12px var(--font-mono); text-anchor: middle; }
+
+    #graph { margin-top: 0.75rem; }
+    .g-area { fill: var(--urine); fill-opacity: 0.45; }
+    .g-line { fill: none; stroke: var(--plug-hatch); stroke-width: 2; stroke-linejoin: round; }
+    .g-axis { stroke: var(--rule); stroke-width: 1; }
+    .g-th { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 4 4; }
+    .g-text { fill: var(--ink-3); font: 500 12px var(--font-mono); }
+    .g-drink { fill: var(--cold); }
+    .ctl-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+    @media (max-width: 46rem) {
+      .ctr .t1 { font-size: 19px; }
+      .ctr .t2 { font-size: 16px; }
+      .g-text { font-size: 22px; }
+    }
+  </style>
+</head>
+<body data-cat="telo">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Lidské tělo</a><span aria-hidden="true">/</span><span>Močový měchýř</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Lidské tělo</a></p>
+      <h1 class="display">Jak funguje močový měchýř</h1>
+      <p class="lede">Měchýř je svalový vak, do kterého ledviny ve dne v noci posílají moč. Umí se natáhnout na půl litru, a tlak uvnitř přitom skoro nestoupne. Vyprázdní ho reflex, který se mozek musí v dětství naučit brzdit.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Ledviny vyrábějí moč nepřetržitě, kolem šedesáti mililitrů za hodinu. Do měchýře ji po močovodech posílají v malých dávkách.</li>
+        <li><span class="hl">Stěna měchýře je sval, který při plnění povoluje.</span> Tlak uvnitř proto skoro nestoupá a prvních sto padesát mililitrů vůbec necítíte.</li>
+        <li>Vyprázdnění je reflex se spínačem v mozkovém kmeni. Dospělý ho drží brzdou z mozkové kůry, malé dítě to ještě neumí.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Měchýř a nervy, které ho řídí</p>
+        <span class="label">Napijte se, počkejte a jděte na záchod</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="body" viewBox="0 0 700 420" role="img" aria-label="Schéma: ledviny, močovody, měchýř se svalovou stěnou, vnitřní a vnější svěrač, močová trubice a nervové spojení s míchou, mozkovým kmenem a mozkovou kůrou"></svg>
+        <svg id="graph" viewBox="0 0 700 160" role="img" aria-label="Graf: kolik moči bylo v měchýři za posledních 12 hodin"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-who">Kdo</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-who" id="who-seg">
+            <button type="button" role="radio" data-v="adult" aria-checked="true">Dospělý</button>
+            <button type="button" role="radio" data-v="child" aria-checked="false">Batole</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-speed">Za sekundu uběhne</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-speed" id="speed-seg">
+            <button type="button" role="radio" data-v="1" aria-checked="false">minuta</button>
+            <button type="button" role="radio" data-v="5" aria-checked="true">5 minut</button>
+            <button type="button" role="radio" data-v="20" aria-checked="false">20 minut</button>
+          </div>
+        </div>
+        <div class="ctl-btns">
+          <button type="button" class="btn" id="drink">Napít se · 250 ml</button>
+          <button type="button" class="btn" id="go">Jít na záchod</button>
+        </div>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">V měchýři</span><span class="v" id="st-vol"></span></li>
+          <li><span class="n">Tlak, cm vody</span><span class="v" id="st-p"></span></li>
+          <li><span class="n" id="st-flow-n">Ledviny posílají</span><span class="v" id="st-flow"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Schéma, ne v měřítku: ledviny leží mnohem výš, u zad pod žebry. Čas běží zrychleně podle volby, močení jen pětkrát rychleji než ve skutečnosti. Žluté tečky na nervech nesou zprávy o natažení stěny, červené povel ke stažení stěny a modré povel svěrači v pánevním dnu. Graf dole ukazuje, kolik moči bylo v měchýři za posledních 12 hodin, modré tečky pod ním jsou chvíle, kdy jste pili. Měchýř batolete je nakreslený zvětšeně, pojme jen asi 70 mililitrů.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-ledviny">
+      <div class="prose">
+        <h2 id="h-ledviny">Odkud moč přitéká</h2>
+        <p>Moč vyrábějí ledviny. Proteče jimi zhruba litr krve za minutu, pětina všeho, co srdce vypumpuje. Ledviny z krve nejdřív vyfiltrují vodu se vším, co je v ní rozpuštěné, a pak si většinu vezmou zpátky: cukr, soli i skoro všechnu vodu. Nechají odejít jen to, čeho má tělo nazbyt, a odpad, hlavně močovinu, která zbyde po rozkladu bílkovin.</p>
+        <p>Z každé ledviny vede do měchýře tenká trubice, močovod. Je dlouhá 25 až 30 centimetrů a moč jí neteče samospádem. Stěna močovodu se několikrát za minutu stáhne vlnou, která dávku moči posune dolů jako pastu v tubě. Proto to funguje i vleže nebo hlavou dolů.</p>
+        <p>Na konci prochází močovod stěnou měchýře šikmo, asi dvoucentimetrovým tunelem. Když se měchýř plní, jeho stěna tunel zmáčkne a moč se nemůže vracet zpátky do ledvin. <span class="hl">Je to zpětný ventil bez jediné pohyblivé součástky.</span></p>
+      </div>
+      <aside class="note" aria-label="Měchýř v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>180 litrů</dt><dd>vody denně ledviny vyfiltrují z krve</dd></div>
+          <div><dt>99 %</dt><dd>z ní si vezmou zpátky</dd></div>
+          <div><dt>1 až 2 litry</dt><dd>moči za den z toho zbyde</dd></div>
+          <div><dt>400–600 ml</dt><dd>pojme měchýř dospělého, než to začne být nepříjemné</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-stena">
+      <div class="prose">
+        <h2 id="h-stena">Vak, který povolí</h2>
+        <p>Stěna měchýře je z hladkého svalu, kterému se latinsky říká <span class="num">detrusor,</span> vypuzovač. Zevnitř ji pokrývá sliznice, která moč nepustí zpátky do těla. Prázdný měchýř je splasklý vak se silnou stěnou a sliznicí složenou do záhybů.</p>
+        <p>Při plnění sval povoluje. Záhyby se vyrovnají, stěna se ztenčí a buňky na povrchu sliznice se z kostiček rozplácnou do tenkých destiček. Z vaku se stane kulatý balon, který se u plného měchýře vyklene až nad stydkou kost.</p>
+        <p><span class="hl">Přitom tlak uvnitř skoro nestoupá.</span> Od prázdného měchýře po půl litru se zvedne jen o pár centimetrů vodního sloupce. Gumový balonek se chová opačně, nejtěžší je ho nafouknout na začátku. Sval měchýře se ale objemu přizpůsobuje a nervy ho při plnění navíc tlumí. Je to stejná část nervové soustavy, která řídí <a href="../husi-kuze/">husí kůži</a>, tep nebo pocení.</p>
+        <p>Nízký tlak se hodí ze dvou důvodů. Ledviny posílají moč jen slabým tlakem a do nafouknutého měchýře by ji nedostaly. A svěrače nemusí odolávat velké síle, takže nic neprotéká.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Napijte se a sledujte tlak. Měchýř se plní, ale tlak zůstává pod deseti centimetry vody až skoro do půl litru. Teprve když je stěna natažená na doraz, začne rychle stoupat.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-pocit">
+      <div class="prose">
+        <h2 id="h-pocit">Kdy to ucítíte</h2>
+        <p>Ve stěně měchýře jsou čidla, která měří, jak moc je natažená. Jejich zprávy jdou nervy do křížové míchy, nízko v zádech, a odtud do mozkového kmene a do mozkové kůry. Dokud je měchýř poloprázdný, je signál slabý a mozek ho přechází.</p>
+        <p>Kolem 150 mililitrů si měchýře poprvé všimnete. Kolem 300 už je to nutkání, které se ale dá odložit. Nad 450 mililitry je nutkání silné a nad 600 to bolí. Čísla se mezi lidmi dost liší a nutkání nepřichází plynule, ale ve vlnách. Chvíli je silné a pak zase na čas ustoupí.</p>
+        <p>Kolik moči ledviny posílají, záleží hlavně na tom, kolik má tělo vody. Když vypijete sklenici vody, musí se nejdřív vstřebat ve střevech. Ledviny začnou posílat víc moči za pár desítek minut a většinu přebytku vyloučí během dvou až tří hodin. Večer a v noci se v těle tvoří víc hormonu vazopresinu, který ledvinám říká, ať vodou šetří. Moči je v noci méně a dá se prospat. S věkem vazopresinu v noci ubývá, a proto starší lidé častěji vstávají na záchod.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Napijte se a sledujte, kolik ledviny posílají. Údaj neskočí hned, voda se musí nejdřív vstřebat. Nejvíc moči přitéká asi po čtyřiceti minutách.</p>
+        <span class="label">Na okraj</span>
+        <p>Nutkání umí přijít i bez plného měchýře. Spousta lidí ho dostane, když slyší téct vodu, nebo ve chvíli, kdy doma strkají klíč do zámku. Mozek má situaci spojenou se záchodem a signál z měchýře zesílí předem.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-spinac">
+      <div class="prose">
+        <h2 id="h-spinac">Spínač v mozkovém kmeni</h2>
+        <p>Vyprázdnění měchýře je reflex. Řídí ho malá skupina nervových buněk v mozkovém kmeni, centrum močení. Funguje jako spínač se dvěma polohami: plnění, nebo močení. Nic mezi tím.</p>
+        <p>Při plnění je sval ve stěně povolený, hrdlo měchýře stažené a vnější svěrač v pánevním dnu drží. Čím je měchýř plnější, tím víc ho mícha sama od sebe utahuje.</p>
+        <p>Když se spínač přepne, stane se všechno naráz. Nervy z křížové míchy stáhnou sval ve stěně a tlak v měchýři vyskočí na 30 až 60 centimetrů vody. Hrdlo se otevře a vnější svěrač povolí. Moč teče proudem kolem dvaceti mililitrů za sekundu a měchýř se vyprázdní skoro do poslední kapky.</p>
+        <p>Kdyby se stěna stahovala a svěrač přitom držel, tlak by vyletěl a moč by se tlačila zpátky do ledvin. Proto je na všechny tři svaly jeden spínač. Na rozdíl od <a href="../reflex/">ucuknutí ruky od plotny</a>, které zvládne mícha sama, potřebuje tenhle reflex mozkový kmen, protože musí sladit svaly na různých místech.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Jděte na záchod a sledujte tlak. Z několika centimetrů vody vyskočí na desítky. Kolik vyteklo a jak dlouho to trvalo, model ukáže na konci.</p>
+        <span class="label">Na okraj</span>
+        <p>Fyzici z Georgijského technologického institutu v roce 2014 natáčeli, jak močí zvířata v zoo. Slon, kráva, koza i pes vyprázdnili měchýř zhruba stejně rychle, za 21 sekund. Větší zvíře má větší měchýř, ale i delší a širší močovou trubici, ve které proud víc zrychlí. Dostali za to Ig Nobelovu cenu.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-brzda">
+      <div class="prose">
+        <h2 id="h-brzda">Brzda v hlavě</h2>
+        <p>Mozková kůra, část mozku, která přemýšlí a plánuje, má s centrem močení spojení, kterým ho brzdí. Dokud nejste na vhodném místě, drží spínač v poloze plnění, i když čidla hlásí plný měchýř. Na záchodě brzdu pustí a spínač se přepne.</p>
+        <p>Když spěcháte, pomůže stáhnout pánevní dno. Stažený vnější svěrač pošle do míchy zprávu, která na chvíli utlumí sval ve stěně, a nutkání poleví. Brzda ale nevydrží věčně. Když je měchýř přeplněný, signál z něj přeroste i vůli a reflex se spustí sám.</p>
+        <p>Novorozenec tu brzdu nemá. Spojení z kůry se teprve vyvíjí, a tak se měchýř vyprázdní pokaždé, když se naplní, třeba i dvacetkrát za den. Kolem druhého roku začnou děti plný měchýř vnímat a postupně se ho naučí ovládat. Přes den bývají suché mezi druhým a třetím rokem, v noci často až později. <span class="hl">V pěti letech se v noci pomočuje zhruba každé sedmé dítě</span> a většinou to samo přejde.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Přepněte na Batole. Kůra je šedá, brzdit ještě neumí. Měchýř pojme jen asi 65 mililitrů. Jakmile se naplní, vyprázdní se sám, ať je dítě zrovna kdekoli.</p>
+        <p>U dospělého zrychlete čas a na záchod nechoďte. Kolem 700 mililitrů nevydrží ani dospělá brzda.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-rozdily">
+      <div class="prose">
+        <h2 id="h-rozdily">Muži a ženy</h2>
+        <p>Močová trubice ženy měří kolem čtyř centimetrů, muže kolem dvaceti. Bakterie se proto u žen snáz dostanou nahoru do měchýře a záněty močového měchýře jsou u žen mnohem častější.</p>
+        <p>Ženám po porodu někdy povolí pánevní dno. Při kašli, smíchu nebo skoku pak tlak v břiše přetlačí svěrač a trochu moči unikne. Pomáhá posilování pánevního dna, tedy cvičení stejných svalů, kterými se dá zadržet moč.</p>
+        <p>U mužů obklopuje močovou trubici hned pod měchýřem prostata. S věkem se zvětšuje a trubici zužuje. Proud slábne, močení trvá déle a v měchýři zůstává zbytek, který se rychle doplní. Na záchod se proto chce častěji.</p>
+      </div>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../husi-kuze/" data-cat="telo">
+        <span class="label">Další článek · Lidské tělo</span>
+        <span class="t">Jak funguje husí kůže</span>
+        <p>Proč nám v zimě a při hudbě vstávají chlupy, když nám to k ničemu není.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const f1 = (v) => v.toFixed(1);
+
+    /* ---------- model ---------- */
+    // objemy v ml, čas v minutách, tlak v centimetrech vodního sloupce
+    // prod: kolik moči ledviny posílají bez pití navíc, cap: pohodlná náplň, max: kdy se reflex spustí sám
+    const PROFILES = {
+      adult: {
+        prod: 60, drink: 250, cap: 500, max: 700, first: 150, urge: 300, strong: 450, pain: 600, qmax: 22, push: 40,
+        scale: 700, top: 700, ticks: [0, 300, 600], lines: [[150, "první pocit"], [450, "silné nutkání"]],
+        seed: { V: 170, events: [[-650, "drink"], [-560, "void"], [-420, "drink"], [-310, "void"], [-190, "drink"], [-80, "void"]] },
+      },
+      child: {
+        prod: 15, drink: 100, cap: 70, max: 65, qmax: 6, push: 50,
+        scale: 70, top: 90, ticks: [0, 30, 60], lines: [[65, "reflex"]],
+        seed: { V: 30, events: [[-560, "drink"], [-250, "drink"]] },
+      },
+    };
+    const T_ABSORB = 30, T_KIDNEY = 50;   // vstřebání vypité vody ve střevech a její vyloučení ledvinami
+    const WINDOW = 720;                   // graf ukazuje posledních 12 hodin
+    const s = { who: "adult", speed: 5, t: 0, V: 0, gut: 0, extra: 0, voiding: false, accident: false, c: 0, hold: 0, start: 0, startV: 0, last: null, hist: [], drinks: [] };
+    const P = () => PROFILES[s.who];
+    const rate = () => P().prod / 60 + s.extra / T_KIDNEY;                     // ml za minutu
+    const pressure = () => 2 + 8 * (s.V / P().cap) ** 4 + P().push * s.c;
+    const flow = () => (s.voiding ? P().qmax * s.c * Math.min(1, Math.sqrt(s.V / (0.15 * P().cap))) : 0);   // ml za sekundu
+    function holdTarget() {
+      const p = P();
+      if (s.voiding) return 0;
+      if (s.who === "child") return 0.2 + 0.3 * Math.min(1, s.V / p.max);
+      return 0.2 + 0.8 * Math.max(0, Math.min(1, (s.V - p.first) / (p.pain - p.first)));
+    }
+
+    function begin(accident) { s.voiding = true; s.accident = accident; s.start = s.t; s.startV = s.V; }
+    function finish() { s.voiding = false; s.V = 0; s.last = { vol: s.startV, sec: (s.t - s.start) * 60, accident: s.accident }; }
+    function drink() { s.gut += P().drink; s.drinks.push(s.t); }
+
+    let lastRec = -Infinity;
+    function record() {
+      if (s.t - lastRec < (s.voiding ? 0.05 : 1)) return;
+      lastRec = s.t;
+      s.hist.push([s.t, s.V]);
+      while (s.hist.length && s.hist[0][0] < s.t - WINDOW - 2) s.hist.shift();
+      while (s.drinks.length && s.drinks[0] < s.t - WINDOW) s.drinks.shift();
+    }
+
+    function step(dt) {
+      while (dt > 1e-9) {
+        const h = Math.min(dt, s.voiding || s.c > 0.01 ? 1 / 120 : 1);    // při močení po půl sekundě
+        dt -= h;
+        const absorbed = s.gut * (1 - Math.exp(-h / T_ABSORB));
+        s.gut -= absorbed; s.extra += absorbed;
+        const out = s.extra * (1 - Math.exp(-h / T_KIDNEY));
+        s.extra -= out;
+        s.V += (P().prod / 60) * h + out;
+        s.t += h;
+        const sec = h * 60;
+        if (s.voiding) {
+          s.c += (1 - s.c) * (1 - Math.exp(-sec / 1.5));
+          s.V = Math.max(0, s.V - flow() * sec);
+          if (s.V < 0.5) finish();
+        } else s.c *= Math.exp(-sec / 2);
+        if (!s.voiding && s.V >= P().max) begin(true);
+        record();
+      }
+    }
+
+    // posledních 12 hodin se odehraje předem, aby graf nezačínal prázdný
+    function reset() {
+      const p = P();
+      Object.assign(s, { t: -WINDOW, V: p.seed.V, gut: 0, extra: 0, voiding: false, accident: false, c: 0, hist: [], drinks: [] });
+      lastRec = -Infinity;
+      for (const [at, what] of p.seed.events) {
+        step(at - s.t);
+        if (what === "drink") drink(); else begin(false);
+      }
+      step(-s.t);
+      s.last = null;
+      s.hold = holdTarget();
+    }
+
+    /* ---------- kresba: tělo ---------- */
+    const svg = $("body");
+    const NX = 250, NY = 300;             // hrdlo měchýře
+    const R0 = 30, R1 = 112;              // poloměr prázdného a plného měchýře
+    const FLOOR_Y = 334, FLOOR_H = 14;
+    const CORD = { x: 530, y: 262 };
+
+    const kidneys = [[120, 66], [380, 66]].map(([x, y]) => {
+      el("ellipse", { cx: x, cy: y, rx: 26, ry: 40, class: "kidney" }, svg);
+      return { x: x + (x < NX ? 24 : -24), y: y + 8 };
+    });
+    const urethra = el("line", { x1: NX, y1: NY - 4, x2: NX, y2: 420, class: "duct" }, svg);
+    urethra.setAttribute("stroke-linecap", "butt");
+    el("line", { x1: NX, y1: NY - 4, x2: NX, y2: 420, class: "duct-in", "stroke-linecap": "butt" }, svg);
+    const stream = el("line", { x1: NX, y1: NY, x2: NX, y2: 420, class: "stream" }, svg);
+    const ureters = kidneys.map(() => {
+      const out = el("path", { class: "duct" }, svg), inn = el("path", { class: "duct-in" }, svg);
+      return { out, inn, drops: [0, 1, 2].map(() => el("ellipse", { rx: 2.6, ry: 4, class: "drop" }, svg)) };
+    });
+    const wallBg = el("ellipse", { class: "wall-bg" }, svg);
+    const wall = el("ellipse", { class: "wall" }, svg);
+    const lumen = el("path", { class: "lumen" }, svg);
+    const necks = [-1, 1].map(() => el("ellipse", { rx: 5, ry: 9, class: "neck" }, svg));
+    const floors = [-1, 1].map(() => el("rect", { y: FLOOR_Y, height: FLOOR_H, rx: 7, class: "floor" }, svg));
+
+    // nervy a centra
+    function center(y, name) {
+      const g = el("g", { class: "ctr" }, svg);
+      el("rect", { x: CORD.x, y, width: 160, height: 54, rx: 6 }, g);
+      el("text", { x: CORD.x + 80, y: y + 23, class: "t1" }, g).textContent = name;
+      const t2 = el("text", { x: CORD.x + 80, y: y + 43, class: "t2" }, g);
+      return { g, t2 };
+    }
+    const cortex = center(26, "mozková kůra"), stem = center(140, "mozkový kmen"), cord = center(CORD.y, "křížová mícha");
+    const up1 = el("path", { d: `M598 ${CORD.y} V194`, class: "nerve" }, svg);
+    const up2 = el("path", { d: "M598 140 V80", class: "nerve" }, svg);
+    const down1 = el("path", { d: `M622 194 V${CORD.y}`, class: "nerve" }, svg);
+    const pelvic = el("path", { class: "nerve" }, svg);
+    const pudendal = el("path", { d: `M${CORD.x} 306 C470 318 ${NX + 120} ${FLOOR_Y + 7} ${NX + 34} ${FLOOR_Y + 7}`, class: "nerve" }, svg);
+    const dots = (n, cls) => Array.from({ length: n }, () => el("circle", { r: 3.6, class: cls }, svg));
+    const pulses = {
+      inPelvic: dots(3, "p-in"), inUp1: dots(2, "p-in"), inUp2: dots(2, "p-in"),
+      outDown: dots(2, "p-out"), outPelvic: dots(3, "p-out"), hold: dots(3, "p-hold"),
+    };
+
+    function callout(label, tx, ty) {
+      const g = el("g", { class: "callout" }, svg);
+      const line = el("line", {}, g), dot = el("circle", { r: 2.2 }, g);
+      el("text", { x: tx, y: ty + 4, "text-anchor": "end" }, g).textContent = label;
+      return (x, y) => {
+        line.setAttribute("x1", tx + 6); line.setAttribute("y1", ty);
+        line.setAttribute("x2", f1(x)); line.setAttribute("y2", f1(y));
+        dot.setAttribute("cx", f1(x)); dot.setAttribute("cy", f1(y));
+      };
+    }
+    const cKidney = callout("ledvina", 80, 66);
+    const cUreter = callout("močovod", 110, 168);
+    const cWall = callout("sval stěny", 110, 222);
+    const cUrine = callout("moč", 110, 262);
+    const cNeck = callout("vnitřní svěrač", 116, 306);
+    const cFloor = callout("vnější svěrač", 116, 366);
+    const cUrethra = callout("močová trubice", 128, 404);
+
+    // vnitřek měchýře: prázdný je zřasený do záhybů, plný hladký
+    function lumenPath(cx, cy, ax, ay, amp) {
+      let d = "";
+      for (let i = 0; i <= 96; i++) {
+        const a = (i / 96) * 2 * Math.PI, k = 1 - amp * (0.5 + 0.5 * Math.cos(12 * a));
+        d += `${i ? "L" : "M"}${f1(cx + ax * k * Math.cos(a))} ${f1(cy + ay * k * Math.sin(a))}`;
+      }
+      return d + "Z";
+    }
+    function place(list, path, phase, reverse, visible, opacity) {
+      const total = path.getTotalLength();
+      list.forEach((dot, k) => {
+        const u = (phase + k / list.length) % 1;
+        const at = path.getPointAtLength((reverse ? 1 - u : u) * total);
+        dot.setAttribute("cx", f1(at.x)); dot.setAttribute("cy", f1(at.y));
+        dot.setAttribute("opacity", visible ? opacity.toFixed(2) : "0");
+      });
+    }
+
+    /* ---------- kresba: graf ---------- */
+    const graph = $("graph");
+    const GX0 = 64, GX1 = 690, GY0 = 12, GY1 = 112;
+    const gStatic = el("g", {}, graph);
+    const gArea = el("path", { class: "g-area" }, graph), gLine = el("path", { class: "g-line" }, graph);
+    const gDrinks = el("g", {}, graph);
+    const gy = (v) => GY1 - (Math.min(v, P().top) / P().top) * (GY1 - GY0);
+    const gx = (t) => GX0 + ((t - (s.t - WINDOW)) / WINDOW) * (GX1 - GX0);
+    function buildGraph() {
+      gStatic.textContent = "";
+      const p = P();
+      el("line", { x1: GX0, x2: GX1, y1: GY1, y2: GY1, class: "g-axis" }, gStatic);
+      for (const v of p.ticks) el("text", { x: GX0 - 8, y: gy(v) + 4, "text-anchor": "end", class: "g-text" }, gStatic).textContent = String(v);
+      for (const [v, name] of p.lines) {
+        el("line", { x1: GX0, x2: GX1, y1: gy(v), y2: gy(v), class: "g-th" }, gStatic);
+        el("text", { x: GX1 - 4, y: gy(v) - 5, "text-anchor": "end", class: "g-text" }, gStatic).textContent = name;
+      }
+      el("text", { x: GX0 - 8, y: GY0 + 2, "text-anchor": "end", class: "g-text" }, gStatic).textContent = "ml";
+      [["před 12 h", GX0, "start"], ["před 6 h", (GX0 + GX1) / 2, "middle"], ["teď", GX1, "end"]].forEach(([txt, x, anchor]) => {
+        el("text", { x, y: 152, "text-anchor": anchor, class: "g-text" }, gStatic).textContent = txt;
+      });
+    }
+    function drawGraph() {
+      let d = "";
+      for (const [t, v] of s.hist) d += `${d ? "L" : "M"}${f1(gx(t))} ${f1(gy(v))}`;
+      d += `L${GX1} ${f1(gy(s.V))}`;
+      gLine.setAttribute("d", d);
+      gArea.setAttribute("d", `${d}L${GX1} ${GY1}L${f1(gx(s.hist[0][0]))} ${GY1}Z`);
+      while (gDrinks.childNodes.length < s.drinks.length) el("circle", { r: 4.5, cy: GY1 + 9, class: "g-drink" }, gDrinks);
+      while (gDrinks.childNodes.length > s.drinks.length) gDrinks.lastChild.remove();
+      s.drinks.forEach((t, i) => gDrinks.childNodes[i].setAttribute("cx", f1(Math.max(GX0, gx(t)))));
+    }
+
+    /* ---------- výpis ---------- */
+    const fmt0 = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+    const cache = new WeakMap();
+    function put(node, str, html) {
+      if (cache.get(node) === str) return;
+      cache.set(node, str);
+      if (html) node.innerHTML = str; else node.textContent = str;
+    }
+
+    function statusText() {
+      const p = P(), V = s.V;
+      if (s.voiding) {
+        if (s.who === "child") return "<strong>Reflex.</strong> Měchýř je plný a spínač v mozkovém kmeni se přepnul sám, bez ptaní. Sval ve stěně se stáhl a oba svěrače povolily.";
+        if (s.accident) return "<strong>Už to nejde vydržet.</strong> Signál z přeplněného měchýře přerostl brzdu z mozkové kůry. Spínač se přepnul sám a měchýř se vyprázdní, ať jste kde jste.";
+        return "<strong>Močení.</strong> Kůra pustila brzdu a spínač v mozkovém kmeni se přepnul. Sval ve stěně se stáhl, tlak vyskočil na desítky centimetrů vody a oba svěrače povolily.";
+      }
+      if (s.last && V < (s.who === "child" ? 15 : 60)) {
+        const vol = fmt0.format(Math.round(s.last.vol / (s.who === "child" ? 1 : 10)) * (s.who === "child" ? 1 : 10)), sec = fmt0.format(Math.round(s.last.sec));
+        if (s.who === "child") return `<strong>Plná plena.</strong> Vyteklo ${vol} ml za ${sec} sekund. Spínač se přepnul sám, jakmile byl měchýř plný, a teď se zase plní.`;
+        if (s.last.accident) return `<strong>Nehoda.</strong> Vyteklo ${vol} ml za ${sec} sekund. Takhle daleko to v životě nechá dojít málokdo, nutkání a bolest vás obvykle donutí jít včas.`;
+        return `<strong>Hotovo.</strong> Vyteklo ${vol} ml za ${sec} sekund. Spínač se přepnul zpátky na plnění, sval ve stěně povolil a svěrače se zavřely.`;
+      }
+      const tail = s.gut > 20 ? " Vypitá voda se teprve vstřebává ve střevech." : s.extra > 25 ? " Ledviny teď posílají víc, zbavují se vypité vody." : "";
+      if (s.who === "child") {
+        if (V < 0.6 * p.max) return "<strong>Plnění.</strong> Čidla ve stěně posílají zprávy do míchy a mozkového kmene. Kůra je ale ještě neumí přečíst a spínač zabrzdit." + tail;
+        return "<strong>Skoro plno.</strong> Signál z čidel sílí. Až bude v měchýři kolem 65 mililitrů, spínač se přepne sám." + tail;
+      }
+      if (V < p.first) return "<strong>Nic necítíte.</strong> Moč přitéká po dávkách a stěna měchýře povoluje, takže tlak uvnitř skoro nestoupá. Čidla ve stěně posílají jen slabý signál." + tail;
+      if (V < p.urge) return "<strong>První pocit.</strong> Signál z natažené stěny už dojde až do mozkové kůry. Víte o měchýři, ale v klidu ještě dlouho vydržíte." + tail;
+      if (V < p.strong) return "<strong>Nutkání.</strong> Je čas najít záchod. Kůra drží brzdu, spínač v mozkovém kmeni zůstává na plnění a mícha utahuje vnější svěrač." + tail;
+      if (V < p.pain) return "<strong>Silné nutkání.</strong> Stěna je skoro natažená a tlak začíná stoupat. Stažení pánevního dna na chvíli pomůže, sval ve stěně se tím utlumí." + tail;
+      return "<strong>Bolí to.</strong> Stěna je natažená na doraz a tlak rychle stoupá. Takhle se to dlouho vydržet nedá." + tail;
+    }
+
+    const goBtn = $("go"), drinkBtn = $("drink");
+    let phase = { drops: 0, in: 0, out: 0, hold: 0 };
+    function render() {
+      const p = P(), child = s.who === "child";
+      const f = Math.min(1, s.V / p.scale);
+      const R = Math.cbrt(R0 ** 3 + (R1 ** 3 - R0 ** 3) * f);
+      const rx = 1.12 * R, ry = R, cy = NY - ry + 6;
+      const w = 15 - 9 * f + 4 * s.c;
+      for (const e of [wallBg, wall]) { e.setAttribute("cx", NX); e.setAttribute("cy", f1(cy)); e.setAttribute("rx", f1(rx)); e.setAttribute("ry", f1(ry)); }
+      wall.setAttribute("fill-opacity", (0.3 + 0.6 * s.c).toFixed(2));
+      lumen.setAttribute("d", lumenPath(NX, cy, rx - w, ry - w, 0.2 * (1 - f) ** 3));
+
+      // močovody vstupují do měchýře zezadu, v dolní části
+      ureters.forEach((u, i) => {
+        const k = kidneys[i], side = i ? 1 : -1;
+        const ex = NX + side * 0.55 * rx, ey = cy + 0.5 * ry;
+        const d = `M${k.x} ${k.y} C${k.x + side * -6} ${k.y + 110} ${f1(ex + side * 40)} ${f1(ey - 40)} ${f1(ex)} ${f1(ey)}`;
+        u.out.setAttribute("d", d); u.inn.setAttribute("d", d);
+        const total = u.out.getTotalLength();
+        u.drops.forEach((drop, j) => {
+          const at = u.out.getPointAtLength((((phase.drops + j / 3 + i * 0.17) % 1) * 0.85) * total);
+          drop.setAttribute("cx", f1(at.x)); drop.setAttribute("cy", f1(at.y));
+        });
+      });
+
+      // hrdlo a vnitřní svěrač, pánevní dno s vnějším svěračem
+      const open = s.c;
+      necks.forEach((n, i) => { n.setAttribute("cx", f1(NX + (i ? 1 : -1) * (7 + 4 * open))); n.setAttribute("cy", NY + 12); });
+      const gap = 3 + 4 * (1 - s.hold) + 5 * open;
+      floors[0].setAttribute("x", 150); floors[0].setAttribute("width", f1(NX - gap - 150));
+      floors[1].setAttribute("x", f1(NX + gap)); floors[1].setAttribute("width", f1(350 - NX - gap));
+      floors.forEach((r) => r.setAttribute("fill-opacity", (0.25 + 0.65 * s.hold).toFixed(2)));
+      stream.setAttribute("stroke-width", f1(5 * open));
+      stream.setAttribute("opacity", open > 0.03 ? "1" : "0");
+
+      // nerv od stěny měchýře do míchy
+      const a = (25 * Math.PI) / 180, W = { x: NX + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
+      pelvic.setAttribute("d", `M${CORD.x} 290 C480 290 ${f1(W.x + 60)} ${f1(W.y + 10)} ${f1(W.x)} ${f1(W.y)}`);
+      const stretch = Math.min(1.2, s.V / (child ? p.max : p.cap));
+      const feel = stretch > 0.08 && !s.voiding;
+      place(pulses.inPelvic, pelvic, phase.in, true, feel, 0.35 + 0.55 * Math.min(1, stretch));
+      place(pulses.inUp1, up1, phase.in, false, feel, 0.35 + 0.55 * Math.min(1, stretch));
+      place(pulses.inUp2, up2, phase.in, false, feel && !child, 0.35 + 0.55 * Math.min(1, stretch));
+      place(pulses.outDown, down1, phase.out, false, s.c > 0.05, 1);
+      place(pulses.outPelvic, pelvic, phase.out, false, s.c > 0.05, 1);
+      place(pulses.hold, pudendal, phase.hold, false, !s.voiding && s.hold > 0.25, Math.min(1, s.hold + 0.1));
+
+      const brake = !child && !s.voiding && s.V >= p.first;
+      cortex.g.setAttribute("class", `ctr${child ? " off" : brake || (s.voiding && !s.accident) ? " on" : ""}`);
+      stem.g.setAttribute("class", `ctr${s.voiding ? " on" : ""}`);
+      cord.g.setAttribute("class", `ctr${s.voiding ? " on" : ""}`);
+      put(cortex.t2, child ? "neumí brzdit" : s.voiding ? (s.accident ? "brzda nestačí" : "pouští") : s.V >= p.urge ? "brzdí" : s.V >= p.first ? "ví o měchýři" : "nic neví");
+      put(stem.t2, s.voiding ? "spínač: močení" : "spínač: plnění");
+      put(cord.t2, s.voiding ? "stahuje stěnu" : "drží svěrače");
+
+      cKidney(96, 60);
+      const ul = ureters[0].out, ulAt = ul.getPointAtLength(ul.getTotalLength() * 0.42);
+      cUreter(ulAt.x - 4, ulAt.y);
+      cWall(NX - rx + w / 2, cy - 0.2 * ry);
+      cUrine(NX - 0.45 * (rx - w), cy + 0.25 * ry);
+      cNeck(NX - 12 - 4 * open, NY + 12);
+      cFloor(165, FLOOR_Y + FLOOR_H / 2);
+      cUrethra(NX - 6, 404);
+
+      drawGraph();
+
+      put($("st-vol"), `${fmt0.format(Math.round(s.V))} ml`);
+      put($("st-p"), fmt0.format(Math.round(pressure())));
+      put($("st-flow-n"), s.voiding ? "Proud" : "Ledviny posílají");
+      put($("st-flow"), s.voiding ? `${fmt0.format(Math.round(flow()))} ml/s` : `${fmt0.format(Math.round(rate() * 60))} ml/h`);
+      put($("status"), statusText(), true);
+      goBtn.disabled = child || s.voiding || s.V < 20;
+    }
+
+    /* ---------- ovládání ---------- */
+    function radio(seg, pick) {
+      seg.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+        pick(b.dataset.v);
+      });
+    }
+    radio($("who-seg"), (v) => {
+      s.who = v;
+      drinkBtn.textContent = `Napít se · ${P().drink} ml`;
+      goBtn.title = v === "child" ? "Batole na záchod ještě nechodí" : "";
+      reset();
+      buildGraph();
+      render();
+    });
+    radio($("speed-seg"), (v) => { s.speed = Number(v); });
+    drinkBtn.addEventListener("click", () => { drink(); render(); });
+    goBtn.addEventListener("click", () => { if (!goBtn.disabled) { begin(false); render(); } });
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let prev = performance.now();
+    function frame(now) {
+      const dt = Math.min(0.1, (now - prev) / 1000);
+      prev = now;
+      // močení běží pětkrát rychleji než ve skutečnosti, plnění podle zvolené rychlosti
+      step(s.voiding || s.c > 0.01 ? (dt * 5) / 60 : dt * s.speed);
+      s.hold += (holdTarget() - s.hold) * (1 - Math.exp(-dt * 3));
+      if (!reduced) {
+        const p = P(), stretch = Math.min(1, s.V / (s.who === "child" ? p.max : p.cap));
+        phase.drops = (phase.drops + dt * (0.15 + 0.35 * Math.min(1, rate() / 3))) % 1;
+        phase.in = (phase.in + dt * (0.2 + 0.8 * stretch)) % 1;
+        phase.out = (phase.out + dt * 1.2) % 1;
+        phase.hold = (phase.hold + dt * (0.2 + 0.6 * s.hold)) % 1;
+      }
+      render();
+      requestAnimationFrame(frame);
+    }
+    reset();
+    buildGraph();
+    render();
+    requestAnimationFrame(frame);
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>
