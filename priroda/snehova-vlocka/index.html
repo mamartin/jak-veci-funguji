@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak vzniká sněhová vločka</title>
+  <meta name="description" content="Proč má sněhová vločka šest ramen, proč jsou všechna stejná a proč jsou kolem −15 °C hvězdičky a kolem −5 °C jehličky. S krystalkem, který si necháte vyrůst v mraku.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .snow-stage { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+    @media (min-width: 60rem) { .snow-stage { grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); } }
+    #chart { justify-self: center; max-width: 24rem; touch-action: none; cursor: crosshair; }
+
+    /* mrak je tmavý v obou režimech, barvy jsou proto pevné */
+    .sky-bg { fill: #101624; }
+    .sky-cap { fill: #8f9ab5; font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
+    .sep { stroke: #2a3348; stroke-width: 1; }
+    .ice { fill: #dcebf8; fill-opacity: 0.9; stroke: #9cc3e6; stroke-width: 1; stroke-linejoin: round; }
+    .ice-line { fill: none; stroke: #dcebf8; stroke-linecap: round; }
+    .ring { fill: none; stroke: #7fa3c6; stroke-width: 0.8; opacity: 0.8; }
+    .ridge { stroke: #7fa3c6; stroke-width: 1; }
+    .bar line { stroke: #aab4cc; stroke-width: 1.5; }
+    .bar text { fill: #aab4cc; font: 500 11px var(--font-mono); }
+
+    .zone { opacity: 0.5; }
+    .zone.plate { fill: var(--sunk); }
+    .zone.col { fill: var(--surface); }
+    .zone-hi { fill: var(--cat); opacity: 0.13; }
+    .frame { fill: none; stroke: var(--rule); }
+    .wsat { fill: none; stroke: var(--ink-3); stroke-width: 1.3; stroke-dasharray: 4 4; }
+    .trail { fill: none; stroke: var(--cat); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; opacity: 0.55; }
+    .now { fill: var(--cat); stroke: var(--surface); stroke-width: 2; }
+    .ax { fill: var(--ink-3); font: 500 10.5px var(--font-mono); }
+    .zl { fill: var(--ink-2); font: 600 11.5px var(--font-mono); text-anchor: middle; }
+    .zl.hi { fill: var(--cat); }
+    .ttl { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
+
+    @media (max-width: 46rem) {
+      .sky-cap, .bar text { font-size: 15px; }
+      .ax { font-size: 14px; }
+      .zl { font-size: 13px; }
+      .ttl { font-size: 14px; }
+    }
+  </style>
+</head>
+<body data-cat="priroda">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Příroda</a><span aria-hidden="true">/</span><span>Sněhová vločka</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Příroda</a></p>
+      <h1 class="display">Jak vzniká sněhová vločka</h1>
+      <p class="lede">Sněhová vločka není zmrzlá kapka. Vyrůstá v mraku přímo z vodní páry, molekulu po molekule. Její tvar je záznam cesty: jaká byla kolem ní teplota a kolik páry měla k dispozici, zatímco rostla.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Led skládá molekuly vody do šestiúhelníkové mřížky. Proto je nejmenší krystalek šestiboký a vločka má šest ramen.</li>
+        <li>Rohy krystalu trčí do vlhkého vzduchu a chytají páru rychleji než stěny. <span class="hl">Z rohů vyrůstají ramena a z ramen větvičky.</span></li>
+        <li>Tvar určuje teplota a množství páry. Kolem −15 °C rostou hvězdičky, kolem −5 °C sloupky a jehličky, těsně pod nulou destičky.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Krystalek, který roste v mraku</p>
+        <span class="label">Nastavte teplotu a vlhkost a nechte ho růst, podmínky můžete měnit i během růstu</span>
+      </div>
+      <div class="fig-stage snow-stage">
+        <svg id="flake" viewBox="0 0 560 420" role="img" aria-label="Sněhový krystal shora a z boku, zvětšený pod lupou"></svg>
+        <svg id="chart" viewBox="0 0 380 420" role="img" aria-label="Diagram tvarů: jaký krystal roste při které teplotě a vlhkosti. Kliknutím nastavíte obojí."></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl ctl-grow">
+          <label class="label" for="temp">Teplota v mraku</label>
+          <div class="ctl-row">
+            <input type="range" id="temp" min="-30" max="-1" step="0.5" value="-15">
+            <output class="val" id="temp-val" for="temp"></output>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="vap">Páry navíc</label>
+          <div class="ctl-row">
+            <input type="range" id="vap" min="0.05" max="1" step="0.01" value="0.8">
+            <output class="val" id="vap-val" for="vap"></output>
+          </div>
+        </div>
+        <button type="button" class="btn" id="play" aria-pressed="false">Nechat růst</button>
+        <button type="button" class="btn ghost" id="reset">Začít znovu</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Tvar</span><span class="v small" id="st-shape"></span></li>
+          <li><span class="n" id="st-size-n">Průměr</span><span class="v" id="st-size"></span></li>
+          <li><span class="n">Doba růstu</span><span class="v" id="st-time"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Zjednodušený model podle pokusů japonského fyzika Ukichira Nakaji a pozdějších měření. Vlevo krystal shora a z boku, každý pohled zvětšený tak, aby se vešel, skutečnou velikost ukazují měřítka. Vpravo diagram tvarů: kliknutím do něj nastavíte teplotu i vlhkost naráz a čára ukazuje, kudy krystal během růstu prošel. Páry navíc je přesycení vůči ledu. Přerušovaná čára odpovídá mraku plnému přechlazených kapiček. Model kreslí ideální krystal, skutečné vločky bývají nepravidelné a často slepené z mnoha krystalků.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-para">
+      <div class="prose">
+        <h2 id="h-para">Z páry, ne z kapky</h2>
+        <p>V zimním mraku je většinou mnohem víc kapiček než ledu. Voda v nich nezmrzne, ani když je deset nebo dvacet stupňů pod nulou. Kapička potřebuje, aby led někde začal, a v čistém vzduchu se to nestane až do −38 °C. Takové vodě se říká přechlazená.</p>
+        <p>Led začne na zrnku prachu, pylu nebo na bakterii, které mají povrch podobný ledové mřížce. Jakmile je v mraku první krystalek, začne růst na úkor kapiček. Nad ledem totiž stačí méně páry než nad vodou, aby byl vzduch nasycený. Kapičky se proto vypařují a pára se usazuje na ledu. <span class="hl">Krystal přímo nasává páru, kterou kapičky pouštějí.</span></p>
+        <p>Takhle ve střední Evropě začíná skoro všechno, co z mraků spadne, i v létě. Déšť je často sníh, který cestou dolů roztál.</p>
+      </div>
+      <aside class="note" aria-label="Sníh v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>−15 °C</dt><dd>je teplota, při které rostou nejbohatší hvězdičky</dd></div>
+          <div><dt>kolem 1 m/s</dt><dd>padá vločka, z mraku k zemi letí i hodinu</dd></div>
+          <div><dt>9 z 10</dt><dd>dílů čerstvého sněhu tvoří vzduch</dd></div>
+          <div><dt>10 cm</dt><dd>prašanu dá po roztání asi centimetr vody</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-sest">
+      <div class="prose">
+        <h2 id="h-sest">Šest ramen z mřížky</h2>
+        <p>Molekula vody je zalomená do tvaru písmene V a v ledu se drží se čtyřmi sousedy. Dohromady skládají vrstvy šestiúhelníků podobné plástvi. Nejmenší krystal, který z takové mřížky vyroste, je šestiboký hranolek: dvě ploché šestiúhelníkové podstavy a šest bočních stěn.</p>
+        <p>Proč je sníh šestičetný, si lámal hlavu Johannes Kepler. V Praze o tom roku 1611 napsal útlou knížku jako novoroční dárek pro přítele. Tipoval, že za tím je skládání drobných kuliček, a měl skoro pravdu. Mřížku ledu ale lidé uviděli až ve dvacátém století pomocí rentgenu.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Klikněte na Začít znovu. Na začátku je krystalek jen šestiboká destička, menší než zrnko prachu. Pak ho nechte růst při −15 °C a hodně páry a sledujte, kde se začne měnit.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-ramena">
+      <div class="prose">
+        <h2 id="h-ramena">Proč rostou ramena</h2>
+        <p>Pára k ledu putuje vzduchem pomalu, molekula se po cestě mnohokrát odrazí. Rohy krystalu trčí dál do okolního vzduchu a dostanou ji první. Rostou proto rychleji než středy stěn, tím víc vyčnívají a dostanou ještě víc. <span class="hl">Ze šesti rohů tak vyrostou ramena.</span></p>
+        <p>Stejně to funguje dál. Na každém rameni se objeví nepatrný hrbolek, ten začne předbíhat okolí a vyroste z něj větvička. Při hodně páry se větví hustě a krystal vypadá jako kapradí. Při málo páry nestihne žádný roh utéct a krystal zůstane hladkou destičkou.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte teplotu na −15 °C a měňte páru navíc. Při málo páry roste hladká destička, s trochu víc párou destička s žebry, pak hvězdička s holými rameny. Při hodně páry se ramena hustě rozvětví.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-stejna">
+      <div class="prose">
+        <h2 id="h-stejna">Proč jsou všechna ramena stejná</h2>
+        <p>Ramena o sobě nevědí, nic je nekoordinuje. Jsou ale od sebe jen pár milimetrů, a tak mají v každém okamžiku stejnou teplotu i stejně páry. Když vločka propadne do teplejší nebo sušší vrstvy mraku, změní se podmínky pro všech šest ramen naráz a všechna na to zareagují stejně.</p>
+        <p>Vločka si tak cestu mrakem zapisuje šestkrát. <span class="hl">Japonský fyzik Ukichiro Nakaja, který jako první vypěstoval sněhový krystal v laboratoři, řekl, že sníh je dopis z nebe.</span> Z tvaru vločky se dá vyčíst, jaké bylo počasí tam, kde rostla.</p>
+        <p>Dokonale souměrné krystaly jsou ale spíš výjimka. Většina se cestou srazí s jinými, obalí se zmrzlými kapičkami nebo se do nich opře vítr z jedné strany.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte růst hvězdičku při −15 °C a hodně páry. V polovině posuňte teplotu na −2 °C. Na konci všech ramen i větviček naráz vyrostou destičky.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-teplota">
+      <div class="prose">
+        <h2 id="h-teplota">Tvar podle teploty</h2>
+        <p>Nakaja pěstoval krystaly od roku 1936 na králičím chlupu v chlazené komoře a měnil teplotu a vlhkost. Výsledek byl překvapivý. Těsně pod nulou rostou ploché destičky. Kolem −5 °C se krystal začne natahovat do délky a vzniknou sloupky a tenké jehličky. Kolem −15 °C jsou zase ploché, a to jsou ty nejkrásnější hvězdičky. Pod −22 °C přijdou znovu sloupky.</p>
+        <p>Proč se tvar se stupni takhle střídá, se dodnes úplně neví. Souvisí to s tím, jak rychle se molekuly uchytí na ploché podstavě a jak rychle na bočních stěnách, a to se s teplotou mění.</p>
+        <p>Proč jsou hvězdičky právě kolem −15 °C, je jasnější. V mraku plném kapiček je tam rozdíl mezi párou nad vodou a nad ledem skoro největší. Krystal má nejvíc páry navíc a roste nejrychleji.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte růst krystal při −6 °C, dokud z něj není sloupek, a pak teplotu přesuňte na −15 °C. Na obou koncích sloupku vyrostou destičky jako kola na nápravě. I takové vločky z mraků padají.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-dve">
+      <div class="prose">
+        <h2 id="h-dve">Žádné dvě stejné?</h2>
+        <p>Americký farmář Wilson Bentley vyfotil první sněhovou vločku pod mikroskopem v roce 1885 a do konce života jich nafotil přes pět tisíc. Dvě stejné mezi nimi nenašel.</p>
+        <p>U velké rozvětvené vločky je to skoro jisté. Má stovky větviček a každá zachytila trochu jiný kousek cesty mrakem. Kombinací je víc, než kolik vloček kdy na Zemi napadlo. U drobných jednoduchých krystalků je to jinak: dva šestiboké sloupky se od sebe pod mikroskopem rozlišit nedají.</p>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="h-bila">
+      <div class="prose">
+        <h2 id="h-bila">Proč je sníh bílý a tichý</h2>
+        <p>Led je průhledný. Sníh je ale hromada malých krystalků a každá jejich plocha odrazí kousek světla. Paprsek se mezi nimi mnohokrát odrazí, než se vrátí ven, a vrátí se všechny barvy stejně. Proto je sníh bílý, stejně jako cukr, sůl nebo pěna.</p>
+        <p>Čerstvý sníh je z devíti desetin vzduch uvězněný mezi ramínky krystalků. Proto dobře izoluje a pod sněhovou peřinou přezimují oziminy i myši. Pohlcuje i zvuk, a krajina po sněžení je proto tak tichá. Když sníh sleží a krystalky se slijí, ticho zmizí.</p>
+        <p>Velké chlupaté vločky, které padají při teplotě kolem nuly, nejsou jeden krystal. Jsou to desítky až stovky krystalků slepených dohromady. Při teplotě těsně pod nulou je jejich povrch lepivý a při srážce se chytí.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Slovníček</span>
+        <p>Sníh jsou krystalky ledu, které vyrostly z páry. Krupky jsou sněhové krystalky obalené zmrzlými kapičkami, kulaté a měkké. Kroupy jsou kusy ledu z letních bouřek, které rostly vrstvu po vrstvě z kapek. A námraza je led, který vyroste z páry nebo z mlhy přímo na stromech a drátech.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../zemetreseni/" data-cat="priroda">
+        <span class="label">Další článek · Příroda</span>
+        <span class="t">Zemětřesení a seismograf</span>
+        <p>Jaké vlny se šíří od zlomu a jak se ze tří záznamů pozná, kde se země pohnula.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const fmt0 = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+    const fmt1 = new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const fmt2 = new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const RAD = Math.PI / 180;
+
+    /* ---------- model ---------- */
+    const TMAX = 45;                      // minut růstu, pak je krystal dost těžký, aby z mraku vypadl
+    const VAP_MAX = 30;                   // procent páry navíc na konci posuvníku
+    // přesycení vůči ledu v mraku plném přechlazených kapiček, jako podíl posuvníku
+    const waterSat = (T) => Math.min(1, (-0.97 * T) / VAP_MAX);
+    // jaký tvar při dané teplotě a páře roste (podle Nakajova diagramu)
+    function habit(T, S) {
+      if (T > -3) return S > 0.75 ? "sector" : "plate";
+      if (T > -10) return S > 0.5 && T <= -4 && T >= -6.5 ? "needle" : "column";
+      if (T > -22) {
+        if (S > 0.5 && Math.abs(T + 14.5) < 2.5 + 3 * (S - 0.5)) return "dendrite";
+        return S > 0.3 ? "sector" : "plate";
+      }
+      return "column";
+    }
+    // rychlost růstu v mm za minutu: roste s párou, nejrychleji kolem −15 °C
+    const rate = (T, S) => 0.07 * S * (0.3 + 0.7 * Math.exp(-(((T + 14.5) / 5) ** 2)) + 0.25 * Math.exp(-(((T + 5) / 2) ** 2)));
+
+    const s = { T: -15, S: 0.8, playing: false };
+    function seed() {
+      Object.assign(s, {
+        t: 0, a: 0.012, c: 0.006,          // hranolek: poloměr a polovina výšky v mm
+        R: 0.012, L: 0.012,                // destička a ramena
+        rings: [], branches: [], cap: 0, last: 0, plateAt: 0, sectored: false, capped: false, colFirst: false,
+        path: [], mode: "",
+      });
+    }
+    function step(dt) {
+      const mode = habit(s.T, s.S), g = rate(s.T, s.S) * dt;
+      if (mode !== s.mode) { s.mode = mode; s.last = s.L; }
+      if (mode === "plate" || mode === "sector") {
+        if (s.L > s.R * 1.25) {
+          // ramena už jsou: na jejich koncích rostou destičky
+          s.cap += g * 0.3;
+          s.branches.forEach((b) => { if (b.len > 0.015) b.cap += g * 0.22; });
+        } else {
+          if (s.c > 0.06 && s.R <= s.a) { s.plateAt = s.c; s.capped = true; }
+          s.R = Math.max(s.R, s.a) + g * 0.5;
+          s.L = s.R;
+          const top = s.rings[s.rings.length - 1];
+          if (top && top.kind === mode) top.r = s.R; else s.rings.push({ r: s.R, kind: mode });
+          if (mode === "sector") s.sectored = true;
+        }
+      } else if (mode === "dendrite") {
+        if (s.L < s.R) s.L = s.R;
+        s.L += g;
+        const gap = s.S > 0.75 ? 0.085 : s.S > 0.62 ? 0.17 : Infinity;
+        if (s.L - s.last >= gap) { s.branches.push({ p: s.L - 0.01, len: 0, cap: 0 }); s.last = s.L; }
+        s.branches.forEach((b) => { b.len = Math.min(b.len + g * 0.4, 0.6 * b.p, 0.45 * (s.L - b.p)); });
+      } else {
+        if (s.R <= s.a * 1.2 && s.L <= s.a * 1.2) s.colFirst = true;
+        s.c += g * (mode === "needle" ? 0.9 : 0.45);
+        s.a += g * (mode === "needle" ? 0.008 : 0.09);
+        if (s.R < s.a) { s.R = s.a; s.L = Math.max(s.L, s.a); }
+      }
+      s.t += dt;
+      const p = s.path[s.path.length - 1];
+      if (!p || p[0] !== s.T || p[1] !== s.S) s.path.push([s.T, s.S]);
+    }
+    const planar = () => Math.max(s.R, s.L);
+    function shape() {
+      if (s.t === 0) return "zárodek";
+      const P = planar();
+      if (s.c > 1.4 * P) return s.a < s.c / 7 ? "jehlička" : "sloupek";
+      if (s.capped && s.colFirst && P > 1.6 * s.a) return "sloupek s destičkami";
+      if (s.L > s.R * 1.6 && s.L > 0.08) {
+        const caps = s.cap > 0.02;
+        if (caps) return "hvězdička s destičkami na koncích";
+        return s.branches.length >= 4 ? "hvězdička s větvičkami" : "hvězdička";
+      }
+      return s.sectored ? "destička s žebry" : "šestiboká destička";
+    }
+
+    /* ---------- krystal ---------- */
+    const flake = $("flake");
+    el("rect", { x: 0, y: 0, width: 560, height: 420, rx: 6, class: "sky-bg" }, flake);
+    el("line", { x1: 412, y1: 18, x2: 412, y2: 402, class: "sep" }, flake);
+    el("text", { x: 18, y: 28, class: "sky-cap" }, flake).textContent = "SHORA";
+    el("text", { x: 428, y: 28, class: "sky-cap" }, flake).textContent = "Z BOKU";
+    const top = el("g", {}, flake), side = el("g", {}, flake), bars = el("g", { class: "bar" }, flake);
+    const TOP = { x: 206, y: 210, r: 168 }, SIDE = { x: 486, y: 210, w: 58, h: 160 };
+    const hex = (cx, cy, r) => { let d = ""; for (let i = 0; i < 6; i++) d += `${i ? "L" : "M"}${(cx + r * Math.cos(i * 60 * RAD)).toFixed(1)} ${(cy - r * Math.sin(i * 60 * RAD)).toFixed(1)}`; return d + "Z"; };
+    function scaleBar(x, y, k, maxPx) {
+      const unit = [0.02, 0.05, 0.1, 0.2, 0.5, 1, 2].find((u) => u * k >= 34 && u * k <= maxPx) || 0.02;
+      el("line", { x1: x, y1: y, x2: x + unit * k, y2: y }, bars);
+      el("line", { x1: x, y1: y - 5, x2: x, y2: y + 5 }, bars);
+      el("line", { x1: x + unit * k, y1: y - 5, x2: x + unit * k, y2: y + 5 }, bars);
+      el("text", { x, y: y - 10 }, bars).textContent = `${unit < 0.1 ? fmt2.format(unit) : unit < 1 ? fmt1.format(unit) : fmt0.format(unit)} mm`;
+    }
+    function drawTop() {
+      top.textContent = "";
+      const P = planar(), reach = Math.max(P + s.cap, s.a, 0.05), k = TOP.r / reach;
+      const plate = Math.max(s.R, s.a);
+      el("path", { d: hex(TOP.x, TOP.y, plate * k), class: "ice" }, top);
+      let prev = 0;
+      s.rings.forEach((g) => {
+        if (g.kind === "sector") for (let i = 0; i < 6; i++) {
+          const u = [Math.cos(i * 60 * RAD), -Math.sin(i * 60 * RAD)];
+          el("line", { x1: TOP.x + u[0] * prev * k, y1: TOP.y + u[1] * prev * k, x2: TOP.x + u[0] * g.r * k, y2: TOP.y + u[1] * g.r * k, class: "ridge" }, top);
+        }
+        if (g.r < plate * 0.98) el("path", { d: hex(TOP.x, TOP.y, g.r * k), class: "ring" }, top);
+        prev = g.r;
+      });
+      if (s.L > plate * 1.02) {
+        const wa = Math.max(1.6, Math.min(8, 0.03 * k)), wb = Math.max(1.2, wa * 0.7);
+        let arms = "", twigs = "", caps = "";
+        for (let i = 0; i < 6; i++) {
+          const th = i * 60 * RAD, u = [Math.cos(th), -Math.sin(th)];
+          arms += `M${(TOP.x + u[0] * plate * k * 0.9).toFixed(1)} ${(TOP.y + u[1] * plate * k * 0.9).toFixed(1)}L${(TOP.x + u[0] * s.L * k).toFixed(1)} ${(TOP.y + u[1] * s.L * k).toFixed(1)}`;
+          if (s.cap > 0) caps += hex(TOP.x + u[0] * s.L * k, TOP.y + u[1] * s.L * k, s.cap * k);
+          s.branches.forEach((b) => {
+            if (b.len <= 0) return;
+            const bx = TOP.x + u[0] * b.p * k, by = TOP.y + u[1] * b.p * k;
+            [-60, 60].forEach((turn) => {
+              const v = [Math.cos(th + turn * RAD), -Math.sin(th + turn * RAD)], ex = bx + v[0] * b.len * k, ey = by + v[1] * b.len * k;
+              twigs += `M${bx.toFixed(1)} ${by.toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}`;
+              if (b.cap > 0) caps += hex(ex, ey, b.cap * k);
+            });
+          });
+        }
+        el("path", { d: twigs, class: "ice-line", "stroke-width": wb.toFixed(2) }, top);
+        el("path", { d: arms, class: "ice-line", "stroke-width": wa.toFixed(2) }, top);
+        if (caps) el("path", { d: caps, class: "ice" }, top);
+      }
+      scaleBar(22, 396, k, 160);
+    }
+    function drawSide() {
+      side.textContent = "";
+      const P = planar() + s.cap, k = Math.min(SIDE.w / Math.max(P, s.a, 0.03), SIDE.h / Math.max(s.c, 0.01));
+      const thick = Math.max(1.5, 0.008 * k);
+      el("rect", { x: SIDE.x - s.a * k, y: SIDE.y - s.c * k, width: 2 * s.a * k, height: 2 * s.c * k, class: "ice" }, side);
+      if (P > s.a * 1.15) {
+        const at = s.capped ? [-s.plateAt, s.plateAt] : [0];
+        at.forEach((z) => el("rect", { x: SIDE.x - P * k, y: SIDE.y + z * k - thick / 2, width: 2 * P * k, height: thick, class: "ice" }, side));
+      }
+      scaleBar(428, 396, k, 110);
+    }
+
+    /* ---------- diagram tvarů ---------- */
+    const chart = $("chart");
+    const D = { x: 44, y: 66, w: 318, h: 288 };
+    const cx = (T) => D.x + (-T / 30) * D.w, cy = (S) => D.y + D.h - S * D.h;
+    el("text", { x: D.x, y: 20, class: "ttl" }, chart).textContent = "JAKÝ TVAR ROSTE";
+    [[0, -3, "plate"], [-3, -10, "col"], [-10, -22, "plate"], [-22, -30, "col"]].forEach(([a, b, kind]) => {
+      el("rect", { x: cx(a), y: D.y, width: cx(b) - cx(a), height: D.h, class: `zone ${kind}` }, chart);
+    });
+    // hvězdičky a jehličky při hodně páry
+    let dz = "";
+    for (let S = 0.5; S <= 1.0001; S += 0.05) dz += `${dz ? "L" : "M"}${cx(-14.5 + 2.5 + 3 * (S - 0.5)).toFixed(1)} ${cy(S).toFixed(1)}`;
+    for (let S = 1; S >= 0.4999; S -= 0.05) dz += `L${cx(-14.5 - 2.5 - 3 * (S - 0.5)).toFixed(1)} ${cy(S).toFixed(1)}`;
+    el("path", { d: dz + "Z", class: "zone-hi" }, chart);
+    el("rect", { x: cx(-4), y: cy(1), width: cx(-6.5) - cx(-4), height: cy(0.5) - cy(1), class: "zone-hi" }, chart);
+    el("rect", { x: D.x, y: D.y, width: D.w, height: D.h, class: "frame" }, chart);
+    let ws = "";
+    for (let T = 0; T >= -30; T -= 1) ws += `${ws ? "L" : "M"}${cx(T).toFixed(1)} ${cy(waterSat(T)).toFixed(1)}`;
+    el("path", { d: ws, class: "wsat" }, chart);
+    [[-6.5, "sloupky"], [-16.5, "destičky"], [-26, "sloupky"]].forEach(([T, t]) => { el("text", { x: cx(T), y: cy(0.06), class: "zl" }, chart).textContent = t; });
+    el("text", { x: cx(-1.5) + 4, y: cy(0.03), class: "zl", transform: `rotate(-90 ${cx(-1.5) + 4} ${cy(0.03)})`, style: "text-anchor:start" }, chart).textContent = "destičky";
+    el("text", { x: cx(-14.5), y: cy(0.93), class: "zl hi" }, chart).textContent = "hvězdičky";
+    el("text", { x: cx(-5.25), y: cy(0.45), class: "zl hi" }, chart).textContent = "jehličky";
+    el("text", { x: cx(-25), y: cy(0.6), class: "ax", "text-anchor": "middle" }, chart).textContent = "mrak";
+    el("text", { x: cx(-25), y: cy(0.6) + 17, class: "ax", "text-anchor": "middle" }, chart).textContent = "s kapkami";
+    [0, -5, -10, -15, -20, -25, -30].forEach((T) => { el("text", { x: cx(T), y: D.y + D.h + 18, class: "ax", "text-anchor": "middle" }, chart).textContent = T ? `−${-T}` : "0"; });
+    el("text", { x: D.x + D.w, y: D.y + D.h + 42, class: "ax", "text-anchor": "end" }, chart).textContent = "teplota °C";
+    [0, 0.5, 1].forEach((S) => { el("text", { x: D.x - 6, y: cy(S) + 4, class: "ax", "text-anchor": "end" }, chart).textContent = `${S * VAP_MAX} %`; });
+    el("text", { x: D.x - 6, y: D.y - 10, class: "ax", "text-anchor": "start" }, chart).textContent = "páry navíc";
+    const trail = el("path", { class: "trail" }, chart), now = el("circle", { r: 7, class: "now" }, chart);
+
+    /* ---------- výpis ---------- */
+    const TEXT = {
+      plate: "Těsně pod nulou roste krystal do šířky. Rohy při téhle teplotě neutíkají a vzniká hladká šestiboká destička.",
+      sector: "Krystal roste do šířky a rohy trochu předbíhají. Destička dostane žebra, která vedou od středu do rohů.",
+      dendrite: "Kolem −15 °C a s hodně párou rohy utíkají a z ramen raší větvičky. Všech šest ramen má stejné podmínky, a tak rostou stejně.",
+      column: "Při téhle teplotě se krystal natahuje do délky. Roste šestiboký sloupek, shora vypadá jako malý šestiúhelník.",
+      needle: "Kolem −5 °C a s hodně párou se sloupek protáhne v tenkou jehličku, delší než milimetr.",
+    };
+    const TNAME = { plate: "Roste destička.", sector: "Roste destička s žebry.", dendrite: "Roste hvězdička.", column: "Roste sloupek.", needle: "Roste jehlička." };
+    function render() {
+      bars.textContent = "";
+      drawTop(); drawSide();
+      trail.setAttribute("d", s.path.map(([T, S], i) => `${i ? "L" : "M"}${cx(T).toFixed(1)} ${cy(S).toFixed(1)}`).join(""));
+      now.setAttribute("cx", cx(s.T).toFixed(1)); now.setAttribute("cy", cy(s.S).toFixed(1));
+      $("temp").value = s.T; $("vap").value = s.S;
+      $("temp-val").textContent = `−${fmt1.format(-s.T)} °C`;
+      $("vap-val").textContent = `${fmt0.format(s.S * VAP_MAX)} %`;
+      const name = shape(), long = s.c > 1.4 * planar();
+      $("st-shape").textContent = name;
+      $("st-size-n").textContent = long ? "Délka" : "Průměr";
+      const size = long ? 2 * s.c : 2 * Math.max(planar() + s.cap, s.a);
+      $("st-size").textContent = `${size < 0.1 ? fmt2.format(size) : fmt1.format(size)} mm`;
+      $("st-time").textContent = `${fmt0.format(s.t)} min`;
+      $("play").textContent = s.playing ? "Pozastavit" : s.t >= TMAX ? "Nechat růst" : s.t > 0 ? "Pokračovat" : "Nechat růst";
+      $("play").setAttribute("aria-pressed", String(s.playing));
+      $("play").disabled = s.t >= TMAX;
+      const mode = habit(s.T, s.S);
+      let status;
+      if (s.t === 0) status = "<strong>Zárodek ledu.</strong> V mraku je zatím jen drobounký šestiboký krystalek. Nastavte podmínky a nechte ho růst.";
+      else if (s.t >= TMAX) status = `<strong>Hotovo: ${name}.</strong> Za ${TMAX} minut krystal ztěžkl natolik, že z mraku vypadl. Cestou dolů už skoro neroste. Zkuste jiné podmínky, nebo je měňte během růstu.`;
+      else status = `<strong>${TNAME[mode]}</strong> ${TEXT[mode]}`;
+      $("status").innerHTML = status;
+    }
+
+    /* ---------- ovládání ---------- */
+    let last = 0;
+    function tick(t) {
+      if (!s.playing) return;
+      const dt = Math.min(0.1, (t - last) / 1000) * 5;   // pět minut růstu za sekundu
+      last = t;
+      for (let left = dt; left > 0; left -= 0.05) step(Math.min(0.05, left));
+      if (s.t >= TMAX) { s.t = TMAX; s.playing = false; }
+      render();
+      if (s.playing) requestAnimationFrame(tick);
+    }
+    function play(on) {
+      s.playing = on && s.t < TMAX;
+      render();
+      if (s.playing) { last = performance.now(); requestAnimationFrame(tick); }
+    }
+    $("play").addEventListener("click", () => play(!s.playing));
+    $("reset").addEventListener("click", () => { seed(); play(false); });
+    $("temp").addEventListener("input", (e) => { s.T = Number(e.target.value); render(); });
+    $("vap").addEventListener("input", (e) => { s.S = Number(e.target.value); render(); });
+    function pick(e) {
+      const m = chart.getScreenCTM();
+      if (!m) return;
+      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
+      s.T = Math.max(-30, Math.min(-1, Math.round((-(p.x - D.x) / D.w) * 30 * 2) / 2));
+      s.S = Math.max(0.05, Math.min(1, Math.round(((D.y + D.h - p.y) / D.h) * 100) / 100));
+      render();
+    }
+    let dragging = false;
+    chart.addEventListener("pointerdown", (e) => { dragging = true; chart.setPointerCapture(e.pointerId); pick(e); });
+    chart.addEventListener("pointermove", (e) => { if (dragging) pick(e); });
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach((n) => chart.addEventListener(n, () => { dragging = false; }));
+
+    // na začátku ukážeme hotovou hvězdičku
+    seed();
+    for (let i = 0; i < 600; i++) step(0.05);
+    render();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>

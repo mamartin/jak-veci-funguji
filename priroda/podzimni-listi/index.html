@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Proč listí na podzim mění barvu</title>
+  <meta name="description" content="Kde se v listí berou žlutá, červená a hnědá, proč je v jednom roce podzim pestřejší než v jiném a jak strom list odhodí. Se stromem, který provedete podzimem.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .leaf-stage { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+    @media (min-width: 60rem) { .leaf-stage { grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); } }
+    #tree { border: 1px solid var(--rule); background: var(--surface); }
+    #chart { justify-self: center; max-width: 24rem; touch-action: pan-y; cursor: ew-resize; }
+
+    .trunk { fill: #6b4a30; }
+    .twig { fill: none; stroke: #6b4a30; stroke-linecap: round; }
+    .ground { fill: var(--sunk); }
+    .ground-line { stroke: var(--rule); stroke-width: 1.5; }
+    .vein { fill: none; stroke-linecap: round; opacity: 0.55; }
+    .stalk { stroke: #6b4a30; stroke-width: 3; stroke-linecap: round; }
+    .cap { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
+    .frame-d { fill: none; stroke: var(--rule); stroke-dasharray: 3 5; }
+
+    .plot-bg { fill: var(--surface); stroke: var(--rule); }
+    .plot-grid { stroke: var(--grid); stroke-width: 1; }
+    .ax { fill: var(--ink-3); font: 500 10.5px var(--font-mono); }
+    .ttl { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
+    .curve { fill: none; stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; }
+    .curve.chl { stroke: #3f8f2a; }
+    .curve.car { stroke: #d9a514; }
+    .curve.ant { stroke: #c8371f; }
+    .curve.brn { stroke: #8a6234; }
+    .curve.on { stroke: var(--ink-3); stroke-width: 1.6; stroke-dasharray: 5 4; }
+    .lg { font: 600 11.5px var(--font-mono); }
+    .lg.chl { fill: #3f8f2a; } .lg.car { fill: #b88a0e; } .lg.ant { fill: #c8371f; } .lg.brn { fill: #8a6234; } .lg.on { fill: var(--ink-3); font-weight: 500; }
+    .mark line { stroke: var(--cat); stroke-width: 2; }
+    .mark circle { fill: var(--cat); stroke: var(--surface); stroke-width: 2; }
+    .frost line { stroke: var(--cold); stroke-width: 1.4; stroke-dasharray: 2 4; }
+    .frost text { fill: var(--cold); font: 600 11px var(--font-mono); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .lg.chl { fill: #6cc152; }
+      :root:not([data-theme="light"]) .lg.car { fill: #e8c040; }
+      :root:not([data-theme="light"]) .lg.ant { fill: #ff7461; }
+      :root:not([data-theme="light"]) .lg.brn { fill: #c49a6a; }
+    }
+    :root[data-theme="dark"] .lg.chl { fill: #6cc152; }
+    :root[data-theme="dark"] .lg.car { fill: #e8c040; }
+    :root[data-theme="dark"] .lg.ant { fill: #ff7461; }
+    :root[data-theme="dark"] .lg.brn { fill: #c49a6a; }
+
+    @media (max-width: 46rem) {
+      .cap, .ttl { font-size: 14px; }
+      .ax { font-size: 14px; }
+      .lg, .frost text { font-size: 13.5px; }
+    }
+  </style>
+</head>
+<body data-cat="priroda">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Příroda</a><span aria-hidden="true">/</span><span>Podzimní listí</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Příroda</a></p>
+      <h1 class="display">Proč listí na podzim mění barvu</h1>
+      <p class="lede">Žlutá v listech byla celé léto, jen ji přebíjela zelená. Na podzim ji strom odhalí, protože zelené barvivo rozebere a odnese si ho do zásoby. Červená je jiný příběh: tu list vyrobí až na poslední chvíli. A hnědá je to, co zbude na konci.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Zelený chlorofyl se v listu celé léto rozpadá a strom ho stále doplňuje. Na podzim ho přestane doplňovat a <span class="hl">ukážou se žlutá barviva, která tam byla celou dobu.</span></li>
+        <li>Červené barvivo list vyrábí až na podzim, a nejvíc za slunečných dnů a chladných nocí. Proto je v některém roce podzim pestřejší než v jiném.</li>
+        <li>U řapíku se vytvoří odlučovací vrstva. List se od větve oddělí a ranku hned zacelí korek.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Strom od září do listopadu</p>
+        <span class="label">Posuňte datum nebo pusťte podzim a zkuste jiný strom a jiné počasí</span>
+      </div>
+      <div class="fig-stage leaf-stage">
+        <svg id="tree" viewBox="0 0 560 420" role="img" aria-label="Listnatý strom s barevnou korunou, opadané listí pod ním a vedle jeden list zblízka"></svg>
+        <svg id="chart" viewBox="0 0 380 420" role="img" aria-label="Graf barviv v listu od září do listopadu. Kliknutím nastavíte datum."></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl ctl-grow">
+          <label class="label" for="day">Datum</label>
+          <div class="ctl-row">
+            <input type="range" id="day" min="0" max="90" step="1" value="34">
+            <output class="val" id="day-val" for="day"></output>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-sp">Strom</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-sp" id="sp-seg">
+            <button type="button" role="radio" data-v="javor" aria-checked="true">Červený javor</button>
+            <button type="button" role="radio" data-v="briza" aria-checked="false">Bříza</button>
+            <button type="button" role="radio" data-v="dub" aria-checked="false">Dub</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-w">Počasí</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-w" id="w-seg">
+            <button type="button" role="radio" data-v="slunce" aria-checked="true">Slunečno, chladné noci</button>
+            <button type="button" role="radio" data-v="teplo" aria-checked="false">Zataženo a teplo</button>
+            <button type="button" role="radio" data-v="mraz" aria-checked="false">Brzký mráz</button>
+          </div>
+        </div>
+        <button type="button" class="btn" id="play" aria-pressed="false">Spustit podzim</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav modelu">
+          <li><span class="n">Chlorofyl</span><span class="v" id="st-chl"></span></li>
+          <li><span class="n">Červené barvivo</span><span class="v" id="st-ant"></span></li>
+          <li><span class="n">Listí na stromě</span><span class="v" id="st-on"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Zjednodušený model. Barva listu je spočítaná z toho, kolik je v něm zeleného chlorofylu, žlutých karotenoidů, červených antokyanů a hnědých látek. Listy na okraji koruny mají víc slunce než listy uvnitř. List vpravo je ze slunné strany koruny, okraj má o pár dní napřed před žilkami. Graf ukazuje barviva v tomhle listu, množství jsou poměrná, a přerušovanou čarou, kolik listí ještě drží na stromě.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-zluta">
+      <div class="prose">
+        <h2 id="h-zluta">Žlutá tam byla celé léto</h2>
+        <p>List je zelený kvůli chlorofylu. To je barvivo, které chytá sluneční světlo a pohání jím výrobu cukru z vody a oxidu uhličitého. Pohlcuje hlavně červené a modré světlo a zelené odráží. Je ho v listu hodně a přebije všechno ostatní.</p>
+        <p>Vedle něj jsou v listu žlutá a oranžová barviva, karotenoidy. Stejná dělají oranžovou mrkev. Pomáhají chytat světlo a chrání chlorofyl, když je slunce moc. Celé léto tam jsou, jen pod zelenou nejsou vidět.</p>
+        <p>Chlorofyl na světle rychle stárne a list ho celé léto rozebírá a staví znovu. <span class="hl">Na podzim strom stavbu zastaví, chlorofyl zmizí během pár týdnů a žlutá vystoupí.</span> Karotenoidy jsou odolnější a vydrží déle.</p>
+      </div>
+      <aside class="note" aria-label="Podzim v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>asi polovinu</dt><dd>dusíku z listu si strom před opadem stáhne zpátky</dd></div>
+          <div><dt>přes 200 tisíc</dt><dd>listů může mít velký dub</dd></div>
+          <div><dt>3–4 tuny</dt><dd>listí spadne každý podzim na hektar listnatého lesa</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-proc">
+      <div class="prose">
+        <h2 id="h-proc">Strom si bere zpátky, co má cenu</h2>
+        <p>List je drahý. Chlorofyl a bílkoviny kolem něj obsahují velkou část dusíku, který strom za rok získá z půdy, a dusíku je v lese málo. Kdyby strom shodil list zelený, přišel by o něj.</p>
+        <p>Proto ho před opadem rozebere. Rozloží chlorofyl i bílkoviny na drobné kousky a odvede je lýkem do větví a kmene. Přes zimu je tam skladuje a na jaře z nich postaví nové listy. Žlutá barva je vedlejší účinek tohohle stěhování.</p>
+        <p>Kdy začít, pozná strom hlavně podle délky noci. Ta je každý rok stejná ke stejnému datu, a je to proto spolehlivý kalendář. Teplota pak začátek posune o pár dní nebo týdnů. Teplý podzim barvení zdrží, chladné noci ho urychlí.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Vyberte Břízu a pusťte podzim. Zelená v grafu klesá, žlutá zůstává skoro stejná. Barva listu se mění jen proto, že ubývá zelené.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-cervena">
+      <div class="prose">
+        <h2 id="h-cervena">Červená se vyrábí nově</h2>
+        <p>Červené a fialové antokyany jsou jiný případ. V letním listu skoro nejsou. List je začne vyrábět až na podzim, ze zbytků cukru, a právě v době, kdy chlorofyl mizí. Stejná barviva barví červené zelí, borůvky nebo třešně.</p>
+        <p>Proč by si list dával práci s barvivem, když ho stejně za pár týdnů shodí? Nejspíš je to opalovací krém. Bez chlorofylu je list proti silnému slunci zranitelný, a strom ho přitom potřebuje udržet naživu, dokud z něj nestáhne živiny. Odpovídá tomu, že <span class="hl">listy na slunné straně koruny rudnou víc a uvnitř koruny zůstávají žluté.</span> Podle jiné hypotézy červená varuje mšice, že strom je silný a obranyschopný.</p>
+        <p>Antokyany se tvoří z cukru, a ten list vyrobí jen za slunce. Chladné noci zase zpomalí jeho odvod z listu. Nejpestřejší podzim proto bývá po sérii slunečných dnů s chladnými, ale ne mrazivými nocemi. Za teplého a zataženého podzimu červená skoro chybí.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte Červený javor a datum v polovině října. Pak přepněte počasí na Zataženo a teplo. Koruna je méně červená a barví se o týden později.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-hneda">
+      <div class="prose">
+        <h2 id="h-hneda">Hnědá je konec</h2>
+        <p>Když se rozpadnou i žlutá a červená barviva, zbude hnědá. Dávají ji třísloviny a odumřelé buněčné stěny. Dub a buk jich mají hodně a hnědnou brzy. Na zemi zhnědne každý list, ať byl předtím jakýkoli.</p>
+        <p>Spadané listí je potrava pro houby, bakterie, roupice a žížaly. Do jara z něj většinou zbude jen síť žilek. Dusík, který strom v listu nechal, se tak vrátí do půdy a strom ho za pár let může nasát kořeny zpátky.</p>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="h-opad">
+      <div class="prose">
+        <h2 id="h-opad">Jak list odpadne</h2>
+        <p>List se neutrhne, strom ho odloží. U paty řapíku se vytvoří tenká odlučovací vrstva. Její buňky rozpustí lepidlo, které je drží pohromadě, a list nakonec visí jen na cévních svazcích. Stačí vítr nebo mráz a upadne.</p>
+        <p>Pod odlučovací vrstvou strom předem připraví korek. Ranka po listu je tak zacelená ve chvíli, kdy vznikne. Na větvičce po ní zůstane listová jizva s tečkami po cévách. Pupen nad ní, ze kterého na jaře vyraší nový list, je hotový už od léta.</p>
+        <p>Odložit list dokáže jen živý strom. <span class="hl">Když přijde silný mráz příliš brzy, list zemře dřív, než se odlučovací vrstva vytvoří.</span> Zhnědne, uschne a často zůstane viset na větvi celé týdny. Strom přitom přijde o živiny, které z něj nestihl stáhnout.</p>
+        <p>Dub, habr nebo mladé buky drží suché listy na větvích často až do jara a shodí je teprve rašící pupeny. Proč, se přesně neví. Možná suché listí chrání pupeny před okusem srnami.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Přepněte na Brzký mráz a posuňte datum za 5. října. Javor ani bříza se už nedobarví, listy zhnědnou a drží na stromě. Pak vyberte Dub a dojeďte na konec listopadu. Část suchých listů na něm zůstane.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zima">
+      <div class="prose">
+        <h2 id="h-zima">Proč stromy listí vůbec shazují</h2>
+        <p>Kvůli zimě, ale ne kvůli zimě samotné. Listy ve dne pořád vypařují vodu. Když je v zimě půda zmrzlá, kořeny vodu nenasají a strom s listy by uschl. Na široké listy by navíc padal sníh a lámal větve.</p>
+        <p>Jehličnany to řeší jinak. Jehlice jsou úzké, pokryté voskem a mají v sobě látky proti zmrznutí. Vypařují málo a sníh z nich sklouzne. Smrk si proto jehlice nechává několik let. Výjimkou je modřín: jehlice mu na podzim zežloutnou a opadají stejně jako listí.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Nejčervenější podzimy jsou na severovýchodě Ameriky a v Japonsku, kde roste spousta javorů a dalších stromů s antokyany. V evropských lesích převládají žluté a hnědé barvy. Proč je červených druhů v Evropě méně, se jistě neví.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../../lidske-telo/kychani/" data-cat="telo">
+        <span class="label">Další článek · Lidské tělo</span>
+        <span class="t">Proč kýcháme</span>
+        <p>Co všechno se v těle stane za jedinou sekundu kýchnutí.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const fmt0 = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+
+    /* ---------- model ---------- */
+    // den 0 je 1. září, den 90 je 30. listopadu; t0 je den, kdy ubude polovina chlorofylu
+    const SPECIES = {
+      javor: { name: "Červený javor", t0: 30, car: 0.75, ant: 1, brn: 0.45, fall: 24, hold: 0, shape: "maple" },
+      briza: { name: "Bříza", t0: 33, car: 0.9, ant: 0, brn: 0.55, fall: 22, hold: 0, shape: "birch" },
+      dub: { name: "Dub", t0: 44, car: 0.45, ant: 0.12, brn: 1, fall: 28, hold: 0.4, shape: "oak" },
+    };
+    const WEATHER = {
+      slunce: { shift: 0, ant: 1, frost: null },
+      teplo: { shift: 8, ant: 0.3, frost: null },
+      mraz: { shift: 0, ant: 1, frost: 35 },
+    };
+    const sig = (x) => 1 / (1 + Math.exp(-x));
+    function healthy(sp, w, d, e) {
+      return {
+        chl: sig(-(d - sp.t0) / 4),
+        car: sp.car * (1 - 0.75 * sig((d - sp.t0 - 18) / 5)),
+        ant: sp.ant * w.ant * e * sig((d - sp.t0 + 5) / 3.5) * (1 - sig((d - sp.t0 - 16) / 5)),
+        brn: sp.brn * sig((d - sp.t0 - 18) / 5),
+      };
+    }
+    // barviva v listu: e je, kolik má slunce (0–1), off o kolik dní je list pozadu
+    function pigments(sp, w, day, e, off) {
+      const d = day - off - w.shift;
+      if (w.frost !== null && day >= w.frost) {
+        const p = healthy(sp, w, w.frost - off - w.shift, e);
+        if (p.chl > 0.15) {
+          const k = Math.min(1, (day - w.frost) / 6);
+          return { chl: p.chl * (1 - 0.55 * k), car: p.car * (1 - 0.4 * k), ant: p.ant * (1 - 0.5 * k), brn: Math.max(p.brn, 0.95 * k), dead: true };
+        }
+      }
+      return healthy(sp, w, d, e);
+    }
+    function fallDay(sp, w, leaf) {
+      if (leaf.hold < sp.hold) return Infinity;
+      let f = sp.t0 + sp.fall + w.shift + leaf.off + leaf.jit;
+      if (w.frost !== null) {
+        const p = healthy(sp, w, w.frost - leaf.off - w.shift, leaf.e);
+        if (p.chl > 0.15) f = Math.max(f, w.frost + 34 + leaf.jit);
+      }
+      return f;
+    }
+    // barva z barviv: světlo projde vrstvou barviv a odrazí se (Beerův zákon ve třech kanálech)
+    const BASE = [0.9, 0.88, 0.76];
+    const ABS = { chl: [2.6, 0.7, 2.2], car: [0.05, 0.45, 2.6], ant: [0.1, 2.6, 1.6], brn: [1.0, 1.5, 2.1] };
+    function color(p) {
+      return "#" + [0, 1, 2].map((i) => {
+        const r = BASE[i] * Math.exp(-(p.chl * ABS.chl[i] + p.car * ABS.car[i] + p.ant * ABS.ant[i] + p.brn * ABS.brn[i]));
+        return Math.round(255 * Math.pow(Math.min(1, r), 1 / 2.2)).toString(16).padStart(2, "0");
+      }).join("");
+    }
+    const MONTHS = [["září", 30], ["října", 31], ["listopadu", 30]];
+    function dateOf(day) {
+      let d = Math.round(day);
+      for (const [m, n] of MONTHS) { if (d < n) return `${d + 1}. ${m}`; d -= n; }
+      return "30. listopadu";
+    }
+    const s = { day: 34, sp: "javor", w: "slunce", playing: false };
+
+    /* ---------- tvary listů: obrys jako řada bodů, řapík v počátku, špička nahoře ---------- */
+    function outline(shape) {
+      const pts = [];
+      if (shape === "maple") {
+        // dlanitý list: tři velké a dva malé laloky kolem středu čepele
+        const cy = -50, lobes = [[0, 1], [55, 0.95], [-55, 0.95], [115, 0.6], [-115, 0.6]];
+        for (let i = 0; i <= 140; i++) {
+          const a = -180 + (i / 140) * 360, rad = (a * Math.PI) / 180;
+          let r = 0.42;
+          lobes.forEach(([at, h]) => { r = Math.max(r, 0.42 + (h - 0.42) * Math.exp(-(((a - at) / 13) ** 2))); });
+          r *= 50 * (1 + 0.025 * (i % 2 ? 1 : -1));
+          pts.push([r * Math.sin(rad), cy - r * Math.cos(rad)]);
+        }
+      } else {
+        const n = 44, side = [];
+        for (let i = 0; i <= n; i++) {
+          const t = i / n;
+          let w;
+          if (shape === "birch") w = 46 * Math.pow(Math.sin(Math.PI * Math.pow(t, 0.62)), 1.1) * (1 + 0.06 * (i % 2 ? 1 : -1));
+          else w = 34 * Math.pow(Math.sin(Math.PI * Math.pow(t, 0.8)), 0.8) * (1 + 0.32 * Math.cos(2 * Math.PI * 4.5 * t + 0.6)) * Math.min(1, t * 6);
+          side.push([Math.max(0.5, w), -6 - t * 100]);
+        }
+        side.forEach(([x, y]) => pts.push([x, y]));
+        side.slice().reverse().forEach(([x, y]) => pts.push([-x, y]));
+      }
+      return pts;
+    }
+    const VEINS = {
+      maple: "M0 -29L0 -98M0 -29L-38 -76M0 -29L38 -76M0 -29L-26 -38M0 -29L26 -38",
+      birch: "M0 0L0 -104M0 -22L-30 -34M0 -22L30 -34M0 -40L-30 -52M0 -40L30 -52M0 -58L-24 -70M0 -58L24 -70M0 -76L-16 -86M0 -76L16 -86",
+      oak: "M0 0L0 -104M0 -20L-26 -28M0 -20L26 -28M0 -42L-30 -50M0 -42L30 -50M0 -64L-28 -72M0 -64L28 -72M0 -84L-18 -92M0 -84L18 -92",
+    };
+    const pathOf = (pts) => pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join("") + "Z";
+
+    /* ---------- strom ---------- */
+    const tree = $("tree");
+    const GROUND = 384, CROWN = { x: 172, y: 168, rx: 132, ry: 112 };
+    el("rect", { x: 0, y: GROUND, width: 560, height: 420 - GROUND, class: "ground" }, tree);
+    el("line", { x1: 0, y1: GROUND, x2: 560, y2: GROUND, class: "ground-line" }, tree);
+    el("path", { d: `M160 ${GROUND}L164 250Q166 214 150 182L160 180Q172 206 176 236Q186 206 204 186L212 192Q190 220 184 250L188 ${GROUND}Z`, class: "trunk" }, tree);
+    el("path", { d: "M166 230Q120 200 92 170M178 220Q230 190 252 150M168 200Q150 150 128 112M180 196Q198 140 214 104M170 186Q172 130 176 78", class: "twig", "stroke-width": 4 }, tree);
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const leaves = [];
+    while (leaves.length < 170) {
+      const x = (rnd() * 2 - 1), y = (rnd() * 2 - 1);
+      const r = Math.hypot(x, y);
+      if (r > 1) continue;
+      // slunce svítí zleva shora: okraj koruny na té straně má světla nejvíc
+      const lit = Math.max(0, Math.min(1, 0.15 + 0.85 * Math.pow(r, 1.4) * (0.75 - 0.35 * x - 0.25 * y)));
+      leaves.push({ x: CROWN.x + x * CROWN.rx, y: CROWN.y + y * CROWN.ry, rot: rnd() * 180, e: lit, off: (rnd() - 0.5) * 8, jit: (rnd() - 0.5) * 8, hold: rnd(), gx: 20 + rnd() * 340, gy: GROUND + 6 + rnd() * 26, grot: rnd() * 180 });
+    }
+    leaves.sort((a, b) => a.e - b.e);
+    const leafG = el("g", {}, tree), groundG = el("g", {}, tree);
+    leaves.forEach((l) => { l.node = el("ellipse", { rx: 7, ry: 4.2 }, leafG); });
+    // jeden list zblízka
+    el("text", { x: 458, y: 30, class: "cap", "text-anchor": "middle" }, tree).textContent = "LIST NA SLUNCI";
+    el("rect", { x: 372, y: 44, width: 172, height: 300, rx: 8, class: "frame-d" }, tree);
+    const defs = el("defs", {}, tree), grad = el("radialGradient", { id: "leaf-grad", cx: 0.5, cy: 1, r: 1, fx: 0.5, fy: 1 }, defs);
+    const stops = [0, 0.55, 1].map((o) => el("stop", { offset: o }, grad));
+    const detail = el("g", { transform: "translate(458 300) scale(1.55)" }, tree);
+    const stalk = el("line", { x1: 0, y1: 22, x2: 0, y2: 0, class: "stalk" }, detail);
+    const blade = el("path", { fill: "url(#leaf-grad)", stroke: "rgba(0,0,0,0.25)", "stroke-width": 0.6, "stroke-linejoin": "round" }, detail);
+    const veins = el("path", { class: "vein", "stroke-width": 0.9 }, detail);
+
+    /* ---------- graf ---------- */
+    const chart = $("chart");
+    const G = { x: 40, y: 74, w: 322, h: 262 };
+    const gx = (d) => G.x + (d / 90) * G.w, gy = (v) => G.y + G.h - (v / 1.05) * G.h;
+    el("text", { x: G.x, y: 18, class: "ttl" }, chart).textContent = "BARVIVA V LISTU";
+    el("rect", { x: G.x, y: G.y, width: G.w, height: G.h, class: "plot-bg" }, chart);
+    [0.25, 0.5, 0.75, 1].forEach((v) => el("line", { x1: G.x, y1: gy(v), x2: G.x + G.w, y2: gy(v), class: "plot-grid" }, chart));
+    [[0, "září"], [30, "říjen"], [61, "listopad"]].forEach(([d, m]) => {
+      el("line", { x1: gx(d), y1: G.y, x2: gx(d), y2: G.y + G.h, class: "plot-grid" }, chart);
+      el("text", { x: gx(d) + 4, y: G.y + G.h + 18, class: "ax" }, chart).textContent = m;
+    });
+    el("text", { x: G.x - 6, y: gy(1) + 4, class: "ax", "text-anchor": "end" }, chart).textContent = "max";
+    el("text", { x: G.x - 6, y: gy(0) + 4, class: "ax", "text-anchor": "end" }, chart).textContent = "0";
+    const frostG = el("g", { class: "frost" }, chart), frostLine = el("line", { y1: G.y, y2: G.y + G.h }, frostG), frostT = el("text", { y: G.y + 14 }, frostG);
+    frostT.textContent = "mráz";
+    const KEYS = ["on", "brn", "car", "ant", "chl"];
+    const curves = Object.fromEntries(KEYS.map((k) => [k, el("path", { class: `curve ${k}` }, chart)]));
+    [["chl", "zelený chlorofyl", 0, 40], ["car", "žluté karotenoidy", 170, 40], ["ant", "červené antokyany", 0, 60], ["brn", "hnědé látky", 170, 60]].forEach(([k, t, dx, y]) => {
+      el("text", { x: G.x + dx, y, class: `lg ${k}` }, chart).textContent = t;
+    });
+    el("text", { x: G.x, y: G.y + G.h + 40, class: "lg on" }, chart).textContent = "- - listí na stromě";
+    const mark = el("g", { class: "mark" }, chart), markLine = el("line", { y1: G.y, y2: G.y + G.h }, mark), markDot = el("circle", { r: 5, cy: G.y }, mark);
+
+    /* ---------- vykreslení ---------- */
+    function render() {
+      const sp = SPECIES[s.sp], w = WEATHER[s.w];
+      let on = 0;
+      groundG.textContent = "";
+      leaves.forEach((l) => {
+        const f = fallDay(sp, w, l);
+        let p = pigments(sp, w, s.day, l.e, l.off);
+        if (s.day >= f) {
+          const k = Math.min(1, (s.day - f) / 12);
+          p = { chl: p.chl * (1 - k), car: p.car * (1 - 0.6 * k), ant: p.ant * (1 - 0.7 * k), brn: Math.max(p.brn, k) };
+          l.node.setAttribute("visibility", "hidden");
+          el("ellipse", { cx: l.gx.toFixed(1), cy: l.gy.toFixed(1), rx: 7, ry: 3.4, transform: `rotate(${(l.grot * 0.3 - 27).toFixed(0)} ${l.gx.toFixed(1)} ${l.gy.toFixed(1)})`, fill: color(p) }, groundG);
+        } else {
+          on++;
+          l.node.setAttribute("visibility", "visible");
+          l.node.setAttribute("cx", l.x.toFixed(1)); l.node.setAttribute("cy", l.y.toFixed(1));
+          l.node.setAttribute("transform", `rotate(${l.rot.toFixed(0)} ${l.x.toFixed(1)} ${l.y.toFixed(1)})`);
+          l.node.setAttribute("fill", color(p));
+        }
+      });
+      // list zblízka: okraj je o pár dní napřed před žilkami
+      blade.setAttribute("d", pathOf(outline(sp.shape)));
+      stalk.setAttribute("y2", sp.shape === "maple" ? -29 : -4);
+      [[stops[0], 6], [stops[1], 0], [stops[2], -6]].forEach(([st, off]) => st.setAttribute("stop-color", color(pigments(sp, w, s.day, 0.9, off))));
+      const mid = pigments(sp, w, s.day, 0.9, 0);
+      veins.setAttribute("d", VEINS[sp.shape]);
+      veins.setAttribute("stroke", color({ chl: mid.chl * 0.6 + 0.15, car: mid.car, ant: mid.ant * 0.5, brn: mid.brn + 0.4 }));
+
+      // graf
+      const series = { chl: "", car: "", ant: "", brn: "", on: "" };
+      for (let d = 0; d <= 90; d += 1) {
+        const p = pigments(sp, w, d, 0.9, 0);
+        const left = leaves.filter((l) => d < fallDay(sp, w, l)).length / leaves.length;
+        const v = { chl: p.chl, car: p.car, ant: p.ant, brn: p.brn, on: left };
+        KEYS.forEach((k) => { series[k] += `${d ? "L" : "M"}${gx(d).toFixed(1)} ${gy(v[k]).toFixed(1)}`; });
+      }
+      KEYS.forEach((k) => curves[k].setAttribute("d", series[k]));
+      frostG.setAttribute("display", w.frost === null ? "none" : "");
+      if (w.frost !== null) { frostLine.setAttribute("x1", gx(w.frost)); frostLine.setAttribute("x2", gx(w.frost)); frostT.setAttribute("x", gx(w.frost) + 4); }
+      markLine.setAttribute("x1", gx(s.day)); markLine.setAttribute("x2", gx(s.day)); markDot.setAttribute("cx", gx(s.day));
+
+      // čísla
+      $("day").value = s.day;
+      $("day-val").textContent = dateOf(s.day);
+      $("st-chl").textContent = `${fmt0.format(mid.chl * 100)} %`;
+      $("st-ant").textContent = sp.ant ? `${fmt0.format((mid.ant / sp.ant) * 100)} %` : "žádné";
+      $("st-on").textContent = `${fmt0.format((on / leaves.length) * 100)} %`;
+      $("play").textContent = s.playing ? "Zastavit" : "Spustit podzim";
+      $("play").setAttribute("aria-pressed", String(s.playing));
+
+      const share = on / leaves.length;
+      let status;
+      if (mid.dead) status = "<strong>Mráz přišel moc brzy.</strong> Listy zmrzly dřív, než z nich strom stihl stáhnout živiny a připravit odlučovací vrstvu. Zhnědnou, uschnou a dlouho zůstanou viset.";
+      else if (share < 0.08) status = `<strong>Holý strom.</strong> Listy odpadly a ranky po nich zacelil korek. Živiny z nich má strom uložené ve větvích a pupeny na jaro jsou připravené od léta.`;
+      else if (mid.chl > 0.85) status = "<strong>V listu je ještě léto.</strong> Chlorofylu je tolik, že přebije všechno ostatní. Žlutá barviva v listu přitom jsou, jen je není vidět.";
+      else if (mid.chl > 0.3) status = `<strong>Strom rozebírá chlorofyl.</strong> Noci se prodlužují a strom ze zelených molekul stahuje dusík do větví. Zpod zelené vystupuje žlutá.${mid.ant > 0.25 ? " Na slunci se navíc začíná tvořit červené barvivo." : ""}`;
+      else if (s.sp === "javor") status = mid.ant > 0.35
+        ? "<strong>Javor v plné barvě.</strong> Červené antokyany vyrobil list až teď, z posledních cukrů. Nejvíc jich je na slunné straně koruny, uvnitř zůstávají listy oranžové a žluté."
+        : "<strong>Javor je oranžový a žlutý.</strong> Na červené barvivo neměl list dost slunce a cukru. Po zataženém teplém podzimu bývá i javor méně pestrý.";
+      else if (s.sp === "briza") status = "<strong>Bříza je zlatá.</strong> Červené barvivo bříza nedělá. Žlutá, kterou teď vidíte, byla v listu celé léto, jen ji už nic nepřekrývá.";
+      else status = share < 0.5 && sp.hold
+        ? "<strong>Dub drží suché listy.</strong> Část listí na něm zůstane přes zimu. Shodí je až rašící pupeny na jaře."
+        : "<strong>Dub hnědne.</strong> Žlutých barviv má málo a brzy převládnou hnědé třísloviny. Proto je dub na podzim spíš rezavý než zlatý.";
+      $("status").innerHTML = status;
+    }
+
+    /* ---------- ovládání ---------- */
+    $("day").addEventListener("input", (e) => { s.playing = false; s.day = Number(e.target.value); render(); });
+    function bindSeg(id, key) {
+      $(id).addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        $(id).querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+        s[key] = b.dataset.v;
+        render();
+      });
+    }
+    bindSeg("sp-seg", "sp");
+    bindSeg("w-seg", "w");
+    function pick(e) {
+      const m = chart.getScreenCTM();
+      if (!m) return;
+      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
+      s.playing = false;
+      s.day = Math.max(0, Math.min(90, Math.round(((p.x - G.x) / G.w) * 90)));
+      render();
+    }
+    let scrubbing = false;
+    chart.addEventListener("pointerdown", (e) => { scrubbing = true; if (e.pointerType === "mouse") chart.setPointerCapture(e.pointerId); pick(e); });
+    chart.addEventListener("pointermove", (e) => { if (scrubbing && (e.pointerType !== "mouse" || e.buttons)) pick(e); });
+    ["pointerup", "pointercancel"].forEach((n) => chart.addEventListener(n, () => { scrubbing = false; }));
+    // podzim proběhne asi za dvanáct sekund
+    let last = 0, carry = 0;
+    function tick(t) {
+      if (!s.playing) return;
+      carry += Math.min(0.1, (t - last) / 1000) * 7.5;
+      last = t;
+      if (carry >= 1) { const whole = Math.floor(carry); carry -= whole; s.day = Math.min(90, s.day + whole); render(); }
+      if (s.day >= 90) { s.playing = false; render(); return; }
+      requestAnimationFrame(tick);
+    }
+    $("play").addEventListener("click", () => {
+      s.playing = !s.playing;
+      if (s.playing && s.day >= 90) s.day = 0;
+      render();
+      if (s.playing) { last = performance.now(); carry = 0; requestAnimationFrame(tick); }
+    });
+    render();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>
