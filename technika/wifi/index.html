@@ -194,7 +194,7 @@
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Co jsou decibely</span>
         <p>Síla signálu se udává v dBm. Je to logaritmická stupnice: každých 10 dB dolů znamená desetkrát slabší signál, 3 dB polovinu.</p>
-        <p>−40 dBm je výborný signál, −70 dBm slabý. To je tisíckrát méně, a pořád to funguje.</p>
+        <p>−40 dBm je výborný signál, −70 dBm už jen slušný. To je tisíckrát méně, a pořád to funguje.</p>
       </aside>
     </section>
 
@@ -216,7 +216,7 @@
         <h2 id="h-sousede">Jeden mluví, ostatní čekají</h2>
         <p>Na jednom kanálu může v jednu chvíli vysílat jen jedno zařízení, jinak by se signály slily. Wi-Fi to řeší zdvořilostí. Každé zařízení před vysíláním poslouchá. Když slyší někoho jiného, počká, až domluví, pak ještě náhodně dlouhou chvilku, a teprve potom začne. Příjemce každý paket potvrdí. Když potvrzení nepřijde, vysílá se znovu.</p>
         <p>Ve vzduchu ale nejsou jen vaše zařízení. Na stejném kanálu čekají ve frontě i sítě sousedů. V paneláku, kde telefon vidí třicet cizích sítí, se o vysílací čas dělí celý vchod. Proto bývá Wi-Fi večer pomalejší, i když signál je plný.</p>
-        <p>V pásmu 2,4 GHz se nepřekrývají jen tři kanály, 1, 6 a 11. V pásmu 5 GHz je jich přes dvacet a signál hůř prochází ke stropu sousedům, což je tady výhoda.</p>
+        <p>V pásmu 2,4 GHz se nepřekrývají jen tři kanály, 1, 6 a 11. V pásmu 5 GHz je jich kolem dvaceti a signál hůř prochází ke stropu sousedům, což je tady výhoda.</p>
       </div>
     </section>
 
@@ -232,7 +232,7 @@
       <div class="prose">
         <h2 id="h-historie">Pásmo, o které nikdo nestál</h2>
         <p>Pásmo kolem 2,4 GHz bylo dlouho považované za odpad. Ruší v něm mikrovlnné trouby, a tak ho úřady nepřidělovaly rozhlasu ani armádě. V roce 1985 ho americký regulátor uvolnil: vysílat tam smí kdokoli bez licence, pokud dodrží nízký výkon. Vedle Wi-Fi se tam proto vešel i <a href="../bluetooth/">Bluetooth</a>. O dvanáct let později vznikl první standard bezdrátové sítě, 802.11, s rychlostí 2 megabity za sekundu.</p>
-        <p>Jméno Wi-Fi přišlo v roce 1999 a nic neznamená. Vymyslela ho reklamní agentura, aby se technologie s názvem „IEEE 802.11b“ dala prodávat, a zní schválně podobně jako hi-fi. Dnešní generace se číslují: Wi-Fi 4, 5, 6 a 7. Od první jsou zhruba deset tisíckrát rychlejší.</p>
+        <p>Jméno Wi-Fi přišlo v roce 1999 a nic neznamená. Vymyslela ho reklamní agentura, aby se technologie s názvem „IEEE 802.11b“ dala prodávat, a zní schválně podobně jako hi-fi. Dnešní generace se číslují: Wi-Fi 4, 5, 6 a 7. Od první jsou zhruba desettisíckrát rychlejší.</p>
       </div>
     </section>
 
@@ -240,7 +240,7 @@
       <a class="next" href="../bluetooth/" data-cat="technika">
         <span class="label">Další článek · Technika</span>
         <span class="t">Jak funguje Bluetooth</span>
-        <p>Proč sluchátka 1 600krát za sekundu mění kanál a jak se vyhnou Wi-Fi.</p>
+        <p>Proč sluchátka až 1 600krát za sekundu mění kanál a jak se vyhnou Wi-Fi.</p>
       </a>
       <a class="back" href="../../">Všechna témata</a>
     </footer>
@@ -440,7 +440,7 @@
       } else if (rates[1] <= 0) {
         status = "<strong>Sem dosáhne jen pásmo 2,4 GHz.</strong> Kratší vlny pásma 5 GHz cestou pohltily zdi. Telefon se sám přepne na pomalejší, ale vytrvalejší pásmo.";
       } else if (rates[1] > rates[0]) {
-        status = "<strong>Tady vyhrává pásmo 5 GHz.</strong> Signál je dost silný na široký kanál a velkou abecedu, takže je spojení několikrát rychlejší než na 2,4 GHz.";
+        status = `<strong>Tady vyhrává pásmo 5 GHz.</strong> Signál je dost silný na široký kanál a velkou abecedu, takže je spojení ${rates[1] >= 2 * rates[0] ? "několikrát" : "o něco"} rychlejší než na 2,4 GHz.`;
       } else {
         status = "<strong>Pásmo 5 GHz tu ještě funguje, ale sotva.</strong> Signál je tak slabý, že pomalejší pásmo 2,4 GHz přenese víc.";
       }

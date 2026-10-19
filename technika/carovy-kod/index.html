@@ -244,7 +244,7 @@
         <h2 id="h-cena">Cena v kódu není</h2>
         <p>Kód je jen číslo zboží, něco jako rodné číslo jogurtu. Pokladna ho pošle do počítače obchodu a ten k němu vyhledá název a cenu. Proto může tentýž výrobek stát v každém obchodě jinak a zlevnit se dá bez přelepování.</p>
         <p>První tři číslice říkají, ve které zemi si firma kódy zaregistrovala. Česko má 859, Slovensko 858, Německo 400 až 440. O tom, kde se zboží vyrobilo, to neříká nic. Česká firma může pod kódem 859 prodávat čaj z Číny.</p>
-        <p>Některé začátky mají zvláštní význam. Čísla 978 a 979 patří knihám. Kódy začínající dvojkou si obchod tiskne sám, třeba na sáček s navážnými rohlíky, a ty jediné v sobě cenu nebo váhu opravdu mají.</p>
+        <p>Některé začátky mají zvláštní význam. Čísla 978 a 979 patří knihám, 977 časopisům. Kódy začínající dvojkou si obchod tiskne sám, třeba na sáček s navážnými rohlíky, a ty jediné v sobě cenu nebo váhu opravdu mají.</p>
       </div>
     </section>
 
@@ -300,13 +300,13 @@
     }
 
     /* ---------- stav a kresba ---------- */
-    const PREFIXES = [[0, 139, "USA a Kanada"], [200, 299, "vnitřní kód obchodu"], [300, 379, "Francie"], [400, 440, "Německo"], [450, 459, "Japonsko"], [460, 469, "Rusko"], [490, 499, "Japonsko"], [500, 509, "Velká Británie"], [540, 549, "Belgie a Lucembursko"], [590, 590, "Polsko"], [599, 599, "Maďarsko"], [690, 699, "Čína"], [730, 739, "Švédsko"], [760, 769, "Švýcarsko"], [800, 839, "Itálie"], [840, 849, "Španělsko"], [858, 858, "Slovensko"], [859, 859, "Česko"], [870, 879, "Nizozemsko"], [880, 880, "Jižní Korea"], [890, 890, "Indie"], [900, 919, "Rakousko"], [978, 979, "knihy"]];
+    const PREFIXES = [[0, 139, "USA a Kanada"], [200, 299, "vnitřní kód obchodu"], [300, 379, "Francie"], [400, 440, "Německo"], [450, 459, "Japonsko"], [460, 469, "Rusko"], [490, 499, "Japonsko"], [500, 509, "Velká Británie"], [540, 549, "Belgie a Lucembursko"], [590, 590, "Polsko"], [599, 599, "Maďarsko"], [690, 699, "Čína"], [730, 739, "Švédsko"], [760, 769, "Švýcarsko"], [800, 839, "Itálie"], [840, 849, "Španělsko"], [858, 858, "Slovensko"], [859, 859, "Česko"], [870, 879, "Nizozemsko"], [880, 880, "Jižní Korea"], [890, 890, "Indie"], [900, 919, "Rakousko"], [977, 977, "časopisy"], [978, 979, "knihy"]];
     // kód musí zůstat černý na bílé v obou režimech, barvy jsou proto pevné
     const PART = { guard: "#b72155", L: "#14181e", G: "#2442c2", R: "#08754f" };
     const M = 6, X0 = 66, TOP = 28, BOTTOM = 212;       // šířka modulu a poloha čar
     const svg = document.getElementById("bars");
     const $ = (id) => document.getElementById(id);
-    const s = { code: "", view: "code", pick: 12 };
+    const s = { code: "", good: "", view: "code", pick: 12 };      // good: kód, jak ho čtenář zadal, se správnou kontrolní číslicí
 
     function draw() {
       const mods = eanModules(s.code), valid = Number(s.code[12]) === checkDigit(s.code.slice(0, 12));
@@ -325,7 +325,7 @@
         const t = el("text", { x, y: BOTTOM + 46, "text-anchor": "middle", "font-family": "IBM Plex Mono, monospace", "font-size": 30, "font-weight": 600, fill: i === 12 && !valid ? "#cc3125" : "#14181e", "data-i": i }, svg);
         t.textContent = d;
       });
-      // dvojice červených čar: tudy čte čtečka
+      // červená čára: tudy čte čtečka
       el("line", { x1: 20, y1: 110, x2: 700, y2: 110, stroke: "#e2231a", "stroke-width": 2, opacity: s.view === "code" ? 0.55 : 0 }, svg);
     }
 
@@ -369,6 +369,7 @@
       }
       warn.hidden = true;
       s.code = digits.length === 12 ? digits + checkDigit(digits) : digits;
+      s.good = digits.slice(0, 12) + checkDigit(digits.slice(0, 12));
       show();
     }
 
@@ -408,7 +409,8 @@
         ? `<strong>Tohle prošlo.</strong> Prohozené číslice ${d[i + 1]} a ${d[i]} se liší přesně o pět. Součet se změnil o násobek deseti a kontrolní číslice si ničeho nevšimla. Je to jediný druh prohození, který unikne.`
         : `<strong>Prohození odhaleno.</strong> Číslice ${d[i + 1]} a ${d[i]} si vyměnily místo. Jedna se teď násobí třemi a druhá ne, součet vyšel jinak a kontrolní číslice nesedí.`);
     });
-    $("fix").addEventListener("click", () => { const base = s.code.slice(0, 12); setCode([...(base + checkDigit(base))]); });
+    // oprava vrátí kód, jak ho čtenář zadal, ne jen přepočítá kontrolní číslici k překlepu
+    $("fix").addEventListener("click", () => setCode([...s.good]));
 
     /* ---------- obr. 2: deset číslic ve třech sadách ---------- */
     const SETS = [["L", L_CODE, "levá půlka", "základní vzor"], ["R", R_CODE, "pravá půlka", "negativ sady L"], ["G", G_CODE, "levá půlka", "sada R přečtená odzadu"]];

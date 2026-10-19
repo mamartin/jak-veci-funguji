@@ -255,7 +255,7 @@
     <section class="sec" aria-labelledby="h-mobil">
       <div class="prose">
         <h2 id="h-mobil">Jak to, že mobil fotí tak dobře</h2>
-        <p>Telefon má čočku velkou jako špendlíková hlavička, čip menší než nehet a clonu, která se nedá měnit. Podle všeho, co tu bylo řečeno, by měl večer fotit špatně.</p>
+        <p>Telefon má čočku velkou jako špendlíková hlavička, čip menší než nehet a clonu, kterou většinou nejde měnit. Podle všeho, co tu bylo řečeno, by měl večer fotit špatně.</p>
         <p>Dohání to počítáním. Místo jedné fotky jich při zmáčknutí spouště udělá rychle za sebou třeba deset, každou krátkým časem, aby nebyla rozmazaná. Pak je přesně položí na sebe a zprůměruje. Náhodný šum se v průměru vyruší, obraz zůstane. Noční režim dělá totéž s desítkami snímků po dobu několika sekund.</p>
         <p>Rozmazané pozadí v portrétním režimu z čočky nepochází vůbec. Telefon odhadne, co je v popředí a co vzadu, a pozadí rozmaže výpočtem. Pozná se to na vlasech a brýlích, kde se občas splete.</p>
       </div>
@@ -329,7 +329,8 @@
       else if (N <= 2.8 && !near) status = "<strong>Zaostřeno dozadu.</strong> Ostrý je dům a stromy, postava vpředu se rozpila. Při otevřené cloně je ostrá jen úzká vrstva kolem vzdálenosti, na kterou čočka míří, a obojí se do ní nevejde. Přivřete clonu.";
       else if (N <= 2.8) status = "<strong>Portrét.</strong> Clona je dokořán. Ostré je jen to, na co je zaostřeno, a pozadí se rozpilo do barevných skvrn. Otvorem zároveň teče hodně světla, takže stačí krátký čas.";
       else if (N >= 11) status = "<strong>Všechno ostré.</strong> Malým otvorem projde jen úzký svazek světla a ostře se zobrazí postava i stromy vzadu. Světla je ale málo a musí ho dohnat čas nebo ISO.";
-      else status = "<strong>Vyvážená fotka.</strong> Světla dopadlo tak akorát, pohyb je skoro zmrazený a pozadí jen lehce měkké. Zkuste teď změnit jednu hodnotu a druhou ji vyrovnat.";
+      else if (ev !== 0) status = `<strong>O krok ${ev > 0 ? "světlejší" : "tmavší"}.</strong> Fotka vyšla trochu ${ev > 0 ? "světlejší" : "tmavší"}, než má být, chyba to ale ještě není. Srovná ji posun kteréhokoli kolečka o krok ${ev > 0 ? "na méně" : "na víc"} světla.`;
+      else status = `<strong>Vyvážená fotka.</strong> Světla dopadlo tak akorát, pohyb je skoro zmrazený a ${near ? "pozadí jen lehce měkké" : "postava vpředu jen lehce měkká"}. Zkuste teď změnit jednu hodnotu a druhou ji vyrovnat.`;
       $("status").innerHTML = status;
     }
 

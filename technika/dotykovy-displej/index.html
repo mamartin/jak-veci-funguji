@@ -180,7 +180,7 @@
         <h2 id="h-presnost">Přesnější než vlastní mřížka</h2>
         <p>Elektrody jsou od sebe pět milimetrů. Přesto trefíte písmeno na klávesnici, které je užší. Jak to?</p>
         <p>Prst je širší než rozteč mřížky, takže ovlivní několik křížení najednou: to přímo pod sebou nejvíc, sousední míň. Čip nevezme jen nejsilnější z nich. Spočítá <span class="hl">těžiště celé skvrny,</span> tedy průměr poloh všech zasažených křížení vážený tím, jak silný signál každé dalo. Když je prst o milimetr vpravo od křížení, dostane pravý soused o kousek víc než levý a těžiště se posune o milimetr vpravo.</p>
-        <p>Ze stejné mapy čip vyčte i víc dotyků naráz. Dva prsty jsou prostě dvě skvrny. Starší dotykové technologie tohle neuměly, a právě proto se gesta jako roztažení dvěma prsty objevila až s telefony.</p>
+        <p>Ze stejné mapy čip vyčte i víc dotyků naráz. Dva prsty jsou prostě dvě skvrny. Starší odporové displeje tohle neuměly, a tak se gesta jako roztažení dvěma prsty do běžného života dostala až s kapacitními telefony.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
         <span class="label">Zkuste</span>
@@ -221,7 +221,7 @@
       <div class="prose">
         <h2 id="h-historie">Od radarů do kapsy</h2>
         <p>Dotykovou obrazovku na principu kapacity popsal v roce 1965 britský inženýr Eric Johnson, který hledal lepší ovládání pro řídící letového provozu. Začátkem sedmdesátých let si průhledný dotykový panel postavili v CERNu, aby jím nahradili tisíce knoflíků a přepínačů ve velínu nového urychlovače.</p>
-        <p>Do kapes se technologie dostala až v roce 2007 s prvním iPhonem. Nebyl první dotykový telefon, ale první, který uměl víc prstů najednou a nepotřeboval pero.</p>
+        <p>Do kapes se technologie dostala až v roce 2007 s prvním iPhonem. Nebyl první dotykový telefon ani první bez pera, ale první rozšířený, který rozuměl víc prstům najednou.</p>
       </div>
     </section>
 
@@ -301,7 +301,11 @@
         blob.forEach(([i, j]) => {
           const v = at(i, j);
           if (v < THRESH * 1.5) return;
-          for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) if ((di || dj) && at(i + di, j + dj) > v) return;
+          // vrchol je křížení, které nemá silnějšího souseda; při shodě vyhraje to dřívější, ať jeden prst nedá dva doteky
+          for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
+            const w = at(i + di, j + dj);
+            if ((di || dj) && (w > v || (w === v && (dj < 0 || (dj === 0 && di < 0))))) return;
+          }
           let sw = 0, sx = 0, sy = 0;
           for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) {
             const w = Math.max(0, at(i + di, j + dj) - 0.06);
@@ -455,11 +459,15 @@
         render();
       });
     }
-    bindSeg("tool-seg", (v) => { s.tool = v; });
+    bindSeg("tool-seg", (v) => { s.tool = v; s.fingers = s.fingers.map(clamp); });
     bindSeg("two-seg", (v) => { s.two = v === "1"; });
     bindSeg("view-seg", (v) => { s.view = v; });
 
-    const clamp = (p) => ({ x: Math.max(1, Math.min(W_MM - 1, p.x)), y: Math.max(1, Math.min(H_MM - 1, p.y)) });
+    // prst smí až ke kraji, dlaň zůstane celá na displeji, aby z ní u rohu nezbyl jen kousek velký jako prst
+    const clamp = (p) => {
+      const t = TOOLS[s.tool], mx = s.tool === "palm" ? t.rx : 1, my = s.tool === "palm" ? t.ry : 1;
+      return { x: Math.max(mx, Math.min(W_MM - mx, p.x)), y: Math.max(my, Math.min(H_MM - my, p.y)) };
+    };
     function toMm(evt) {
       const m = svg.getScreenCTM();
       if (!m) return null;

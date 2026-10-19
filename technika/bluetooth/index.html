@@ -13,7 +13,7 @@
     gtag('config', 'G-3FQVWCDJ6V');
   </script>
   <title>Jak funguje Bluetooth</title>
-  <meta name="description" content="Jak se sluchátka domluví s telefonem v pásmu, kde vysílá Wi-Fi i mikrovlnka, proč Bluetooth 1 600krát za sekundu mění kanál a jak se naučí vyhýbat těm obsazeným. S pásmem, které si můžete zarušit.">
+  <meta name="description" content="Jak se sluchátka domluví s telefonem v pásmu, kde vysílá Wi-Fi i mikrovlnka, proč Bluetooth až 1 600krát za sekundu mění kanál a jak se naučí vyhýbat těm obsazeným. S pásmem, které si můžete zarušit.">
   <link rel="stylesheet" href="/style.css?v=9">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
@@ -60,13 +60,13 @@
     <header class="art-head">
       <p class="eyebrow"><a href="../">Technika</a></p>
       <h1 class="display">Jak funguje Bluetooth</h1>
-      <p class="lede">Sluchátka vysílají ve stejném pásmu jako Wi-Fi, bezdrátové myši a mikrovlnná trouba, a to výkonem menším než kapesní svítilna. Hudba přesto nevypadává. Bluetooth totiž na žádné frekvenci nezůstane déle než zlomek tisíciny sekundy.</p>
+      <p class="lede">Sluchátka vysílají ve stejném pásmu jako Wi-Fi, bezdrátové myši a mikrovlnná trouba, a to výkonem menším než kapesní svítilna. Hudba přesto nevypadává. Bluetooth totiž na žádné frekvenci nezůstane déle než pár tisícin sekundy.</p>
     </header>
 
     <section class="tldr" aria-labelledby="h-zkratka">
       <h2 class="label" id="h-zkratka">Ve zkratce</h2>
       <ul>
-        <li>Bluetooth má pásmo rozdělené na 79 úzkých kanálů a 1 600krát za sekundu přeskočí na jiný.</li>
+        <li>Bluetooth má pásmo rozdělené na 79 úzkých kanálů a až 1 600krát za sekundu přeskočí na jiný.</li>
         <li><span class="hl">Když se trefí do obsazeného kanálu, ztratí jen jeden krátký paket</span> a pošle ho znovu jinde.</li>
         <li>Pořadí skoků znají jen dvě spárovaná zařízení. Kanály, kde je trvale rušno, si spojení zapamatuje a přestane na ně skákat.</li>
       </ul>
@@ -82,7 +82,7 @@
       </div>
       <div class="fig-controls">
         <div class="ctl">
-          <span class="label" id="lbl-src">Kdo dál vysílá</span>
+          <span class="label" id="lbl-src">Kdo další vysílá</span>
           <div class="seg" role="group" aria-labelledby="lbl-src" id="src-seg">
             <button type="button" data-v="w1" aria-pressed="false">Wi-Fi 1</button>
             <button type="button" data-v="w6" aria-pressed="true">Wi-Fi 6</button>
@@ -123,7 +123,7 @@
           <li><span class="n">Posláno paketů</span><span class="v" id="st-n"></span></li>
         </ul>
       </div>
-      <figcaption class="fig-caption">Každý řádek je jeden skok, nejnovější je nahoře. Čtvereček ukazuje, na kterém ze 79 kanálů zrovna spojení vysílalo. Šedý pruh znamená, že v tu chvíli na těch kanálech vysílala Wi-Fi nebo mikrovlnka. Model je silně zpomalený: skutečný Bluetooth udělá 1 600 skoků za sekundu. Ztráty se počítají z posledních sto paketů.</figcaption>
+      <figcaption class="fig-caption">Každý řádek je jeden skok, nejnovější je nahoře. Čtvereček ukazuje, na kterém ze 79 kanálů zrovna spojení vysílalo. Šedý pruh znamená, že v tu chvíli na těch kanálech vysílala Wi-Fi nebo mikrovlnka. Model je silně zpomalený: skutečný Bluetooth udělá až 1 600 skoků za sekundu. Ztráty se počítají z posledních sto paketů.</figcaption>
     </figure>
 
     <section class="sec" aria-labelledby="h-pasmo">
@@ -136,7 +136,7 @@
         <span class="label">V číslech</span>
         <dl class="facts">
           <div><dt>79</dt><dd>kanálů po jednom megahertzu</dd></div>
-          <div><dt>1 600×</dt><dd>za sekundu změní kanál</dd></div>
+          <div><dt>až 1 600×</dt><dd>za sekundu změní kanál</dd></div>
           <div><dt>2,5 mW</dt><dd>je obvyklý výkon sluchátek, s dosahem kolem deseti metrů</dd></div>
         </dl>
       </aside>
@@ -145,7 +145,7 @@
     <section class="sec" aria-labelledby="h-skok">
       <div class="prose">
         <h2 id="h-skok">Nikde se nezdržet</h2>
-        <p>Bluetooth to řeší tak, že na žádné frekvenci nezůstává. Pásmo má rozdělené na 79 úzkých kanálů. Na jednom vyšle krátký paket dat, hned přeskočí jinam a tam vyšle další. Na každém kanálu se zdrží 625 miliontin sekundy.</p>
+        <p>Bluetooth to řeší tak, že na žádné frekvenci nezůstává. Pásmo má rozdělené na 79 úzkých kanálů. Na jednom vyšle krátký paket dat, hned přeskočí jinam a tam vyšle další. Na každém kanálu se zdrží 625 miliontin sekundy. Delší pakety, třeba s hudbou, zaberou až pět takových okének za sebou, a spojení pak skáče méně často. Ani tak nezůstane na jednom kanálu déle než tři tisíciny sekundy.</p>
         <p><span class="hl">Rušení tak nikdy nezasáhne celé spojení, jen jednotlivé pakety.</span> Když skok padne na kanál, kde zrovna vysílá Wi-Fi, paket se ztratí. Přijímač nepotvrdí, že ho dostal, a vysílač ho o zlomek sekundy později pošle znovu, už na jiném kanálu.</p>
         <p>Sluchátka si proto drží malou zásobu zvuku dopředu, asi desetinu sekundy. Z ní hrají, zatímco se ztracený paket posílá znovu. Je to důvod, proč má zvuk přes Bluetooth vždycky malé zpoždění za obrazem.</p>
       </div>
@@ -172,7 +172,7 @@
       <div class="prose">
         <h2 id="h-afh">Naučí se, kde je obsazeno</h2>
         <p>První verze Bluetoothu skákaly naslepo po všech 79 kanálech. Když vedle běžela Wi-Fi, která zabírá dvacet z nich, ztrácel se zhruba každý čtvrtý paket. A stejně tak Bluetooth kazil pakety jí.</p>
-        <p>Od roku 2003 proto spojení sleduje, na kterých kanálech pakety nedocházejí. Ty si označí jako špatné, pošle seznam druhé straně a obě je ze svého pořadí vynechají. Dál skáčou jen po zbytku. Vyřazené kanály přitom dál poslouchají, a když se uvolní, vrátí je do hry.</p>
+        <p>Od roku 2003 proto spojení sleduje, na kterých kanálech pakety nedocházejí. Ty si označí jako špatné, pošle seznam druhé straně a obě je ze svého pořadí vynechají. Dál skáčou jen po zbytku. Vyřazené kanály přitom dál občas poslouchá, a když se uvolní, vrátí je do hry.</p>
         <p>Vyhýbat se dá jen do určité míry. Spojení si musí nechat aspoň dvacet kanálů, aby se pořád dost rozprostřelo. Kde je pásmo plné, nezbývá než skákat i do obsazených.</p>
       </div>
       <aside class="note" aria-label="Poznámka na okraj">
