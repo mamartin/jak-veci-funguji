@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje tranzistor</title>
+  <meta name="description" content="Tranzistor je vypínač, který nemačká prst, ale napětí. Jak se v křemíku otevírá kanál, proč jsou tranzistory dvojího typu a jak se ze čtyř z nich postaví hradlo, ze kterého jde složit celý procesor. Se třemi modely: tranzistor v řezu, hradlo z tranzistorů a obvody z hradel NE OBA.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+    #mos, #cmos, #nands { border: 1px solid var(--rule); background: var(--surface); }
+    .lbl { fill: var(--ink-2); font: 500 13px var(--font-mono); }
+    .lbl.mid { text-anchor: middle; }
+    .lbl.end { text-anchor: end; }
+    .lbl.strong { fill: var(--ink); font-weight: 600; }
+    .cap { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
+
+    /* Obr. 1: řez tranzistorem */
+    .si { fill: var(--sunk); stroke: var(--metal-line); stroke-width: 1.2; }
+    .well { fill: var(--cat); fill-opacity: 0.16; stroke: var(--metal-line); stroke-width: 1.2; }
+    .ox { fill: var(--pin-key); stroke: var(--metal-line); stroke-width: 1; }
+    .gate-el { fill: var(--steel); stroke: var(--metal-line); stroke-width: 1.2; }
+    .metal { fill: var(--steel); stroke: var(--metal-line); stroke-width: 1.2; }
+    .lead-w { fill: none; stroke: var(--metal-line); stroke-width: 2.5; }
+    .car { fill: var(--cat); }
+    .car.h { fill: var(--surface); stroke: var(--cat); stroke-width: 1.6; }
+    .chg { fill: var(--hot); font: 700 17px var(--font-mono); text-anchor: middle; }
+    .chg.neg { fill: var(--cold); }
+    .v-big { fill: var(--ink); font: 800 19px var(--font-display); font-stretch: 112%; text-anchor: middle; font-variant-numeric: tabular-nums; }
+    .lamp { fill: var(--surface); stroke: var(--metal-line); stroke-width: 1.5; }
+    .lamp-on { fill: var(--warm); }
+    .chan-lbl { fill: var(--cat); font: 600 13px var(--font-mono); text-anchor: middle; }
+
+    /* Obr. 2: hradlo z tranzistorů */
+    .gate-stage { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+    @media (min-width: 56rem) { .gate-stage { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 2rem; } }
+    .wire { fill: none; stroke: var(--ink-3); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+    .wire.hot { stroke: var(--cat); stroke-width: 4.5; }
+    .wire.float { stroke-dasharray: 2 6; }
+    .dot { fill: var(--ink-3); }
+    .dot.hot { fill: var(--cat); }
+    .tr { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+    .tr.on { fill: var(--cat); stroke: var(--cat); }
+    .sw { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
+    .sw.on { stroke: var(--paper); stroke-width: 4; }
+    .bubble { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+    .tag { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+    .tag.hot { fill: var(--ink); }
+    .tag-t { fill: var(--ink); font: 600 13px var(--font-mono); text-anchor: middle; }
+    .tag-t.hot { fill: var(--paper); }
+    .tr-type { fill: var(--ink-3); font: 600 12px var(--font-mono); }
+    .pin { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+    .pin.hot { fill: var(--ink); }
+    .pin-v { fill: var(--ink); font: 600 14px var(--font-mono); text-anchor: middle; }
+    .pin-v.hot { fill: var(--paper); }
+    .clicky { cursor: pointer; }
+    .truth { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+    .truth caption { caption-side: top; text-align: left; padding-bottom: 0.45rem; }
+    .truth th { padding: 0.3rem 0.6rem; border-bottom: 2px solid var(--ink); font-weight: 500; font-size: 0.75rem; color: var(--ink-3); text-align: center; }
+    .truth td { padding: 0; border-bottom: 1px solid var(--rule); text-align: center; }
+    .truth tbody tr { cursor: pointer; }
+    .truth button { display: block; width: 100%; padding: 0.42rem 0.6rem; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+    .truth tr.on td { background: var(--ink); color: var(--paper); font-weight: 600; }
+    .truth td.out { font-weight: 600; }
+    .side { display: grid; gap: 1rem; min-width: 0; }
+    .side p { margin: 0; font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-2); }
+    .side p b { color: var(--ink); font-weight: 600; }
+
+    /* Obr. 3: obvody z hradel NE OBA */
+    .lg { fill: var(--sunk); stroke: var(--ink); stroke-width: 1.5; }
+    .lg.hot { fill: var(--cat); }
+    .lg-name { fill: var(--ink); font: 700 13px var(--font-display); text-anchor: middle; }
+    .lg-name.hot { fill: var(--paper); }
+    .pin-n { fill: var(--ink-2); font: 500 12px var(--font-mono); text-anchor: middle; }
+
+    @media (max-width: 46rem) {
+      .lbl, .chan-lbl { font-size: 17px; }
+      .v-big { font-size: 22px; }
+      .cap { font-size: 15px; }
+      .tag-t, .pin-v { font-size: 16px; }
+      .tr-type { font-size: 15px; }
+      .lg-name { font-size: 15px; }
+      .pin-n { font-size: 15px; }
+    }
+  </style>
+</head>
+<body data-cat="technika">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Technika</a><span aria-hidden="true">/</span><span>Tranzistor a hradla</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Technika</a></p>
+      <h1 class="display">Jak funguje tranzistor</h1>
+      <p class="lede">V telefonu jich nosíte kolem dvaceti miliard a žádný jste nikdy neviděli. Tranzistor je vypínač, který nemačká prst, ale napětí. Ze dvou takových vypínačů je nejjednodušší hradlo. Ze čtyř je hradlo, ze kterého se dá poskládat celý procesor.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Tranzistor je vypínač bez pohyblivých částí. O tom, jestli jím proud projde, rozhoduje napětí na jeho řídicí elektrodě.</li>
+        <li>Tranzistory jsou dvojího typu. Jeden vede při jedničce, druhý při nule. <span class="hl">V páru se doplňují tak, že proud teče jen ve chvíli přepnutí.</span></li>
+        <li>Ze čtyř tranzistorů je hradlo NE OBA. Z něj samotného jde složit jakýkoli jiný obvod, i sčítačka.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Tranzistor v řezu</p>
+        <span class="label">Měňte napětí na řídicí elektrodě</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="mos" viewBox="0 0 640 300" role="img" aria-label="Řez tranzistorem: přívod a odvod v křemíku, nad nimi řídicí elektroda oddělená izolantem"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-type">Typ tranzistoru</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-type" id="type-seg">
+            <button type="button" role="radio" data-v="n" aria-checked="true">Typ N</button>
+            <button type="button" role="radio" data-v="p" aria-checked="false">Typ P</button>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="volt">Napětí na řídicí elektrodě</label>
+          <div class="ctl-row">
+            <input type="range" id="volt" min="0" max="1" step="0.01" value="0">
+            <output class="val" id="volt-val" for="volt"></output>
+          </div>
+        </div>
+        <button type="button" class="btn ghost" id="v0">Nula · 0 V</button>
+        <button type="button" class="btn ghost" id="v1">Jednička · 1 V</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="mos-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav tranzistoru">
+          <li><span class="n">Napětí</span><span class="v" id="st-v"></span></li>
+          <li><span class="n">Proud</span><span class="v" id="st-i"></span></li>
+          <li><span class="n">Tranzistor</span><span class="v" id="st-s"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Řez tranzistorem, jak se kreslí v učebnicích. Plné tečky jsou volné elektrony, prázdná kolečka u typu P jsou díry, tedy místa, kde elektron chybí. Znaménka na řídicí elektrodě ukazují její náboj. Proud je vyjádřený v procentech největšího proudu, kontrolka u odvodu svítí podle něj. Napětí, od kterého tranzistor začne vést, se čip od čipu liší, model počítá s 0,35 V. Dnešní tranzistory už ploché nejsou, princip ale mají stejný.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-vypinac">
+      <div class="prose">
+        <h2 id="h-vypinac">Vypínač, který mačká napětí</h2>
+        <p>Obyčejný vypínač má dva kontakty a mezi nimi páčku. Tranzistor má taky dva kontakty, přívod a odvod. Mezi nimi je kousek křemíku, kterým proud sám od sebe neprojde. Nad tím kouskem leží třetí kontakt, řídicí elektroda. Od křemíku ji odděluje tenká vrstva izolantu.</p>
+        <p>Když se na řídicí elektrodu přivede kladné napětí, začne k sobě přitahovat elektrony z okolí. Nahrnou se těsně pod izolant a vytvoří tam tenký vodivý kanál z přívodu do odvodu. Tranzistor je sepnutý. Když napětí zmizí, elektrony se rozptýlí a kanál zanikne.</p>
+        <p><span class="hl">Řídicí elektrodou přitom žádný proud neteče,</span> izolant ho nepustí. Elektroda působí na dálku, jako když nabitý balonek přitahuje vlasy. Na přepnutí ji stačí nabít, a to stojí nepatrně energie.</p>
+        <p>V tranzistoru se nehýbe nic kromě elektronů. Proto se neopotřebuje a proto dokáže přepnout mnoha miliardkrát za sekundu.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Posouvejte napětí pomalu od nuly. Asi do třetiny voltu se zdánlivě nic neděje, elektroda se jen nabíjí. Pak se pod izolantem objeví první elektrony a proud začne prudce růst.</p>
+        <p>Procesor používá jen oba kraje: napětí blízko nuly znamená nulu, napětí blízko napájecího jedničku.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-kremik">
+      <div class="prose">
+        <h2 id="h-kremik">Dva druhy křemíku</h2>
+        <p>Čistý křemík vede proud špatně. Skoro všechny jeho elektrony drží pevně v krystalu a nemají se jak pohnout. Změní to nepatrná příměs jiného prvku, třeba jeden cizí atom na milion atomů křemíku.</p>
+        <p>Atom fosforu má o jeden elektron víc, než krystal potřebuje. Přebytečný elektron se uvolní a může se krystalem pohybovat. Takovému křemíku se říká typ N. Atom boru má naopak o elektron míň. Zůstane po něm prázdné místo, díra. Do díry může přeskočit elektron od souseda a díra se tím posune o kus dál. Chová se jako kladná částice. To je křemík typu P.</p>
+        <p>Tranzistor z prvního obrázku má přívod a odvod z typu N a mezi nimi typ P. Volné elektrony z přívodu se přes něj nedostanou, dokud je tam řídicí elektroda nepřitáhne.</p>
+        <p>Druhý druh tranzistoru má všechno obráceně. Přívod a odvod jsou z typu P, mezi nimi je typ N a kanál tvoří díry. Otevírá se, když má řídicí elektroda napětí nižší než přívod. V zapojení, které uvidíte dál, to znamená: <span class="hl">typ N vede při jedničce, typ P při nule.</span></p>
+      </div>
+      <aside class="note" aria-label="Tranzistor v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>1947</dt><dd>první tranzistor, Bellovy laboratoře v USA</dd></div>
+          <div><dt>2 300</dt><dd>tranzistorů měl první procesor Intel 4004 z roku 1971</dd></div>
+          <div><dt>kolem 20 miliard</dt><dd>jich má čip v dnešním telefonu</dd></div>
+          <div><dt>přes 1 000</dt><dd>by se jich vešlo vedle sebe na šířku vlasu</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <figure class="fig" id="obr2">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 2</b> Hradlo z tranzistorů</p>
+        <span class="label">Vyberte hradlo a přepínejte vstupy</span>
+      </div>
+      <div class="fig-stage gate-stage">
+        <svg id="cmos" viewBox="0 0 600 410" role="img" aria-label="Zapojení hradla z tranzistorů mezi napájením a zemí"></svg>
+        <div class="side">
+          <table class="truth" id="truth"></table>
+          <p id="cmos-count"></p>
+        </div>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-gate">Hradlo</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-gate" id="gate-seg">
+            <button type="button" role="radio" data-v="not" aria-checked="true">NE</button>
+            <button type="button" role="radio" data-v="nand" aria-checked="false">NE OBA</button>
+            <button type="button" role="radio" data-v="nor" aria-checked="false">ANI JEDEN</button>
+            <button type="button" role="radio" data-v="and" aria-checked="false">OBA</button>
+            <button type="button" role="radio" data-v="or" aria-checked="false">ASPOŇ JEDEN</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-in">Vstupy</span>
+          <div class="seg" role="group" aria-labelledby="lbl-in">
+            <button type="button" id="in-a" aria-pressed="false">A = 0</button>
+            <button type="button" id="in-b" aria-pressed="false">B = 0</button>
+          </div>
+        </div>
+      </div>
+      <div class="fig-status">
+        <p class="status" id="cmos-status" aria-live="polite"></p>
+      </div>
+      <figcaption class="fig-caption">Nahoře je napájení, tedy jednička, dole zem, tedy nula. Každý obdélník je jeden tranzistor nakreslený jako vypínač. Barevný vede, bílý je rozpojený. Štítek vlevo od tranzistoru říká, který vstup ho řídí, a kroužek u štítku značí typ P, který vede při nule. Tlusté barevné dráty jsou spojené s napájením. Tečkovaný drát není v tu chvíli spojený s ničím. V tabulce jsou všechny kombinace vstupů, klepnutím na řádek ji nastavíte.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-par">
+      <div class="prose">
+        <h2 id="h-par">Dva tranzistory, které se střídají</h2>
+        <p>Jeden tranzistor ještě nepočítá. Počítat začne dvojice. Tranzistor typu P se zapojí mezi napájení a výstup, tranzistor typu N mezi výstup a zem. Řídicí elektrody obou se spojí a to je vstup.</p>
+        <p>Když je na vstupu jednička, dolní tranzistor vede a horní ne. Výstup je spojený se zemí a je na něm nula. Když je na vstupu nula, je to obráceně: horní vede, dolní ne a na výstupu je jednička. Výstup je vždycky opakem vstupu. Tomuhle hradlu se říká NE.</p>
+        <p>Důležité je, co se nikdy nestane. <span class="hl">Oba tranzistory nevedou zároveň,</span> a tak z napájení do země nevede žádná cesta. Hradlo v klidu nespotřebuje skoro nic. Proud jím projde jen v okamžiku přepnutí, kdy se výstup nabíjí nebo vybíjí.</p>
+        <p>Proto procesor hřeje tím víc, čím rychleji počítá, a proto telefon se zhasnutým displejem vydrží dny. Zapojení se říká CMOS a jsou jím postavené skoro všechny dnešní čipy.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte na druhém obrázku hradlo NE a přepínejte vstup A. Pokaždé vede právě jeden ze dvou tranzistorů a výstup se přepojí na opačnou stranu.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-ctyri">
+      <div class="prose">
+        <h2 id="h-ctyri">Hradlo ze čtyř tranzistorů</h2>
+        <p>Hradlo se dvěma vstupy potřebuje čtyři tranzistory, pro každý vstup jeden pár. Záleží na tom, jak se zapojí. Dva tranzistory za sebou vedou, jen když jsou sepnuté oba. Dva vedle sebe vedou, když je sepnutý aspoň jeden.</p>
+        <p>Hradlo NE OBA má dole dva tranzistory typu N za sebou a nahoře dva typu P vedle sebe. Na zem se výstup dostane, jen když jsou oba vstupy jedničky. V každém jiném případě vede aspoň jeden horní tranzistor a na výstupu je jednička.</p>
+        <p>Když se zapojení otočí, dva vedle sebe dole a dva za sebou nahoře, vznikne hradlo ANI JEDEN. Jedničku dá, jen když jsou oba vstupy nuly.</p>
+        <p>Možná byste čekali, že nejjednodušší bude hradlo OBA, které dá jedničku, když jsou jedničky oba vstupy. To ale přímo postavit nejde. Typ N umí dobře spojovat se zemí a typ P s napájením, a tak každé takové hradlo odpověď zároveň obrátí. Hradlo OBA je proto NE OBA, za kterým následuje hradlo NE. Dohromady šest tranzistorů.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Přepněte na NE OBA a projděte v tabulce všechny čtyři řádky. Nulu dostanete jen v posledním. Pak zvolte OBA a sledujte, jak druhá dvojice tranzistorů výsledek první obrátí.</p>
+      </aside>
+    </section>
+
+    <figure class="fig" id="obr3">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 3</b> Všechno z jednoho hradla</p>
+        <span class="label">Vyberte, co chcete postavit, a přepínejte vstupy</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="nands" viewBox="0 0 640 260" role="img" aria-label="Obvod složený jen z hradel NE OBA"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-target">Postavit hradlo</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-target" id="target-seg">
+            <button type="button" role="radio" data-v="not" aria-checked="false">NE</button>
+            <button type="button" role="radio" data-v="and" aria-checked="false">OBA</button>
+            <button type="button" role="radio" data-v="or" aria-checked="false">ASPOŇ JEDEN</button>
+            <button type="button" role="radio" data-v="xor" aria-checked="true">PRÁVĚ JEDEN</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-in3">Vstupy</span>
+          <div class="seg" role="group" aria-labelledby="lbl-in3">
+            <button type="button" id="n-a" aria-pressed="false">A = 0</button>
+            <button type="button" id="n-b" aria-pressed="false">B = 0</button>
+          </div>
+        </div>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="nands-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Z čeho se obvod skládá">
+          <li><span class="n">Hradel NE OBA</span><span class="v" id="st-g"></span></li>
+          <li><span class="n">Tranzistorů</span><span class="v" id="st-t"></span></li>
+          <li><span class="n">Výstup</span><span class="v" id="st-o"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Každý obdélník je jedno hradlo NE OBA z předchozího obrázku, tedy čtyři tranzistory. Dává nulu, jen když jsou oba jeho vstupy jedničky. Barevné hradlo má na výstupu jedničku, tlustý barevný drát je pod napětím.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-jedno">
+      <div class="prose">
+        <h2 id="h-jedno">Jedno hradlo stačí na všechno</h2>
+        <p>Hradlo NE OBA má zvláštní vlastnost: dá se z něj poskládat každé jiné. Když se oba jeho vstupy spojí, chová se jako NE. Dvě za sebou dají OBA. Tři dají ASPOŇ JEDEN a čtyři PRÁVĚ JEDEN.</p>
+        <p>Z těchhle tří hradel se staví <a href="../scitani/">sčítačka</a>, pět hradel na každý sloupec čísla. Celý procesor by tedy šlo postavit z jediného druhu součástky, mnohokrát zopakované.</p>
+        <p>Jednou to tak opravdu bylo. Počítač, který v šedesátých letech navigoval lodě Apollo k Měsíci, měl logiku z necelých šesti tisíc stejných hradel. Byla to hradla ANI JEDEN se třemi vstupy, která mají stejnou vlastnost jako NE OBA.</p>
+        <p>Dnešní návrháři si vybírají z knihovny stovek hotových hradel. Hradlo PRÁVĚ JEDEN se dá postavit úsporněji než ze šestnácti tranzistorů a na čipu, kde se opakuje milionkrát, se každý ušetřený tranzistor počítá.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Postavte PRÁVĚ JEDEN a vyzkoušejte všechny čtyři kombinace vstupů. Jedničku dostanete, jen když se vstupy liší. Přesně tohle hradlo potřebuje sčítačka, aby věděla, co napsat do sloupce.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-male">
+      <div class="prose">
+        <h2 id="h-male">Jak malé a jak rychlé</h2>
+        <p>První tranzistor z roku 1947 byl kousek germania se dvěma hroty a vešel se do dlaně. První procesor, Intel 4004 z roku 1971, měl 2 300 tranzistorů. Čip v dnešním telefonu jich má kolem dvaceti miliard na ploše nehtu.</p>
+        <p>Zmenšování má dvojí užitek. Menší tranzistor se nabije rychleji a menším množstvím energie, takže čip je zároveň rychlejší i úspornější. Gordon Moore, pozdější spoluzakladatel Intelu, si v roce 1965 všiml, že se počet tranzistorů na čipu pravidelně zdvojnásobuje. Odhadl, že to tak bude pokračovat, a vydrželo to přes padesát let.</p>
+        <p>Dnes zmenšování naráží na velikost atomů. Izolant pod řídicí elektrodou je tlustý jen pár nanometrů, to je kolem deseti vrstev atomů. Tak tenkou vrstvou elektrony občas projdou, i když nemají, a tranzistor trochu propouští, i když je vypnutý.</p>
+        <p>Výrobci proto kanál postavili na výšku jako ploutev a řídicí elektrodu přes něj přehodili ze tří stran. V nejnovějších čipech ho obepíná dokola. Označení jako „3 nanometry“ je dnes obchodní název generace čipů. Žádný rozměr tranzistoru tolik neměří.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Před tranzistorem dělaly stejnou práci elektronky, skleněné baňky se žhaveným vláknem. Počítač ENIAC z roku 1945 jich měl skoro 18 000, vážil 27 tun a měl příkon 150 kilowattů. Elektronky se přepalovaly jako žárovky, v průměru jedna každý druhý den.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../scitani/" data-cat="technika">
+        <span class="label">Další článek · Technika</span>
+        <span class="t">Jak počítač sčítá</span>
+        <p>Jak se z nul, jedniček a pěti hradel postaví sčítačka.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fmt2 = new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+    // přepínač z tlačítek s role="radio"; vrací funkci, která nastaví vybranou hodnotu
+    function radio(id, onPick) {
+      const box = $(id), set = (v) => box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === v)));
+      box.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        set(b.dataset.v);
+        onPick(b.dataset.v);
+      });
+      return set;
+    }
+    // klikací prvek uvnitř SVG, ovladatelný i z klávesnice
+    function clicky(node, label, fn) {
+      node.setAttribute("class", "clicky");
+      node.setAttribute("role", "button");
+      node.setAttribute("tabindex", "0");
+      node.setAttribute("aria-label", label);
+      node.addEventListener("click", fn);
+      node.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fn(); } });
+    }
+
+    /* ---------- Obr. 1: tranzistor v řezu ---------- */
+    const VT = 0.35, CH_X = 205, CH_W = 230, MAX_CAR = 12, MAX_CHG = 10;
+    const t = { v: 0, type: "n", phase: 0 };
+    const mos = $("mos");
+    let m = {};
+    function buildMos() {
+      mos.textContent = "";
+      const n = t.type === "n";
+      el("rect", { x: 40, y: 170, width: 560, height: 112, class: "si" }, mos);
+      el("text", { x: 320, y: 266, class: "lbl mid" }, mos).textContent = n ? "křemík typu P" : "křemík typu N";
+      // přívod a odvod s volnými nosiči náboje
+      let seed = 11;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      [60, 440].forEach((x) => {
+        el("rect", { x, y: 170, width: 140, height: 62, class: "well" }, mos);
+        for (let i = 0; i < 16; i++) el("circle", { cx: (x + 14 + (i % 8) * 16 + (rnd() - 0.5) * 7).toFixed(1), cy: (182 + Math.floor(i / 8) * 15 + (rnd() - 0.5) * 6).toFixed(1), r: 3.2, class: n ? "car" : "car h" }, mos);
+        el("text", { x: x + 70, y: 225, class: "lbl mid" }, mos).textContent = n ? "typ N" : "typ P";
+      });
+      el("rect", { x: 200, y: 158, width: 240, height: 12, class: "ox" }, mos);
+      el("rect", { x: 200, y: 108, width: 240, height: 50, class: "gate-el" }, mos);
+      el("text", { x: 320, y: 130, class: "lbl mid strong" }, mos).textContent = "řídicí elektroda";
+      el("text", { x: 194, y: 154, class: "lbl end" }, mos).textContent = "izolant";
+      [90, 550].forEach((x) => { el("rect", { x: x - 25, y: 128, width: 50, height: 42, class: "metal" }, mos); el("path", { d: `M${x} 128V62`, class: "lead-w" }, mos); });
+      el("path", { d: "M320 108V62", class: "lead-w" }, mos);
+      el("text", { x: 90, y: 28, class: "lbl mid" }, mos).textContent = "přívod";
+      el("text", { x: 90, y: 50, class: "v-big" }, mos).textContent = n ? "0 V" : "1 V";
+      el("text", { x: 320, y: 28, class: "lbl mid" }, mos).textContent = "napětí na elektrodě";
+      m.volt = el("text", { x: 320, y: 50, class: "v-big" }, mos);
+      el("text", { x: 550, y: 28, class: "lbl mid" }, mos).textContent = "proud odvodem";
+      el("circle", { cx: 550, cy: 86, r: 12, class: "lamp" }, mos);
+      m.lamp = el("circle", { cx: 550, cy: 86, r: 12, class: "lamp-on" }, mos);
+      m.lampT = el("text", { x: 550, y: 50, class: "v-big" }, mos);
+      // náboj na řídicí elektrodě a nosiče v kanálu
+      m.chg = [];
+      for (let i = 0; i < MAX_CHG; i++) m.chg.push(el("text", { x: 212 + i * 24, y: 152, class: n ? "chg" : "chg neg" }, mos));
+      m.chg.forEach((c) => (c.textContent = n ? "+" : "−"));
+      m.car = [];
+      for (let i = 0; i < MAX_CAR; i++) m.car.push(el("circle", { cy: 178, r: 3.2, class: n ? "car" : "car h" }, mos));
+      m.chan = el("text", { x: 320, y: 204, class: "chan-lbl" }, mos);
+      m.chan.textContent = n ? "kanál z elektronů" : "kanál z děr";
+    }
+    // jak silně elektroda přitahuje nosiče (0 až 1) a kolik jich je v kanálu
+    const pull = () => (t.type === "n" ? t.v : 1 - t.v);
+    const channel = () => clamp((pull() - VT) / (1 - VT), 0, 1);
+    function placeCarriers() {
+      const q = channel(), k = q > 0 ? Math.max(1, Math.round(q * MAX_CAR)) : 0;
+      m.car.forEach((c, i) => {
+        c.setAttribute("visibility", i < k ? "visible" : "hidden");
+        if (i < k) c.setAttribute("cx", (CH_X + (((i + t.phase) % k) / k) * CH_W).toFixed(1));
+      });
+    }
+    function renderMos() {
+      const n = t.type === "n", g = pull(), q = channel(), cur = q * q;
+      m.volt.textContent = `${fmt2.format(t.v)} V`;
+      m.lamp.setAttribute("opacity", cur.toFixed(2));
+      m.lampT.textContent = `${Math.round(cur * 100)} %`;
+      const shown = Math.round(g * MAX_CHG);
+      m.chg.forEach((c, i) => c.setAttribute("visibility", i < shown ? "visible" : "hidden"));
+      m.chan.setAttribute("visibility", q > 0 ? "visible" : "hidden");
+      placeCarriers();
+      $("volt").value = t.v;
+      $("volt-val").textContent = `${fmt2.format(t.v)} V`;
+      $("st-v").textContent = `${fmt2.format(t.v)} V`;
+      $("st-i").textContent = `${Math.round(cur * 100)} %`;
+      $("st-s").textContent = q > 0 ? "vede" : "nevede";
+      const key = g < 0.05 ? 0 : q === 0 ? 1 : g < 0.95 ? 2 : 3;
+      $("mos-status").innerHTML = (n ? [
+        "<strong>Zavřeno.</strong> Na řídicí elektrodě není napětí. Mezi přívodem a odvodem leží křemík, ve kterém skoro žádné volné elektrony nejsou, a proud neprojde. V procesoru je tohle nula.",
+        "<strong>Ještě zavřeno.</strong> Elektroda se nabíjí kladně a začíná k sobě přitahovat elektrony. Na souvislý kanál jich zatím není dost.",
+        "<strong>Kanál se otevírá.</strong> Pod izolantem se nahromadily elektrony a spojily přívod s odvodem. Čím vyšší napětí, tím víc jich je a tím větší proud teče.",
+        "<strong>Otevřeno naplno.</strong> Kanál je plný elektronů a tranzistor vede jako sepnutý vypínač. V procesoru je tohle jednička.",
+      ] : [
+        "<strong>Zavřeno.</strong> Řídicí elektroda má stejné napětí jako přívod, nic nepřitahuje a kanál neexistuje. Typ P je při jedničce vypnutý.",
+        "<strong>Ještě zavřeno.</strong> Elektroda má o něco nižší napětí než přívod, nabíjí se záporně a začíná k sobě přitahovat díry. Na souvislý kanál jich zatím není dost.",
+        "<strong>Kanál se otevírá.</strong> Pod izolantem se nahromadily díry a spojily přívod s odvodem. Čím nižší napětí na elektrodě, tím větší proud teče.",
+        "<strong>Otevřeno naplno.</strong> Typ P vede nejlíp při nule na řídicí elektrodě. Je to zrcadlový obraz typu N.",
+      ])[key];
+    }
+    radio("type-seg", (v) => { t.type = v; t.v = v === "n" ? 0 : 1; buildMos(); renderMos(); });
+    $("volt").addEventListener("input", (e) => { t.v = Number(e.target.value); renderMos(); });
+    $("v0").addEventListener("click", () => { t.v = 0; renderMos(); });
+    $("v1").addEventListener("click", () => { t.v = 1; renderMos(); });
+    buildMos();
+    renderMos();
+    if (!calm) {
+      let last = 0;
+      const frame = (now) => {
+        const dt = Math.min(0.1, (now - last) / 1000 || 0);
+        last = now;
+        const q = channel();
+        if (q > 0) { t.phase = (t.phase + dt * (0.6 + 2.4 * q)) % MAX_CAR; placeCarriers(); }
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    }
+
+    /* ---------- Obr. 2: hradlo z tranzistorů ---------- */
+    // horní síť je z tranzistorů typu P (vedou při nule), dolní z typu N (vedou při jedničce)
+    const GATES = {
+      not: { name: "NE", ins: 1, up: "one", down: "one", inv: false, f: (a) => 1 - a, n: 2 },
+      nand: { name: "NE OBA", ins: 2, up: "par", down: "ser", inv: false, f: (a, b) => 1 - (a & b), n: 4 },
+      nor: { name: "ANI JEDEN", ins: 2, up: "ser", down: "par", inv: false, f: (a, b) => 1 - (a | b), n: 4 },
+      and: { name: "OBA", ins: 2, up: "par", down: "ser", inv: true, f: (a, b) => a & b, n: 6 },
+      or: { name: "ASPOŇ JEDEN", ins: 2, up: "ser", down: "par", inv: true, f: (a, b) => a | b, n: 6 },
+    };
+    const c = { gate: "not", a: 0, b: 0 };
+    const cm = $("cmos"), TOP = 46, MID = 205, BOT = 364;
+    const cls = (base, v) => `${base}${v === 1 ? " hot" : v === null ? " float" : ""}`;
+    const wire = (d, v) => el("path", { d, class: cls("wire", v) }, cm);
+    const node = (x, y, v) => el("circle", { cx: x, cy: y, r: 4.5, class: cls("dot", v) }, cm);
+    // jeden tranzistor jako vypínač; tag je jméno vstupu, bez něj vede řídicí drát kreslený zvlášť
+    function tr(x, y, type, gateV, tag) {
+      const on = type === "n" ? gateV === 1 : gateV === 0;
+      const lead = type === "p" ? x - 27 : x - 17;
+      el("path", { d: `M${lead} ${y}H${x - 44}`, class: cls("wire", gateV) }, cm);
+      el("rect", { x: x - 17, y: y - 22, width: 34, height: 44, rx: 5, class: `tr${on ? " on" : ""}` }, cm);
+      if (type === "p") el("circle", { cx: x - 22, cy: y, r: 5, class: "bubble" }, cm);
+      el("path", { d: on ? `M${x} ${y - 22}V${y + 22}` : `M${x} ${y - 22}V${y - 9}M${x} ${y + 22}V${y + 9}L${x + 10} ${y - 9}`, class: `sw${on ? " on" : ""}` }, cm);
+      el("text", { x: x + 23, y: y + 4, class: "tr-type" }, cm).textContent = type.toUpperCase();
+      if (tag) {
+        const g = el("g", {}, cm);
+        el("rect", { x: x - 70, y: y - 12, width: 26, height: 24, rx: 4, class: cls("tag", gateV) }, g);
+        el("text", { x: x - 57, y: y + 5, class: cls("tag-t", gateV) }, g).textContent = tag;
+        clicky(g, `Vstup ${tag}, teď ${gateV}. Přepnout.`, () => { c[tag.toLowerCase()] ^= 1; renderCmos(); });
+      }
+      return on;
+    }
+    // jedno hradlo: síť typu P nad výstupem, síť typu N pod ním; vrací hodnotu výstupu
+    function stage(x, def, ins, tags) {
+      const [a, b] = ins, out = def.up === "one" ? 1 - a : def.f2(a, b);
+      const half = (mode, type, yOne, ySer, railY, rail) => {
+        const sign = railY < MID ? -1 : 1;                       // směr od výstupu k napájení nebo zemi
+        if (mode === "one") {
+          wire(`M${x} ${railY}V${yOne + sign * 22}`, rail); wire(`M${x} ${yOne - sign * 22}V${MID}`, out);
+          tr(x, yOne, type, a, tags && tags[0]);
+        } else if (mode === "par") {
+          const bus = yOne - sign * 44;
+          [[x - 62, a, 0], [x + 62, b, 1]].forEach(([tx, v, i]) => { wire(`M${tx} ${railY}V${yOne + sign * 22}`, rail); wire(`M${tx} ${yOne - sign * 22}V${bus}`, out); tr(tx, yOne, type, v, tags && tags[i]); });
+          wire(`M${x - 62} ${bus}H${x + 62}`, out); wire(`M${x} ${bus}V${MID}`, out);
+        } else {
+          // dva za sebou: A blíž k výstupu u typu N, blíž k napájení u typu P
+          const [yFar, yNear] = ySer, vFar = type === "p" ? a : b, vNear = type === "p" ? b : a;
+          const onFar = type === "n" ? vFar === 1 : vFar === 0, onNear = type === "n" ? vNear === 1 : vNear === 0;
+          wire(`M${x} ${railY}V${yFar + sign * 22}`, rail);
+          wire(`M${x} ${yFar - sign * 22}V${yNear + sign * 22}`, onFar ? rail : onNear ? out : null);
+          wire(`M${x} ${yNear - sign * 22}V${MID}`, out);
+          tr(x, yFar, type, vFar, tags && tags[type === "p" ? 0 : 1]); tr(x, yNear, type, vNear, tags && tags[type === "p" ? 1 : 0]);
+        }
+      };
+      half(def.up, "p", 122, [96, 158], TOP, 1);
+      half(def.down, "n", 288, [314, 252], BOT, 0);
+      node(x, MID, out);
+      return out;
+    }
+    function renderCmos() {
+      const def = GATES[c.gate], two = def.ins === 2;
+      cm.textContent = "";
+      const core = { up: def.up, down: def.down, f2: (a, b) => (def.up === "par" ? 1 - (a & b) : 1 - (a | b)) };
+      const x1 = def.inv ? 170 : 290, xo = def.inv ? 556 : 500;
+      el("text", { x: 24, y: TOP - 14, class: "cap" }, cm).textContent = "NAPÁJENÍ · JEDNIČKA";
+      el("text", { x: 24, y: BOT + 26, class: "cap" }, cm).textContent = "ZEM · NULA";
+      wire(`M24 ${TOP}H576`, 1); wire(`M24 ${BOT}H576`, 0);
+      const first = stage(x1, core, [c.a, c.b], two ? ["A", "B"] : ["A"]);
+      let out = first;
+      if (def.inv) {
+        const x2 = 430, bus = x2 - 58;
+        wire(`M${x1} ${MID}H${bus}`, first); wire(`M${bus} 122V288`, first); wire(`M${bus} 122H${x2 - 44}M${bus} 288H${x2 - 44}`, first);
+        node(bus, MID, first);
+        out = stage(x2, { up: "one", down: "one" }, [first, 0], null);
+      }
+      wire(`M${def.inv ? 430 : x1} ${MID}H${xo - 15}`, out);
+      el("circle", { cx: xo, cy: MID, r: 15, class: cls("pin", out) }, cm);
+      el("text", { x: xo, y: MID + 5, class: cls("pin-v", out) }, cm).textContent = out;
+      el("text", { x: xo, y: MID - 24, class: "lbl mid" }, cm).textContent = "výstup";
+
+      // tabulka všech kombinací
+      const rows = two ? [[0, 0], [0, 1], [1, 0], [1, 1]] : [[0], [1]];
+      $("truth").innerHTML = `<caption class="label">Hradlo ${def.name}</caption><thead><tr><th scope="col">A</th>${two ? '<th scope="col">B</th>' : ""}<th scope="col">výstup</th></tr></thead><tbody>${rows.map(([a, b]) => {
+        const on = a === c.a && (!two || b === c.b), o = two ? def.f(a, b) : def.f(a);
+        return `<tr${on ? ' class="on"' : ""}><td><button type="button" data-a="${a}" data-b="${two ? b : c.b}" aria-label="Nastavit A = ${a}${two ? `, B = ${b}` : ""}">${a}</button></td>${two ? `<td>${b}</td>` : ""}<td class="out">${o}</td></tr>`;
+      }).join("")}</tbody>`;
+      $("cmos-count").innerHTML = `Tranzistorů v hradle: <b>${def.n}</b>`;
+      $("in-a").textContent = `A = ${c.a}`; $("in-a").setAttribute("aria-pressed", String(c.a === 1));
+      $("in-b").textContent = `B = ${c.b}`; $("in-b").setAttribute("aria-pressed", String(c.b === 1));
+      $("in-b").disabled = !two;
+
+      const { a, b } = c, both = a & b, any = a | b;
+      const which = (v) => (v ? "A" : "B");
+      let s;
+      if (c.gate === "not") s = a ? "<strong>Výstup 0.</strong> Jednička na vstupu sepnula dolní tranzistor a horní rozpojila. Výstup je spojený se zemí." : "<strong>Výstup 1.</strong> Nula na vstupu sepnula horní tranzistor a dolní rozpojila. Výstup je spojený s napájením.";
+      else {
+        const nandS = both ? "oba vstupy jsou jedničky, oba dolní tranzistory vedou za sebou a spojují výstup se zemí" : `${any ? `vstup ${which(!a)} je nula, a tak vede horní tranzistor ${which(!a)}` : "oba vstupy jsou nuly a vedou oba horní tranzistory"}. Cesta na zem je přerušená, protože dolní tranzistory jsou za sebou a ${any ? "jeden z nich nevede" : "žádný nevede"}`;
+        const norS = !any ? "oba vstupy jsou nuly, oba horní tranzistory vedou za sebou a spojují výstup s napájením" : `${both ? "oba vstupy jsou jedničky a vedou oba dolní tranzistory" : `vstup ${which(a)} je jednička, a tak vede dolní tranzistor ${which(a)}`}. Cesta k napájení je přerušená, protože horní tranzistory jsou za sebou a ${both ? "žádný nevede" : "jeden z nich nevede"}`;
+        const cap = (x) => x[0].toUpperCase() + x.slice(1);
+        if (c.gate === "nand") s = `<strong>Výstup ${out}.</strong> ${cap(nandS)}.`;
+        else if (c.gate === "nor") s = `<strong>Výstup ${out}.</strong> ${cap(norS)}.`;
+        else s = `<strong>Výstup ${out}.</strong> První čtveřice je hradlo ${c.gate === "and" ? "NE OBA" : "ANI JEDEN"}: ${c.gate === "and" ? nandS : norS}. Má na výstupu ${first}. Dvojice vpravo je hradlo NE a obrátí to na ${out}.`;
+      }
+      $("cmos-status").innerHTML = s;
+    }
+    const setGate = radio("gate-seg", (v) => { c.gate = v; renderCmos(); });
+    $("in-a").addEventListener("click", () => { c.a ^= 1; renderCmos(); });
+    $("in-b").addEventListener("click", () => { c.b ^= 1; renderCmos(); });
+    $("truth").addEventListener("click", (e) => {
+      const b = e.target.closest("tr")?.querySelector("button[data-a]");
+      if (!b) return;
+      c.a = Number(b.dataset.a); c.b = Number(b.dataset.b);
+      renderCmos();
+      $("truth").querySelector("tr.on button")?.focus();
+    });
+    setGate(c.gate);
+    renderCmos();
+
+    /* ---------- Obr. 3: obvody jen z hradel NE OBA ---------- */
+    const nand = (a, b) => 1 - (a & b);
+    const h = { target: "xor", a: 1, b: 0 };
+    const ns = $("nands"), GW = 96, GH = 52;
+    // každý obvod: hradla (x, y a odkud berou vstupy) a dráty; signály se jmenují a, b, g1, g2…
+    const CIRCUITS = {
+      not: {
+        name: "NE", ins: 1, f: (a) => 1 - a,
+        gates: [{ id: "g1", x: 270, y: 104, in: ["a", "a"] }],
+        wires: [["a", "M50 70H220V120H270M220 120V140H270"], ["g1", "M366 130H589"]],
+        dots: [["a", 220, 120]],
+      },
+      and: {
+        name: "OBA", ins: 2, f: (a, b) => a & b,
+        gates: [{ id: "g1", x: 170, y: 104, in: ["a", "b"] }, { id: "g2", x: 400, y: 104, in: ["g1", "g1"] }],
+        wires: [["a", "M50 70H120V120H170"], ["b", "M50 190H120V140H170"], ["g1", "M266 130H350V120H400M350 130V140H400"], ["g2", "M496 130H589"]],
+        dots: [["g1", 350, 130]],
+      },
+      or: {
+        name: "ASPOŇ JEDEN", ins: 2, f: (a, b) => a | b,
+        gates: [{ id: "g1", x: 170, y: 44, in: ["a", "a"] }, { id: "g2", x: 170, y: 164, in: ["b", "b"] }, { id: "g3", x: 400, y: 104, in: ["g1", "g2"] }],
+        wires: [["a", "M50 70H130V60H170M130 70V80H170"], ["b", "M50 190H130V180H170M130 190V200H170"], ["g1", "M266 70H340V120H400"], ["g2", "M266 190H340V140H400"], ["g3", "M496 130H589"]],
+        dots: [["a", 130, 70], ["b", 130, 190]],
+      },
+      xor: {
+        name: "PRÁVĚ JEDEN", ins: 2, f: (a, b) => a ^ b,
+        gates: [{ id: "g1", x: 150, y: 104, in: ["a", "b"] }, { id: "g2", x: 320, y: 34, in: ["a", "g1"] }, { id: "g3", x: 320, y: 174, in: ["g1", "b"] }, { id: "g4", x: 470, y: 104, in: ["g2", "g3"] }],
+        wires: [["a", "M50 70H110V120H150M110 70V50H320"], ["b", "M50 190H110V140H150M110 190V210H320"], ["g1", "M246 130H280V70H320M280 130V190H320"], ["g2", "M416 60H440V120H470"], ["g3", "M416 200H440V140H470"], ["g4", "M566 130H589"]],
+        dots: [["a", 110, 70], ["b", 110, 190], ["g1", 280, 130]],
+      },
+    };
+    function renderNands() {
+      const def = CIRCUITS[h.target], two = def.ins === 2, sig = { a: h.a, b: h.b };
+      def.gates.forEach((g) => (sig[g.id] = nand(sig[g.in[0]], sig[g.in[1]])));
+      const last = def.gates[def.gates.length - 1].id, out = sig[last];
+      ns.textContent = "";
+      def.wires.forEach(([k, d]) => el("path", { d, class: cls("wire", sig[k]) }, ns));
+      def.dots.forEach(([k, x, y]) => el("circle", { cx: x, cy: y, r: 4.5, class: cls("dot", sig[k]) }, ns));
+      def.gates.forEach((g) => {
+        el("rect", { x: g.x, y: g.y, width: GW, height: GH, rx: 6, class: cls("lg", sig[g.id]) }, ns);
+        el("text", { x: g.x + GW / 2, y: g.y + GH / 2 + 5, class: cls("lg-name", sig[g.id]) }, ns).textContent = "NE OBA";
+      });
+      const pin = (x, y, v, name, key) => {
+        const g = el("g", {}, ns);
+        el("circle", { cx: x, cy: y, r: 15, class: cls("pin", v) }, g);
+        el("text", { x, y: y + 5, class: cls("pin-v", v) }, g).textContent = v;
+        el("text", { x, y: y - 22, class: "pin-n" }, ns).textContent = name;
+        if (key) clicky(g, `Vstup ${name}, teď ${v}. Přepnout.`, () => { h[key] ^= 1; renderNands(); });
+      };
+      pin(36, 70, h.a, "A", "a");
+      if (two) pin(36, 190, h.b, "B", "b");
+      pin(604, 130, out, "výstup");
+      $("n-a").textContent = `A = ${h.a}`; $("n-a").setAttribute("aria-pressed", String(h.a === 1));
+      $("n-b").textContent = `B = ${h.b}`; $("n-b").setAttribute("aria-pressed", String(h.b === 1));
+      $("n-b").disabled = !two;
+      $("st-g").textContent = def.gates.length;
+      $("st-t").textContent = def.gates.length * 4;
+      $("st-o").textContent = out;
+      const say = {
+        not: h.a ? "Oba vstupy hradla jsou spojené. Je na nich jednička, tedy „oba“, a hradlo NE OBA dá nulu." : "Oba vstupy hradla jsou spojené. Je na nich nula, tedy ne oba, a hradlo dá jedničku.",
+        and: `První hradlo dá ${sig.g1}. Druhé má vstupy spojené, takže jen obrací: z ${sig.g1} udělá ${out}. Dvojí „ne“ se zruší a zbude OBA.`,
+        or: `Levá hradla mají vstupy spojené a obracejí: z A = ${h.a} je ${sig.g1}, z B = ${h.b} je ${sig.g2}. Třetí hradlo dá nulu, jen když jsou obě obrácené hodnoty jedničky, tedy když byly oba vstupy nuly.`,
+        xor: h.a === h.b ? (h.a ? "Oba vstupy jsou jedničky. První hradlo dá nulu. Obě prostřední hradla tak dostanou aspoň jednu nulu a dají jedničku. Poslední hradlo má na vstupech dvě jedničky a dá nulu." : "Oba vstupy jsou nuly. První tři hradla dají jedničky. Poslední hradlo má na vstupech dvě jedničky a dá nulu.") : `Jedničku má jen vstup ${h.a ? "A" : "B"}. První hradlo dá jedničku, ${h.a ? "horní" : "dolní"} prostřední hradlo tak dostane dvě jedničky a dá nulu. Poslední hradlo má na vstupu aspoň jednu nulu, a dá proto jedničku.`,
+      }[h.target];
+      $("nands-status").innerHTML = `<strong>${def.name}: výstup ${out}.</strong> ${say}`;
+    }
+    const setTarget = radio("target-seg", (v) => { h.target = v; renderNands(); });
+    $("n-a").addEventListener("click", () => { h.a ^= 1; renderNands(); });
+    $("n-b").addEventListener("click", () => { h.b ^= 1; renderNands(); });
+    setTarget(h.target);
+    renderNands();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>

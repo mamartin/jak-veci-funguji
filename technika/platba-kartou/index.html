@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje platba kartou</title>
+  <meta name="description" content="Kde bere bezkontaktní karta bez baterie proud, proč funguje jen na pár centimetrů, jak odpovídá, když nemá vysílač, a proč zloději nestačí přečíst její číslo. S modelem karty v poli terminálu a s platbou, kterou můžete zkusit podvrhnout.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    .nfc-stage { display: grid; gap: 0.75rem; }
+    #field, #sig { border: 1px solid var(--rule); background: var(--surface); }
+    .cap { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
+    .lbl { fill: var(--ink-2); font: 500 13px var(--font-mono); }
+    .lbl.mid { text-anchor: middle; }
+    .lbl.strong { fill: var(--ink); font-weight: 600; }
+    .lbl.ok { fill: var(--ok); font-weight: 600; }
+    #field .lbl.strong, #field .lbl.ok { paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+    .term { fill: var(--ink); }
+    .term-top { fill: var(--steel); stroke: var(--metal-line); stroke-width: 1; }
+    .wire-x { fill: #c9824f; stroke: var(--metal-line); stroke-width: 1; }
+    .wire-x.live { fill: var(--warm); }
+    .fline { fill: none; stroke: var(--cat); stroke-width: 1.8; stroke-dasharray: 6 7; opacity: 0.75; }
+    .card-b { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+    .chip { fill: var(--ink-3); stroke: var(--metal-line); stroke-width: 1; }
+    .chip.on { fill: var(--ok); }
+    .bar-bg { fill: var(--sunk); stroke: var(--rule); stroke-width: 1; }
+    .bar-in { fill: var(--cat); }
+    .bar-in.low { fill: var(--ink-3); }
+    .thr { stroke: var(--bad); stroke-width: 2; }
+    .thr-t { fill: var(--bad); font: 600 12px var(--font-mono); }
+    .env { fill: var(--cat); fill-opacity: 0.3; stroke: var(--cat); stroke-width: 1.5; stroke-linejoin: round; }
+    .sep { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
+    @media (prefers-reduced-motion: no-preference) {
+      .fline { animation: flow 1.2s linear infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+    }
+
+    /* Obr. 2: rozhovor při platbě */
+    .msgs { display: grid; gap: 0.6rem; margin: 0; padding: 0; list-style: none; counter-reset: zprava; }
+    .msgs li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.3rem 1.25rem; padding: 0.75rem 0.9rem; border: 1px solid var(--rule); border-left: 4px solid var(--cat); background: var(--paper); counter-increment: zprava; }
+    @media (min-width: 52rem) { .msgs li { grid-template-columns: 15rem minmax(0, 1fr); align-items: baseline; } }
+    .msgs li.inner { border-left-color: var(--ink-3); }
+    .msgs li.atk { border-left-color: var(--bad); }
+    .msgs .who { font-family: var(--font-display); font-stretch: 108%; font-weight: 700; font-size: 0.95rem; }
+    .msgs .who::before { content: counter(zprava) ". "; color: var(--cat); }
+    .msgs li.atk .who::before { color: var(--bad); }
+    .msgs .what { display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-2); }
+    .msgs .what > p { flex: 1 1 100%; margin: 0; font-family: var(--font-body); font-size: 0.95rem; }
+    .f { white-space: nowrap; }
+    .f b { color: var(--ink); font-weight: 600; }
+    .f.hid b { letter-spacing: 0.1em; }
+    .f.bad b, b.bad { color: var(--bad); }
+    .f.good b { color: var(--ok); }
+    .f.old b { text-decoration: underline wavy var(--bad); text-underline-offset: 0.2em; }
+    .verdict { margin: 0.75rem 0 0; padding: 0.7rem 0.9rem; font-family: var(--font-display); font-stretch: 118%; font-weight: 800; font-size: 1.25rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--paper); background: var(--ok); }
+    .verdict.no { background: var(--bad); }
+    .verdict.warn { background: var(--warm); color: #14181e; }
+    .verdict small { display: block; margin-top: 0.15rem; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0; text-transform: none; }
+    @media (max-width: 46rem) {
+      .lbl { font-size: 17px; }
+      .cap { font-size: 15px; letter-spacing: 0.04em; }
+      .thr-t { font-size: 15px; }
+    }
+  </style>
+</head>
+<body data-cat="technika">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Technika</a><span aria-hidden="true">/</span><span>Platba kartou</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Technika</a></p>
+      <h1 class="display">Jak funguje platba kartou</h1>
+      <p class="lede">Platební karta nemá baterii, a přesto v ní běží malý počítač. Proud si bere z pole terminálu, ke kterému ji přiložíte. Za necelou půl sekundy stihne nastartovat, spočítat jednorázový kód a poslat ho. Kvůli tomu kódu zloději nestačí znát číslo karty.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>V kartě je čip a pod jejím okrajem několik závitů drátu. Terminál vytváří střídavé magnetické pole a to v závitech vyrobí proud. Stačí to na pár centimetrů.</li>
+        <li>Karta nevysílá. Odpovídá tím, že z pole odebírá střídavě víc a míň energie, a terminál ty změny měří.</li>
+        <li><span class="hl">Při každé platbě čip spočítá jednorázový kód z tajného klíče, který z karty nikdy neodejde.</span> Číslo karty přečíst jde, klíč ne, a bez něj další platba neprojde.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Karta v poli terminálu</p>
+        <span class="label">Přibližte kartu k terminálu a zkuste ji naklonit</span>
+      </div>
+      <div class="fig-stage nfc-stage">
+        <svg id="field" viewBox="0 0 640 380" role="img" aria-label="Řez terminálem a kartou nad ním. Z antény terminálu vycházejí siločáry magnetického pole a procházejí kartou."></svg>
+        <svg id="sig" viewBox="0 0 640 128" role="img" aria-label="Síla pole v čase: úsek, kdy terminál jen vysílá, úsek, kdy se ptá, a úsek, kdy odpovídá karta"></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl ctl-grow">
+          <label class="label" for="dist">Vzdálenost karty od terminálu</label>
+          <div class="ctl-row">
+            <input type="range" id="dist" min="0" max="10" step="0.1" value="8">
+            <output class="val" id="dist-val" for="dist"></output>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="tilt">Naklonění karty</label>
+          <div class="ctl-row">
+            <input type="range" id="tilt" min="0" max="90" step="1" value="0">
+            <output class="val" id="tilt-val" for="tilt"></output>
+          </div>
+        </div>
+        <button type="button" class="btn" id="tap">Přiložit</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="nfc-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav karty">
+          <li><span class="n">Střed karty</span><span class="v" id="st-d"></span></li>
+          <li><span class="n">Pole u karty</span><span class="v" id="st-h"></span></li>
+          <li><span class="n">Čip</span><span class="v" id="st-chip"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Nahoře řez: dole terminál se dvěma průřezy antény, nad ním karta se svou anténou a čipem. Čárkované křivky jsou siločáry pole. Ve skutečnosti pole 13,56milionkrát za sekundu otočí směr tam a zpátky. Dole je síla pole, jak ji měří terminál na své anténě. Hloubka zářezů od karty je pro názornost zvětšená. Model počítá pole nad středem antény a vychází z mezí normy: terminál smí u svého povrchu vytvořit nejvýš 7,5 A/m a karta musí fungovat od 1,5 A/m. Skutečné terminály bývají slabší a kartu čtou zhruba do čtyř centimetrů.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-baterie">
+      <div class="prose">
+        <h2 id="h-baterie">Karta bez baterie</h2>
+        <p>Kdybyste platební kartu rozloupli, našli byste čip menší než nehet na malíčku a tenký drát, který několikrát obíhá těsně pod jejím okrajem. Ten drát je anténa. Baterie v kartě není.</p>
+        <p>Terminál má pod místem, kam kartu přikládáte, podobnou smyčku drátu. Pouští do ní střídavý proud, který kmitá tam a zpátky 13,56milionkrát za sekundu. Kolem smyčky tak vzniká magnetické pole a mění se stejně rychle.</p>
+        <p>Když se do měnícího se pole dostane jiná smyčka drátu, vznikne v ní napětí. Je to stejný jev, kterým <a href="../../domacnost/indukcni-deska/">indukční deska</a> ohřívá hrnec a kterým se bezdrátově nabíjí telefon. Tady jde o nepatrný výkon. Čipu stačí několik tisícin wattu.</p>
+        <p><span class="hl">Karta je tedy napájená jen po dobu, kdy leží u terminálu.</span> Čip se probudí během pár tisícin sekundy, odvede svou práci, a když kartu oddálíte, zase zhasne.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Posouvejte kartu pomalu k terminálu a sledujte sloupec vpravo. Čip se rozběhne, až když pole u karty přeroste červenou rysku. V dolním grafu se v tu chvíli objeví odpověď karty.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-dosah">
+      <div class="prose">
+        <h2 id="h-dosah">Proč jen na pár centimetrů</h2>
+        <p>Pole kolem smyčky slábne se vzdáleností velmi rychle. Ve vzdálenosti rovné průměru antény z něj zbývá necelá desetina. Čip potřebuje určité minimum, a tak funguje zhruba do čtyř centimetrů.</p>
+        <p>Záleží i na natočení. Proud v závitech vyrábí jen ta část pole, která smyčkou prochází skrz. Karta přiložená naplocho jí zachytí nejvíc. Karta otočená k terminálu hranou nezachytí nic, siločáry ji jen míjejí.</p>
+        <p>Krátký dosah je záměr. Platit se má, jen když kartu vědomě přiložíte, a terminál nemá mluvit s kartami lidí, kteří stojí ve frontě za vámi.</p>
+        <p>S <a href="../wifi/">Wi-Fi</a> to má společného míň, než se zdá. Rádiová vlna o frekvenci 13,56 MHz je dlouhá 22 metrů. Na čtyřech centimetrech se ještě nestihne ani zformovat. Anténa terminálu a anténa karty se k sobě chovají jako dvě půlky transformátoru.</p>
+      </div>
+      <aside class="note" aria-label="Bezkontaktní platba v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>13,56 MHz</dt><dd>frekvence pole, na které pracují karty i telefony</dd></div>
+          <div><dt>do 4 cm</dt><dd>má terminál kartu přečíst</dd></div>
+          <div><dt>do 0,5 s</dt><dd>má být hotová celá výměna mezi kartou a terminálem</dd></div>
+          <div><dt>500 Kč</dt><dd>je v Česku hranice, nad kterou terminál chce PIN</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-odpoved">
+      <div class="prose">
+        <h2 id="h-odpoved">Jak karta odpovídá, když nevysílá</h2>
+        <p>Terminál mluví ke kartě tak, že pole na okamžik přeruší nebo zeslabí. Krátké pauzy v poli jsou jeho nuly a jedničky. Čip je přečká na energii, kterou má nastřádanou.</p>
+        <p>Karta žádný vysílač nemá. Když chce odpovědět, připojuje a odpojuje ke své anténě zátěž. Odebírá tak z pole střídavě víc a míň energie. Terminál to pozná na vlastní anténě, protože se v ní nepatrně mění proud.</p>
+        <p>Je to podobné, jako když vám doma pohasne světlo a vy podle toho poznáte, že někdo ve vedlejší místnosti zapnul konvici. Karta takhle „zapíná konvici“ statisíckrát za sekundu a terminál z poblikávání čte nuly a jedničky.</p>
+        <p>Přenese se tak přes sto tisíc bitů za sekundu. Na platbu, při které si obě strany vymění nanejvýš pár kilobajtů, to bohatě stačí.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Přiložte kartu a pak ji pomalu naklánějte. Pole u karty slábne, i když se nevzdaluje. Kolem pětapadesáti stupňů čip zhasne a v dolním grafu zůstanou jen otázky terminálu bez odpovědi.</p>
+      </aside>
+    </section>
+
+    <figure class="fig" id="obr2">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 2</b> Co si při platbě řeknou</p>
+        <span class="label">Zaplaťte pravou kartou a pak zkuste banku ošidit</span>
+      </div>
+      <div class="fig-stage">
+        <ol class="msgs" id="msgs"></ol>
+        <p class="verdict" id="verdict" aria-live="polite"></p>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-who">Kdo platí</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-who" id="who-seg">
+            <button type="button" role="radio" data-v="genuine" aria-checked="true">Pravá karta</button>
+            <button type="button" role="radio" data-v="replay" aria-checked="false">Nahrávka minulé platby</button>
+            <button type="button" role="radio" data-v="tamper" aria-checked="false">Přepsaná částka</button>
+            <button type="button" role="radio" data-v="clone" aria-checked="false">Kopie bez klíče</button>
+            <button type="button" role="radio" data-v="stripe" aria-checked="false">Kopie proužku</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-amount">Částka</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-amount" id="amount-seg">
+            <button type="button" role="radio" data-v="89" aria-checked="false">89 Kč</button>
+            <button type="button" role="radio" data-v="249" aria-checked="true">249 Kč</button>
+            <button type="button" role="radio" data-v="1890" aria-checked="false">1 890 Kč</button>
+          </div>
+        </div>
+        <button type="button" class="btn" id="pay">Zaplatit znovu</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="pay-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav karty a banky">
+          <li><span class="n">Počítadlo v kartě</span><span class="v" id="st-atc"></span></li>
+          <li><span class="n">Poslední v bance</span><span class="v" id="st-bank"></span></li>
+          <li><span class="n">Schváleno plateb</span><span class="v" id="st-ok"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Zprávy jsou zjednodušené, pořadí a smysl ale odpovídají skutečné platbě. Model kód opravdu počítá ze všech vypsaných údajů, a když kterýkoli z nich změníte, vyjde jiný. Používá k tomu jednoduchý výpočet a osm znaků. Skutečná karta počítá šifrou AES nebo 3DES a kód má šestnáct znaků. Číslo karty i klíč jsou vymyšlené.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-cislo">
+      <div class="prose">
+        <h2 id="h-cislo">Proč nestačí číslo karty</h2>
+        <p>Číslo vytištěné na kartě není tajné. Zná ho každý obchod, kde jste platili. Kdyby platba stála jen na něm, stačilo by ho opsat.</p>
+        <p>V čipu je proto uložený tajný klíč. Banka ho tam nahrála při výrobě karty a jeho dvojče si nechala u sebe. Čip je postavený tak, aby klíč nikdy nevydal. Umí s ním jen počítat.</p>
+        <p>Při platbě pošle terminál kartě částku, datum a náhodné číslo, které si právě vymyslel. Čip k tomu přidá stav svého počítadla plateb a všechno spolu s tajným klíčem prožene výpočtem. Vyjde krátký kód. Banka dostane stejné údaje, udělá stejný výpočet se svou kopií klíče a výsledky porovná.</p>
+        <p><span class="hl">Kód platí jen pro tuhle jednu platbu.</span> Jiná částka, jiné náhodné číslo nebo jiný stav počítadla dají úplně jiný kód. Kdo zprávu odposlechne, získá něco, co už podruhé nepoužije.</p>
+        <p>Starý magnetický proužek tohle neuměl. Byly na něm pořád stejné údaje a čtečka je jen přečetla. Kdo je okopíroval na prázdnou kartu, měl dvojče. Proto se přešlo na čipy a proužek z nových karet postupně mizí.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Zaplaťte pravou kartou dvakrát stejnou částku a porovnejte kódy. Pak vyzkoušejte tři podvody. Každý ztroskotá na tom, že útočník nemá klíč. Projde jen kopie proužku.</p>
+        <span class="label">Na okraj</span>
+        <p>Karta se umí prokázat i samotnému terminálu, když zrovna není spojení s bankou. Má k tomu vlastní <a href="../sifrovani/">soukromý klíč</a> a certifikát podepsaný bankou. Terminál její podpis ověří veřejným klíčem.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-precist">
+      <div class="prose">
+        <h2 id="h-precist">Co se z karty přečíst dá</h2>
+        <p>Telefon s NFC a vhodnou aplikací přečte z bezkontaktní karty její číslo a datum platnosti. Čip je řekne každému terminálu, který se zeptá. Musí, jinak by se platba nedostala ke správné bance.</p>
+        <p>K platbě v obchodě to nestačí, chybí klíč. K platbě na internetu obvykle taky ne. E-shop chce navíc třímístný kód ze zadní strany karty, který v čipu vůbec není, a banka si platbu nechává potvrdit v aplikaci.</p>
+        <p>Druhá obava bývá, že vám někdo v tramvaji přiloží terminál ke kapse. Technicky by platba do 500 Kč proběhnout mohla. Každý terminál je ale vedený na obchodníka s účtem u banky, takže peníze mají dohledatelného příjemce, a neoprávněnou platbu lze reklamovat. Po několika platbách bez PINu za sebou si navíc karta o PIN řekne sama.</p>
+        <p>Kdo chce mít jistotu, může si v bankovní aplikaci bezkontaktní platby vypnout nebo nosit kartu v pouzdře s kovovou fólií. Ve fólii se naindukují proudy, které pole terminálu vyruší dřív, než se dostane ke kartě.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>V laboratoři funguje i útok na dálku. Jeden přístroj je u vaší kapsy, druhý u pokladny a mezi nimi spojení, které rozhovor karty s terminálem přeposílá. Karta počítá správně, jen netuší, že terminál je jinde. Brání tomu krátký dosah, limit bez PINu a u novějších karet i měření, za jak dlouho odpověď dorazí.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-telefon">
+      <div class="prose">
+        <h2 id="h-telefon">Telefon a hodinky</h2>
+        <p>Telefon se u terminálu tváří jako karta a mluví stejnou řečí. Liší se ve dvou věcech.</p>
+        <p>Místo čísla vaší karty posílá náhradní číslo, které dostal jen tenhle telefon. Kdyby uniklo, nedá se použít nikde jinde, a skutečné číslo karty se obchodník vůbec nedozví.</p>
+        <p>A platbu odemykáte otiskem prstu, obličejem nebo kódem telefonu. Terminál proto nechce PIN ani u částek nad 500 Kč.</p>
+        <p>Telefon má vlastní baterii a pole terminálu k napájení nepotřebuje. Přiložit ho ale musíte stejně. I on odpovídá přes pole terminálu a to o pár centimetrů dál skoro není.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Čipové karty se v Evropě šířily od devadesátých let a do terminálu se zasouvaly. Počítaly stejný jednorázový kód jako dnes, jen proud dostávaly přes zlaté kontakty. Bezkontaktní karty přidaly o desetiletí později anténu a na způsobu ověření nezměnily skoro nic.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../../doprava/abs/" data-cat="doprava">
+        <span class="label">Další článek · Doprava</span>
+        <span class="t">Jak fungují brzdy s ABS</span>
+        <p>Proč zablokované kolo brzdí hůř a proč ABS uprostřed brzdění povoluje.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const fmt1 = new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    function radio(id, onPick) {
+      const box = $(id), set = (v) => box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === String(v))));
+      box.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        set(b.dataset.v);
+        onPick(b.dataset.v);
+      });
+      return set;
+    }
+
+    /* ---------- Obr. 1: karta v poli terminálu ---------- */
+    // rozměry v centimetrech: poloměr antény terminálu, délka karty; S je měřítko v bodech na centimetr
+    const R = 3.5, CARD = 8.56, S = 26, CX = 268, TY = 322, WY = 331;
+    const H_MAX = 7.5, H_MIN = 1.5;                 // meze pole podle normy ISO/IEC 14443, v A/m
+    const n = { z: 8, tilt: 0 };
+    const fs = $("field"), sg = $("sig");
+    // pole na ose kruhové smyčky ve výšce d nad ní, vztažené k poli u povrchu
+    const onAxis = (d) => Math.pow((R * R) / (R * R + d * d), 1.5);
+    // nakloněná karta se o terminál opře hranou, její střed proto nemůže být níž
+    const centre = () => Math.max(n.z, (CARD / 2) * Math.sin((n.tilt * Math.PI) / 180));
+    const fieldAt = () => H_MAX * onAxis(centre()) * Math.cos((n.tilt * Math.PI) / 180);
+
+    const f = {};
+    (function buildField() {
+      const clip = el("clipPath", { id: "above" }, el("defs", {}, fs));
+      el("rect", { x: 0, y: 0, width: 500, height: TY }, clip);
+      const lines = el("g", { "clip-path": "url(#above)" }, fs);
+      // siločáry kolem dvou průřezů antény: kružnice, na kterých je poměr vzdáleností od obou vodičů stálý
+      const Rp = R * S;
+      [0.25, 0.45, 0.62, 0.75, 0.86].forEach((k) => {
+        const xc = (Rp * (1 + k * k)) / (1 - k * k), r = (2 * Rp * k) / (1 - k * k);
+        el("circle", { cx: (CX + xc).toFixed(1), cy: WY, r: r.toFixed(1), class: "fline" }, lines);
+        el("circle", { cx: (CX - xc).toFixed(1), cy: WY, r: r.toFixed(1), class: "fline", style: "animation-direction: reverse" }, lines);
+      });
+      el("path", { d: `M${CX} ${TY}V0`, class: "fline", style: "animation-direction: reverse" }, lines);
+      el("text", { x: 16, y: 24, class: "cap" }, fs).textContent = "STŘÍDAVÉ MAGNETICKÉ POLE";
+      // terminál
+      el("rect", { x: CX - 150, y: TY, width: 300, height: 46, rx: 6, class: "term" }, fs);
+      el("rect", { x: CX - 150, y: TY, width: 300, height: 5, class: "term-top" }, fs);
+      [-1, 1].forEach((s) => el("circle", { cx: CX + s * Rp, cy: WY + 4, r: 6, class: "wire-x live" }, fs));
+      el("text", { x: CX, y: TY + 31, class: "lbl mid", style: "fill: var(--paper)" }, fs).textContent = "terminál · anténa";
+      // karta: natáčí se kolem svého středu
+      f.card = el("g", {}, fs);
+      const half = (CARD / 2) * S;
+      el("rect", { x: -half, y: -4, width: half * 2, height: 8, rx: 3, class: "card-b" }, f.card);
+      f.ends = [-1, 1].map((s) => el("circle", { cx: s * (half - 9), cy: 0, r: 3.2, class: "wire-x" }, f.card));
+      f.chip = el("rect", { x: -13, y: -11, width: 26, height: 7, rx: 2, class: "chip" }, f.card);
+      f.cardT = el("text", { class: "lbl mid strong" }, fs);
+      // sloupec se silou pole u karty a ryskou, od které čip běží
+      const bx = 588, by = 62, bh = 232;
+      f.bar = { x: bx, y: by, h: bh };
+      el("text", { x: 628, y: 24, class: "lbl", "text-anchor": "end" }, fs).textContent = "pole u karty";
+      f.barV = el("text", { x: 628, y: 46, class: "lbl strong", "text-anchor": "end" }, fs);
+      el("rect", { x: bx, y: by, width: 18, height: bh, class: "bar-bg" }, fs);
+      f.barIn = el("rect", { x: bx, width: 18, class: "bar-in" }, fs);
+      const ty = by + bh * (1 - H_MIN / H_MAX);
+      el("path", { d: `M${bx - 8} ${ty}H${bx + 26}`, class: "thr" }, fs);
+      el("text", { x: 628, y: by + bh + 24, class: "thr-t", "text-anchor": "end" }, fs).textContent = "ryska 1,5 A/m";
+    })();
+
+    function renderSig(on, coupling) {
+      sg.textContent = "";
+      const mid = 74, A = 30, parts = [[16, 196, "TERMINÁL VYSÍLÁ POLE"], [196, 410, "TERMINÁL SE PTÁ"], [410, 624, on ? "KARTA ODPOVÍDÁ" : "NIKDO NEODPOVÍDÁ"]];
+      // horní obrys pásu: body [x, výška]; dolní je jeho zrcadlo
+      const top = [[16, A]];
+      const bits = [1, 0, 1, 1, 0, 0, 1, 0];
+      bits.forEach((b, i) => { const x = 210 + i * 24 + (b ? 12 : 0); top.push([x, A], [x, 0], [x + 6, 0], [x + 6, A]); });
+      if (on) {
+        const dip = A * (0.1 + 0.22 * coupling);
+        [0, 1, 1, 0, 1, 0, 0, 1].forEach((b, i) => {
+          const x0 = 424 + i * 24 + (b ? 12 : 0);
+          for (let t = 0; t < 3; t++) { const x = x0 + t * 4; top.push([x, A], [x, A - dip], [x + 2, A - dip], [x + 2, A]); }
+        });
+      }
+      top.push([624, A]);
+      const d = "M" + top.map(([x, a]) => `${x} ${mid - a}`).join("L") + "L" + top.reverse().map(([x, a]) => `${x} ${mid + a}`).join("L") + "Z";
+      el("path", { d, class: "env" }, sg);
+      parts.forEach(([x1, x2, t], i) => {
+        if (i) el("path", { d: `M${x1} 28V120`, class: "sep" }, sg);
+        el("text", { x: (x1 + x2) / 2, y: 20, class: "cap", "text-anchor": "middle" }, sg).textContent = t;
+      });
+    }
+
+    function renderNfc() {
+      const d = centre(), h = fieldAt(), on = h >= H_MIN, lifted = d > n.z + 0.05;
+      const cy = TY - 7 - d * S;
+      f.card.setAttribute("transform", `translate(${CX} ${cy.toFixed(1)}) rotate(${-n.tilt})`);
+      f.chip.setAttribute("class", `chip${on ? " on" : ""}`);
+      f.ends.forEach((c) => c.setAttribute("class", `wire-x${on ? " live" : ""}`));
+      const above = cy - (CARD / 2) * S * Math.sin((n.tilt * Math.PI) / 180) - 16;
+      f.cardT.setAttribute("x", CX); f.cardT.setAttribute("y", (above < 44 ? cy + (CARD / 2) * S * Math.sin((n.tilt * Math.PI) / 180) + 28 : above).toFixed(1));
+      f.cardT.setAttribute("class", `lbl mid ${on ? "ok" : "strong"}`);
+      f.cardT.textContent = on ? "karta · čip běží" : "karta · čip spí";
+      const frac = Math.min(1, h / H_MAX);
+      f.barIn.setAttribute("y", (f.bar.y + f.bar.h * (1 - frac)).toFixed(1));
+      f.barIn.setAttribute("height", (f.bar.h * frac).toFixed(1));
+      f.barIn.setAttribute("class", `bar-in${on ? "" : " low"}`);
+      f.barV.textContent = `${fmt1.format(h)} A/m`;
+      renderSig(on, onAxis(d) * Math.cos((n.tilt * Math.PI) / 180));
+
+      $("dist").value = n.z; $("tilt").value = n.tilt;
+      $("dist-val").textContent = `${fmt1.format(n.z)} cm`;
+      $("tilt-val").textContent = `${n.tilt}°`;
+      $("st-d").textContent = `${fmt1.format(d)} cm`;
+      $("st-h").textContent = `${fmt1.format(h)} A/m`;
+      $("st-chip").textContent = on ? "běží" : "spí";
+      $("tap").textContent = n.z === 0 && n.tilt === 0 ? "Oddálit" : "Přiložit";
+      let s;
+      if (n.tilt >= 85) s = "<strong>Karta stojí k poli hranou.</strong> Siločáry kloužou podél ní a smyčkou její antény neprochází skoro žádná. V závitech nevzniká napětí a čip spí, ať je terminál jakkoli blízko.";
+      else if (on && n.tilt >= 30) s = `<strong>Čip běží, i když je karta nakřivo.</strong> Nakloněná smyčka zachytí jen část pole, tady asi ${Math.round(Math.cos((n.tilt * Math.PI) / 180) * 100)} %. Blízko terminálu to pořád stačí.${lifted ? " Hranou se karta o terminál opírá, a tak je její střed dál, než ukazuje posuvník." : ""}`;
+      else if (on) s = `<strong>Čip běží.</strong> Pole u karty má ${fmt1.format(h)} A/m, víc než 1,5 A/m, které čip potřebuje. Měnící se pole vyrábí v závitech karty proud, čip se probudil a odpovídá terminálu.`;
+      else if (n.tilt >= 30) s = `<strong>Čip spí.</strong> Karta je nakloněná a daleko. Do její smyčky se dostane jen ${fmt1.format(h)} A/m, a to nestačí. Narovnejte ji, nebo ji přibližte.`;
+      else if (d > 7) s = `<strong>Čip spí.</strong> Ve vzdálenosti ${fmt1.format(d)} cm zbývá z pole jen ${fmt1.format(h)} A/m. Terminál vysílá pořád a pravidelně se ptá, jestli je někdo poblíž. Nikdo neodpovídá.`;
+      else s = `<strong>Ještě kousek.</strong> Pole u karty má ${fmt1.format(h)} A/m a čip potřebuje aspoň 1,5 A/m. Každý centimetr blíž pole znatelně zesílí.`;
+      $("nfc-status").innerHTML = s;
+    }
+    $("dist").addEventListener("input", (e) => { n.z = Number(e.target.value); renderNfc(); });
+    $("tilt").addEventListener("input", (e) => { n.tilt = Number(e.target.value); renderNfc(); });
+    $("tap").addEventListener("click", () => { if (n.z === 0 && n.tilt === 0) n.z = 8; else { n.z = 0; n.tilt = 0; } renderNfc(); });
+    renderNfc();
+
+    /* ---------- Obr. 2: rozhovor při platbě ---------- */
+    // zjednodušený výpočet kódu: ze všech údajů a z klíče udělá osm šestnáctkových znaků
+    function code(...parts) {
+      let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+      for (const chr of parts.join("|")) { const c = chr.charCodeAt(0); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      return (h1 >>> 0).toString(16).toUpperCase().padStart(8, "0");
+    }
+    const rnd8 = () => Math.floor(Math.random() * 0x100000000).toString(16).toUpperCase().padStart(8, "0");
+    const kc = new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK" });
+    const atc4 = (x) => String(x).padStart(4, "0");
+    const PAN = "5412 75•• •••• 4821", EXP = "08/29", KEY = "K7Q2-M91X-D4RT", TODAY = new Date().toLocaleDateString("cs-CZ");
+    const p = { who: "genuine", amount: 249, atc: 40, bankAtc: 40, okCount: 0, tape: null };
+    const fld = (name, value, c = "") => `<span class="f${c ? " " + c : ""}">${name} <b>${value}</b></span>`;
+    const li = (who, what, c = "") => `<li${c ? ` class="${c}"` : ""}><span class="who">${who}</span><div class="what">${what}</div></li>`;
+
+    // pravá platba: karta zvýší počítadlo a spočítá kód; vrací všechno, co šlo vzduchem
+    function genuine(amount) {
+      const nonce = rnd8(), atc = ++p.atc;
+      return { amount, nonce, atc, mac: code(KEY, amount, TODAY, nonce, atc) };
+    }
+    function pay() {
+      const amount = p.amount, pin = amount > 500;
+      let rows, ok, verdict, status;
+      const ask = (a, nonce) => li("Terminál → karta", fld("částka", kc.format(a)) + fld("datum", TODAY) + fld("náhodné číslo", nonce));
+      if (p.who === "genuine") {
+        const t = genuine(amount), bank = code(KEY, amount, TODAY, t.nonce, t.atc);
+        ok = bank === t.mac && t.atc > p.bankAtc;
+        p.bankAtc = t.atc; p.tape = t;
+        rows = ask(amount, t.nonce)
+          + li("Čip karty počítá", fld("tajný klíč", "••••••••", "hid") + fld("+ částka, datum, náhodné číslo", "") + fld("+ počítadlo", atc4(t.atc)) + fld("→ kód", t.mac, "good"), "inner")
+          + li("Karta → terminál → banka", fld("číslo karty", PAN) + fld("platnost", EXP) + fld("počítadlo", atc4(t.atc)) + fld("kód", t.mac))
+          + li("Banka počítá totéž", fld("svůj klíč", "••••••••", "hid") + fld("+ stejné údaje", "") + fld("→ kód", bank, "good") + `<p>Kódy se shodují a počítadlo ${atc4(t.atc)} banka ještě neviděla.</p>`, "inner");
+        verdict = ["", "Schváleno", `${kc.format(amount)} · kód ${t.mac} už nikdy nebude platit`];
+        status = `<strong>Schváleno.</strong> Čip spočítal kód z tajného klíče, částky, data, náhodného čísla a počítadla. Banka má stejný klíč, dostala stejné údaje a vyšel jí stejný kód. Zaplaťte znovu stejnou částku: kód bude úplně jiný.${pin ? " Protože jde o víc než 500 Kč, chtěl terminál navíc PIN." : ""}`;
+      } else if (p.who === "replay") {
+        const t = p.tape, nonce = rnd8(), bank = code(KEY, amount, TODAY, nonce, t.atc);
+        ok = false;
+        rows = ask(amount, nonce)
+          + li("Útočník nemá čím počítat", `<p>Klíč nezná. Pustí terminálu to, co odposlechl při vaší minulé platbě za ${kc.format(t.amount)}.</p>`, "atk")
+          + li("Nahrávka → terminál → banka", fld("číslo karty", PAN) + fld("platnost", EXP) + fld("počítadlo", atc4(t.atc), "old") + fld("kód", t.mac, "old"), "atk")
+          + li("Banka počítá", fld("svůj klíč", "••••••••", "hid") + fld("+ dnešní náhodné číslo", nonce) + fld("→ kód", bank, "good") + `<p>Přišel kód <b class="bad">${t.mac}</b>, bance vyšel ${bank}. Počítadlo ${atc4(t.atc)} navíc už jednou viděla.</p>`, "inner");
+        verdict = ["no", "Zamítnuto", "kód patří k jiné platbě"];
+        status = `<strong>Zamítnuto.</strong> Nahrávka odpovídala na náhodné číslo z minulé platby. Terminál si dnes vymyslel jiné, a tak bance vyšel jiný kód. I kdyby útočník ovládal terminál a poslal bance starou zprávu celou, neprošla by: počítadlo ${atc4(t.atc)} už banka jednou viděla.`;
+      } else if (p.who === "tamper") {
+        const t = genuine(amount), fake = amount * 100, bank = code(KEY, fake, TODAY, t.nonce, t.atc);
+        ok = false;
+        rows = ask(amount, t.nonce)
+          + li("Čip karty počítá", fld("tajný klíč", "••••••••", "hid") + fld("+ částka", kc.format(amount)) + fld("+ počítadlo", atc4(t.atc)) + fld("→ kód", t.mac, "good"), "inner")
+          + li("Cestou k bance někdo přepíše částku", fld("částka", kc.format(fake), "bad") + fld("počítadlo", atc4(t.atc)) + fld("kód", t.mac), "atk")
+          + li("Banka počítá", fld("svůj klíč", "••••••••", "hid") + fld("+ částka", kc.format(fake), "bad") + fld("→ kód", bank, "good") + `<p>Přišel kód <b class="bad">${t.mac}</b>, bance vyšel ${bank}.</p>`, "inner");
+        verdict = ["no", "Zamítnuto", "kód nepatří k téhle částce"];
+        status = `<strong>Zamítnuto.</strong> Karta spočítala kód pro ${kc.format(amount)}. Když někdo po cestě přepsal částku na ${kc.format(fake)}, banka počítala s ní a vyšel jí jiný kód. Kód tak chrání i obsah zprávy: bez klíče ji nejde změnit tak, aby to banka nepoznala.`;
+      } else if (p.who === "clone") {
+        const nonce = rnd8(), atc = p.bankAtc + 1, guess = rnd8(), mac = code(guess, amount, TODAY, nonce, atc), bank = code(KEY, amount, TODAY, nonce, atc);
+        ok = false;
+        rows = ask(amount, nonce)
+          + li("Čip útočníka počítá", fld("vymyšlený klíč", guess, "bad") + fld("+ částka, datum, náhodné číslo", "") + fld("+ počítadlo", atc4(atc)) + fld("→ kód", mac, "bad"), "atk")
+          + li("Kopie → terminál → banka", fld("číslo karty", PAN) + fld("platnost", EXP) + fld("počítadlo", atc4(atc)) + fld("kód", mac, "bad"), "atk")
+          + li("Banka počítá", fld("pravý klíč", "••••••••", "hid") + fld("+ stejné údaje", "") + fld("→ kód", bank, "good") + `<p>Přišel kód <b class="bad">${mac}</b>, bance vyšel ${bank}.</p>`, "inner");
+        verdict = ["no", "Zamítnuto", "kopie nezná klíč"];
+        status = "<strong>Zamítnuto.</strong> Útočník přečetl z karty číslo a platnost a nahrál je na vlastní čip. Tajný klíč přečíst nejde, a tak si nějaký vymyslel. Všechno ostatní má správně, a kód mu přesto vyšel jiný než bance. Uhodnout skutečný šestnáctimístný kód je prakticky vyloučené.";
+      } else {
+        ok = true;
+        rows = li("Terminál čte proužek", `<p>Na nic se neptá. Na proužku je jen pevný záznam, který se při protažení přečte.</p>`)
+          + li("Proužek nic nepočítá", `<p>Nemá čip ani počítadlo. Kopie na prázdné kartě obsahuje přesně totéž co originál.</p>`, "atk")
+          + li("Kopie → terminál → banka", fld("číslo karty", PAN) + fld("platnost", EXP) + fld("pevný kód", "317", "old"), "atk")
+          + li("Banka porovnává", fld("pevný kód", "317") + `<p>Údaje jsou stejné jako minule i předminule. Banka nemá podle čeho poznat kopii.</p>`, "inner");
+        verdict = ["warn", "Schváleno, a to je špatně", "kopie proužku je k nerozeznání od originálu"];
+        status = "<strong>Kopie prošla.</strong> Magnetický proužek posílá při každé platbě totéž. Kdo ho jednou přečetl, třeba čtečkou nasazenou na bankomat, měl dvojče karty. Kvůli tomu vznikly čipy. Evropské banky dnes platbu proužkem u karty s čipem většinou zamítnou.";
+      }
+      if (ok && p.who !== "stripe") p.okCount++;
+      $("msgs").innerHTML = rows;
+      $("verdict").className = `verdict${verdict[0] ? " " + verdict[0] : ""}`;
+      $("verdict").innerHTML = `${verdict[1]}<small>${verdict[2]}</small>`;
+      $("pay-status").innerHTML = status;
+      $("st-atc").textContent = atc4(p.atc);
+      $("st-bank").textContent = atc4(p.bankAtc);
+      $("st-ok").textContent = p.okCount;
+      $("pay").textContent = p.who === "genuine" ? "Zaplatit znovu" : "Zkusit znovu";
+    }
+    radio("who-seg", (v) => { p.who = v; pay(); });
+    radio("amount-seg", (v) => { p.amount = Number(v); pay(); });
+    $("pay").addEventListener("click", pay);
+    // minulá platba, kterou útočník odposlechl, a první platba na ukázku
+    p.tape = genuine(249); p.bankAtc = p.atc; p.okCount = 1;
+    pay();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>

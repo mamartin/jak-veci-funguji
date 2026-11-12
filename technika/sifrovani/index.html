@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje šifrování na webu</title>
+  <meta name="description" content="Jak se prohlížeč se serverem domluví na tajném klíči, i když je někdo celou dobu poslouchá, co je veřejný a soukromý klíč a co znamená zámek v adresním řádku. S modelem míchání barev, do kterého můžete pustit útočníka, a s výměnou klíčů na malých číslech.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    #paint, #chart { border: 1px solid var(--rule); background: var(--surface); }
+    #paint { max-width: 46rem; margin-inline: auto; }
+    .net { fill: var(--sunk); }
+    .cap { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; text-anchor: middle; }
+    .lbl { fill: var(--ink); font: 600 13px var(--font-mono); text-anchor: middle; }
+    .sub { fill: var(--ink-2); font: 500 12px var(--font-mono); text-anchor: middle; }
+    .lbl.bad, .sub.bad { fill: var(--bad); }
+    .jar { stroke: var(--metal-line); stroke-width: 1.5; }
+    .strip { stroke: var(--metal-line); stroke-width: 0.8; }
+    .ghost { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 5; opacity: 0.6; }
+    .ghost-t { opacity: 0.75; }
+    .arrow { fill: none; stroke: var(--ink-2); stroke-width: 2; }
+    .arrow.bad { stroke: var(--bad); stroke-width: 2.5; }
+    .head { fill: var(--ink-2); }
+    .head.bad { fill: var(--bad); }
+    .cmp { fill: var(--ink); font: 800 24px var(--font-display); text-anchor: middle; }
+    .cmp.bad { fill: var(--bad); }
+    .seal { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+    .seal.ok { fill: var(--ok); stroke: var(--ok); }
+    .seal.bad { fill: var(--bad); stroke: var(--bad); }
+    .seal-t { fill: var(--ink); font: 700 12px var(--font-mono); text-anchor: middle; }
+    .seal-t.on { fill: var(--paper); }
+    .stop { fill: none; stroke: var(--bad); stroke-width: 3; stroke-linecap: round; }
+    .swatch { display: inline-block; width: 1.6rem; height: 1.6rem; border: 1px solid var(--ink); vertical-align: middle; }
+    .ctl-row .swatch { flex: none; }
+
+    /* Obr. 2 */
+    .num-stage { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+    @media (min-width: 60rem) { .num-stage { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 2rem; } }
+    .ax { stroke: var(--ink-3); stroke-width: 1; }
+    .ax-t { fill: var(--ink-3); font: 500 11px var(--font-mono); text-anchor: middle; }
+    .ax-t.end { text-anchor: end; }
+    .ax-n { fill: var(--ink-2); font: 500 12px var(--font-mono); }
+    .pt { fill: var(--ink-3); }
+    .guide { fill: none; stroke-width: 2; stroke-dasharray: 4 4; }
+    .guide.me, .pt.me { stroke: var(--cat); }
+    .guide.srv, .pt.srv { stroke: var(--warm); }
+    .pt.me { fill: var(--cat); stroke: none; }
+    .pt.srv { fill: var(--warm); stroke: none; }
+    .pt-l { font: 700 13px var(--font-mono); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+    .pt-l.me { fill: var(--cat); }
+    .pt-l.srv { fill: var(--warm); }
+    .scan { fill: none; stroke: var(--bad); stroke-width: 2.5; }
+    .calc { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+    .calc th { padding: 0.4rem 0.75rem 0.4rem 0; border-bottom: 1px solid var(--rule); font-weight: 500; color: var(--ink-2); text-align: left; vertical-align: top; white-space: nowrap; }
+    .calc td { padding: 0.4rem 0; border-bottom: 1px solid var(--rule); color: var(--ink); }
+    .calc td b { font-weight: 700; }
+    .calc tr.key td b { background: var(--mark); padding: 0 0.25em; }
+    .chip { display: inline-block; margin-left: 0.4rem; padding: 0 0.35rem; border: 1px solid currentColor; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .chip.pub { color: var(--ink-3); }
+    .chip.priv { color: var(--bad); }
+    .me-c { color: var(--cat); }
+    .srv-c { color: var(--warm); }
+    @media (max-width: 46rem) {
+      .cap { font-size: 15px; letter-spacing: 0.04em; }
+      .lbl { font-size: 17px; }
+      .sub { font-size: 15.5px; }
+      .ax-t { font-size: 15px; }
+      .ax-n { font-size: 15px; }
+      .pt-l { font-size: 17px; }
+      .calc th { white-space: normal; }
+    }
+  </style>
+</head>
+<body data-cat="technika">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Technika</a><span aria-hidden="true">/</span><span>Šifrování na webu</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Technika</a></p>
+      <h1 class="display">Jak funguje šifrování na webu</h1>
+      <p class="lede">Heslo do banky cestuje přes Wi-Fi router, operátora a desítky cizích zařízení. Každé z nich si zprávu může přečíst, a přesto se z ní nic nedozví. Prohlížeč se totiž se serverem předem domluvil na klíči. Domluvili se nahlas, přede všemi, a klíč přesto znají jen oni dva.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Zašifrovat zprávu je snadné, když mají obě strany stejný klíč. Těžké je dostat ho na oba konce, když celou domluvu někdo poslouchá.</li>
+        <li><span class="hl">Pomáhá výpočet, který jde snadno udělat a skoro nejde vrátit zpátky,</span> podobně jako smíchání dvou barev. Tajnou část si každý nechá, ven pošle jen směs.</li>
+        <li>Zámek u adresy říká, že spojení je šifrované a že na druhém konci je opravdu server s touhle adresou. Neříká, že je ten web poctivý.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Domluva na klíči mícháním barev</p>
+        <span class="label">Projděte čtyři kroky, pak změňte barvu a pusťte dovnitř útočníka</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="paint" viewBox="0 0 640 508" role="img" aria-label="Tři sloupce: váš prohlížeč, internet, kde poslouchá útočník, a server. V řádcích společná barva, tajné barvy, směsi a výsledný klíč."></svg>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-step">Krok</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-step" id="step-seg">
+            <button type="button" role="radio" data-v="1" aria-checked="true">1 · Společná</button>
+            <button type="button" role="radio" data-v="2" aria-checked="false">2 · Tajné</button>
+            <button type="button" role="radio" data-v="3" aria-checked="false">3 · Směsi</button>
+            <button type="button" role="radio" data-v="4" aria-checked="false">4 · Klíč</button>
+          </div>
+        </div>
+        <button type="button" class="btn" id="next">Další krok</button>
+        <div class="ctl ctl-grow">
+          <label class="label" for="hue">Vaše tajná barva</label>
+          <div class="ctl-row">
+            <input type="range" id="hue" min="0" max="359" step="1" value="350">
+            <span class="swatch" id="hue-sw" aria-hidden="true"></span>
+          </div>
+        </div>
+        <button type="button" class="btn ghost" id="srv-new">Jiná barva serveru</button>
+        <div class="ctl">
+          <span class="label" id="lbl-atk">Útočník</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-atk" id="atk-seg">
+            <button type="button" role="radio" data-v="listen" aria-checked="true">Jen poslouchá</button>
+            <button type="button" role="radio" data-v="mitm" aria-checked="false">Přepisuje zprávy</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="label" id="lbl-sign">Server svou směs</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-sign" id="sign-seg">
+            <button type="button" role="radio" data-v="0" aria-checked="true">Nepodepisuje</button>
+            <button type="button" role="radio" data-v="1" aria-checked="false">Podepisuje</button>
+          </div>
+        </div>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="paint-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav spojení">
+          <li><span class="n">Oba klíče</span><span class="v small" id="st-keys"></span></li>
+          <li><span class="n">Útočník</span><span class="v small" id="st-atk"></span></li>
+          <li><span class="n">Spojení</span><span class="v small" id="st-conn"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Čtverec je kelímek s barvou. Proužek pod ním ukazuje, z čeho je namíchaná, vždy stejným dílem od každé. Vše v prostředním sloupci útočník vidí. Proužky nevidí, zná jen výsledný odstín. Barvy se v modelu míchají jako opravdové pigmenty, takže ze žluté a modré vyjde zelená. Kolečko se zatržítkem je podpis serveru. Barvy jsou přirovnání, skutečný výpočet je na druhém obrázku.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-svedci">
+      <div class="prose">
+        <h2 id="h-svedci">Domluva před svědky</h2>
+        <p>Šifra potřebuje klíč. Je to číslo, které zprávu promění ve změť znaků a zase zpátky. Kdo ho nemá, vidí jen tu změť. Obě strany proto musí mít klíč stejný a nikdo třetí ho mít nesmí.</p>
+        <p>Do banky byste si pro klíč mohli zajít osobně. S e-shopem, který dnes vidíte poprvé, to nejde. Klíč si musíte domluvit po stejném vedení, které někdo odposlouchává. Zní to jako úloha bez řešení: cokoli si řeknete, uslyší i on.</p>
+        <p>Dlouho si to mysleli i odborníci. V roce 1976 ale Američané Whitfield Diffie a Martin Hellman zveřejnili postup, který to dokáže. Nejlíp se vysvětluje na barvách.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Britská tajná služba znala tentýž postup o pár let dřív. Její matematici James Ellis, Clifford Cocks a Malcolm Williamson na něj přišli mezi lety 1969 a 1974. Jejich práce ale zůstala utajená až do roku 1997.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-barvy">
+      <div class="prose">
+        <h2 id="h-barvy">Míchání barev</h2>
+        <p>Celý trik stojí na jedné vlastnosti barev: smíchat je umí každý, rozmíchat nikdo.</p>
+        <ol class="steps">
+          <li><div><b>Společná barva.</b> Prohlížeč a server si veřejně řeknou jednu barvu, třeba žlutou. Slyší ji každý.</div></li>
+          <li><div><b>Tajné barvy.</b> Každý si vybere jednu barvu jen pro sebe. Nikomu ji neřekne a nikam ji nepošle.</div></li>
+          <li><div><b>Směsi.</b> Každý smíchá svou tajnou barvu se společnou a směs pošle druhému. Ten, kdo poslouchá, vidí obě směsi.</div></li>
+          <li><div><b>Klíč.</b> Každý přilije do směsi, kterou dostal, svou tajnou barvu. V obou kelímcích je teď totéž: společná barva, vaše tajná a tajná serveru.</div></li>
+        </ol>
+        <p>Posluchač viděl společnou barvu a dvě směsi. Tajné barvy z nich nedostane, protože směs nejde rozdělit zpátky. A když obě směsi slije dohromady, bude v nich společná barva dvakrát. Vyjde mu jiný odstín. <span class="hl">Klíč nikdy nikudy necestoval, a přesto ho mají oba.</span></p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Projděte všechny čtyři kroky. Pak hýbejte svou tajnou barvou. Mění se vaše směs i oba klíče, a ty dva zůstávají pořád stejné. Pokus útočníka se od nich pokaždé liší.</p>
+      </aside>
+    </section>
+
+    <figure class="fig" id="obr2">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 2</b> Totéž s čísly</p>
+        <span class="label">Zvolte tajná čísla a nechte útočníka hádat</span>
+      </div>
+      <div class="fig-stage num-stage">
+        <svg id="chart" viewBox="0 0 640 344" role="img" aria-label="Graf: pro každé tajné číslo od 1 do 22 výsledek, který se pošle ven"></svg>
+        <table class="calc" id="calc"></table>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl ctl-grow">
+          <label class="label" for="sa">Vaše tajné číslo</label>
+          <div class="ctl-row">
+            <input type="range" id="sa" min="1" max="22" step="1" value="6">
+            <output class="val" id="sa-val" for="sa"></output>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="sb">Tajné číslo serveru</label>
+          <div class="ctl-row">
+            <input type="range" id="sb" min="1" max="22" step="1" value="15">
+            <output class="val" id="sb-val" for="sb"></output>
+          </div>
+        </div>
+        <button type="button" class="btn" id="crack">Útočník: zkusit všechny možnosti</button>
+      </div>
+      <div class="fig-status">
+        <p class="status" id="num-status" aria-live="polite"></p>
+      </div>
+      <figcaption class="fig-caption">Společná barva je tu číslo 5, míchání je umocňování a z výsledku se nechává jen zbytek po dělení 23. Graf ukazuje, co vyjde pro každé tajné číslo. Tečky skáčou bez viditelného řádu: z tajného čísla se výsledek spočítá hned, ale kdo zná jen výsledek, musí tajné číslo hledat zkoušením. S 22 možnostmi je to hračka. Skutečná tajná čísla mají kolem 77 číslic.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-cisla">
+      <div class="prose">
+        <h2 id="h-cisla">Místo barev čísla</h2>
+        <p>Počítač barvy nemíchá. Potřebuje výpočet se stejnou vlastností: jedním směrem snadný, druhým těžký. Používá umocňování na ciferníku.</p>
+        <p>Představte si hodiny, které nemají dvanáct dílků, ale třiadvacet. Když ručička dojde na konec, pokračuje zase od začátku. Z každého čísla tak zbude jen zbytek po dělení třiadvaceti.</p>
+        <p>Společná barva je teď číslo, třeba 5. Tajná barva je počet, kolikrát se pětka vynásobí sama sebou. Smíchat znamená umocnit a nechat si zbytek. Pět na šestou je 15 625 a zbytek po dělení 23 je 8. Osmičku pošlete ven.</p>
+        <p>Server udělá totéž se svým tajným číslem. Pak každý umocní číslo, které dostal, na to své. Oběma vyjde stejný zbytek, protože u mocnin nezáleží na pořadí.</p>
+        <p>Zpátky to tak snadné není. Kdo vidí osmičku, nepozná z ní, kolikátá mocnina to byla, a nezbývá mu než zkoušet jednu po druhé. S třiadvaceti dílky je hotov za okamžik. Skutečný ciferník má tolik dílků, že se jejich počet píše desítkami až stovkami číslic. Zkoušením by to nestihly ani všechny počítače světa za miliardy let.</p>
+      </div>
+      <aside class="note" aria-label="Šifrování v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>1976</dt><dd>Diffie a Hellman zveřejnili výměnu klíčů</dd></div>
+          <div><dt>77 číslic</dt><dd>má tajné číslo při dnešní výměně klíčů</dd></div>
+          <div><dt>přes 90 %</dt><dd>stránek se dnes načítá šifrovaně</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-dvojice">
+      <div class="prose">
+        <h2 id="h-dvojice">Veřejný a soukromý klíč</h2>
+        <p>V téhle výměně má každá strana dvě čísla. Tajné, které nikdy neopustí počítač, a z něj spočítané, které smí vidět kdokoli. Říká se jim soukromý a veřejný klíč. Patří k sobě: veřejný se ze soukromého spočítá snadno, opačným směrem to nejde.</p>
+        <p>Taková dvojice umí víc než domluvit klíč. Soukromým klíčem se dá zpráva podepsat. Podpis je číslo spočítané ze zprávy a ze soukromého klíče. Kdokoli s veřejným klíčem si ověří, že podpis ke zprávě patří a že zprávu nikdo nezměnil. Vyrobit takový podpis bez soukromého klíče ale nedokáže.</p>
+        <p>Samotná data se potom šifrují jednodušší šifrou, která používá na obou koncích ten jeden domluvený klíč. Je mnohonásobně rychlejší. Výpočty s dvojicí klíčů se použijí jen na začátku spojení, na domluvu a na ověření. Celé to trvá pár setin sekundy.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Na druhém obrázku nastavte obě tajná čísla a porovnejte poslední dva řádky tabulky. Klíč vyjde oběma stejný. Pak pusťte útočníka a spočítejte, na kolikátý pokus tajné číslo najde.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-kdo">
+      <div class="prose">
+        <h2 id="h-kdo">Kdo je na druhém konci</h2>
+        <p>Míchání barev má slabinu. Chrání před tím, kdo poslouchá, ale ne před tím, kdo zprávy přepisuje. Útočník, který sedí na cestě, třeba provozuje falešnou Wi-Fi v kavárně, může obě směsi zadržet a každé straně poslat svou vlastní. Vy si pak klíč domluvíte s ním a on se serverem. Čte všechno, přeposílá to dál a nikdo nic nepozná.</p>
+        <p>Server proto svou směs podepíše soukromým klíčem. Aby prohlížeč věděl, že veřejný klíč, kterým podpis ověřuje, opravdu patří bance, pošle server ještě certifikát. Je to potvrzení „tenhle veřejný klíč patří adrese banka.cz“ a podepsala ho certifikační autorita.</p>
+        <p>Seznam autorit, kterým věří, má prohlížeč nebo systém v sobě už od výroby. Je jich několik desítek. Autorita před vydáním certifikátu ověří, že žadatel adresu opravdu ovládá. Útočník certifikát na cizí adresu nedostane, podpis nepadělá a prohlížeč místo stránky ukáže varování.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Na prvním obrázku přepněte útočníka na Přepisuje zprávy a dojděte ke čtvrtému kroku. Vy i server máte klíč, jenže každý jiný a útočník zná oba. Pak nechte server směs podepsat a projděte kroky znovu.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zamek">
+      <div class="prose">
+        <h2 id="h-zamek">Co zámek říká a co ne</h2>
+        <p>Zámek v adresním řádku a písmena https na začátku adresy říkají dvě věci. Nikdo po cestě nevidí obsah a nemůže ho změnit. A na druhém konci je server, kterému patří adresa, kterou vidíte.</p>
+        <p>Neříkají nic o tom, kdo ten server provozuje a co s vašimi údaji udělá. Podvodná stránka na adrese banka-prihlaseni-overeni.com má zámek taky. Certifikát na svou vlastní adresu dostane kdokoli zdarma a za pár minut. <span class="hl">Zámek ověřuje adresu, ne poctivost.</span> Číst adresu proto musíte dál sami.</p>
+        <p>Prohlížeč Chrome kvůli tomu v roce 2023 zámek nahradil neutrální ikonou. Šifrované je dnes skoro všechno a zámek v lidech budil větší důvěru, než kolik zaručuje.</p>
+        <p>I šifrované spojení něco prozradí. Kdo je po cestě, pořád vidí, se kterým serverem mluvíte, kdy a kolik dat mezi vámi teče. Nevidí, kterou stránku čtete ani co do ní píšete.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Dost velký kvantový počítač by umocňování na ciferníku dokázal obrátit rychle. Zatím žádný takový není, jenže odposlechnutá data se dají uložit dnes a rozluštit později. Prohlížeče proto od roku 2024 přidávají k výměně klíčů druhý výpočet, na který by neměl stačit ani kvantový počítač.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../platba-kartou/" data-cat="technika">
+        <span class="label">Další článek · Technika</span>
+        <span class="t">Jak funguje platba kartou</span>
+        <p>Kde bere karta bez baterie proud a proč zloději nestačí opsat její číslo.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function radio(id, onPick) {
+      const box = $(id), set = (v) => box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === String(v))));
+      box.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-v]");
+        if (!b) return;
+        set(b.dataset.v);
+        onPick(b.dataset.v);
+      });
+      return set;
+    }
+
+    /* ---------- Obr. 1: míchání barev ---------- */
+    // barva je odrazivost ve třech složkách (0 až 1); pigmenty se míchají geometrickým průměrem,
+    // každá složka směsi má stejný díl. Díky tomu nezáleží na pořadí přilévání.
+    function pigment(h) {
+      const s = 0.75, l = 0.5, a = s * Math.min(l, 1 - l);
+      const f = (n) => { const k = (n + h / 30) % 12; return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };
+      return [f(0), f(8), f(4)];
+    }
+    const mix = (...parts) => [0, 1, 2].map((i) => Math.exp(parts.reduce((sum, p) => sum + Math.log(p[i]), 0) / parts.length));
+    const css = (c) => `rgb(${c.map((v) => Math.round(v * 255)).join(",")})`;
+    const COMMON = [0.97, 0.84, 0.2];
+    const k = { step: 1, hue: 350, srv: 215, atk: 125, mode: "listen", sign: false };
+    const pv = $("paint"), XL = 110, XM = 320, XR = 530, ROW = [40, 158, 276, 394];
+
+    function jar(x, y, color, size = 56) { return el("rect", { x: x - size / 2, y, width: size, height: size, rx: 8, class: "jar", fill: css(color) }, pv); }
+    function strip(x, y, parts) {
+      const w = 56 / parts.length;
+      parts.forEach((p, i) => el("rect", { x: (x - 28 + i * w).toFixed(1), y, width: w.toFixed(1), height: 8, class: "strip", fill: css(p) }, pv));
+    }
+    function text(x, y, t, c = "lbl") { const n = el("text", { x, y, class: c }, pv); n.textContent = t; return n; }
+    function labels(x, y, a, b, bad) { text(x, y + 86, a, bad ? "lbl bad" : "lbl"); if (b) text(x, y + 103, b, bad ? "sub bad" : "sub"); }
+    // šipka zleva doprava (dir 1) nebo zprava doleva (dir -1), s hrotem na konci
+    function arrow(x1, x2, y, bad) {
+      const dir = x2 > x1 ? 1 : -1;
+      el("path", { d: `M${x1} ${y}H${x2 - dir * 7}`, class: `arrow${bad ? " bad" : ""}` }, pv);
+      el("path", { d: `M${x2} ${y}l${-dir * 10} -5.5v11Z`, class: `head${bad ? " bad" : ""}` }, pv);
+    }
+    function seal(x, y, state) {
+      el("circle", { cx: x, cy: y, r: 10, class: `seal${state ? " " + state : ""}` }, pv);
+      text(x, y + 4.5, state === "bad" ? "✗" : "✓", `seal-t${state ? " on" : ""}`);
+    }
+
+    function renderPaint() {
+      const a = pigment(k.hue), b = pigment(k.srv), e = pigment(k.atk), C = COMMON;
+      const mitm = k.mode === "mitm", caught = mitm && k.sign;
+      pv.textContent = "";
+      el("rect", { x: 216, y: 0, width: 208, height: 508, class: "net" }, pv);
+      text(XL, 22, "VÁŠ PROHLÍŽEČ", "cap"); text(XM, 22, "INTERNET · ÚTOČNÍK", "cap"); text(XR, 22, "SERVER", "cap");
+
+      // 1: společná barva
+      let y = ROW[0];
+      jar(XM, y, C); strip(XM, y + 61, [C]); labels(XM, y, "společná barva", "zná ji každý");
+      if (k.step >= 2) {
+        y = ROW[1];
+        jar(XL, y, a); strip(XL, y + 61, [a]); labels(XL, y, "vaše tajná", "zůstává u vás");
+        jar(XR, y, b); strip(XR, y + 61, [b]); labels(XR, y, "tajná serveru", "zůstává u něj");
+        if (mitm) { jar(XM, y, e); strip(XM, y + 61, [e]); labels(XM, y, "tajná útočníka", null, true); }
+        else { text(XM, y + 26, "tajné barvy", "sub"); text(XM, y + 43, "sem nepřijdou", "sub"); }
+      }
+      if (k.step >= 3) {
+        y = ROW[2];
+        const mA = mix(C, a), mB = mix(C, b), mE = mix(C, e), l1 = y + 14, l2 = y + 44;
+        jar(XL, y, mA); strip(XL, y + 61, [C, a]); labels(XL, y, "vaše směs", "společná + tajná");
+        jar(XR, y, mB); strip(XR, y + 61, [C, b]); labels(XR, y, "směs serveru", "společná + tajná");
+        if (!mitm) {
+          arrow(142, 299, l1); arrow(341, 498, l1); arrow(498, 341, l2); arrow(299, 142, l2);
+          jar(XM, y - 1, mA, 30); jar(XM, y + 29, mB, 30);
+          labels(XM, y, "útočník vidí", "obě směsi");
+        } else {
+          el("path", { d: `M142 ${l1}H292M498 ${l2}H348`, class: "arrow" }, pv);
+          el("path", { d: `M294 ${l1 - 8}V${l1 + 8}M346 ${l2 - 8}V${l2 + 8}`, class: "stop" }, pv);
+          arrow(341, 498, l1, true); arrow(299, 142, l2, true);
+          jar(XM, y - 1, mE, 30); jar(XM, y + 29, mE, 30);
+          labels(XM, y, "útočník pošle", "oběma svou směs", true);
+        }
+        if (k.sign) { seal(468, l2 - 16); seal(172, l2 - 16, mitm ? "bad" : "ok"); }
+      }
+      if (k.step >= 4) {
+        y = ROW[3];
+        if (caught) {
+          el("path", { d: `M${XL - 16} ${y + 12}l32 32m0 -32l-32 32`, class: "stop" }, pv);
+          labels(XL, y, "podpis nesedí", "spojení ukončeno", true);
+          labels(XM, y, "útočník", "nezískal nic");
+          labels(XR, y, "bez spojení", null);
+        } else if (mitm) {
+          const kA = mix(C, e, a), kB = mix(C, e, b);
+          jar(XL, y, kA); strip(XL, y + 61, [C, e, a]); labels(XL, y, "váš klíč", "směs útočníka + tajná");
+          jar(XR, y, kB); strip(XR, y + 61, [C, e, b]); labels(XR, y, "klíč serveru", "směs útočníka + tajná");
+          jar(XM - 46, y + 6, kA, 44); jar(XM + 46, y + 6, kB, 44);
+          text(216, y + 37, "=", "cmp bad"); text(424, y + 37, "=", "cmp bad");
+          labels(XM, y, "útočník má", "oba klíče", true);
+        } else {
+          const key = mix(C, a, b), eve = mix(C, a, C, b);
+          jar(XL, y, key); strip(XL, y + 61, [C, b, a]); labels(XL, y, "váš klíč", "směs serveru + tajná");
+          jar(XR, y, key); strip(XR, y + 61, [C, a, b]); labels(XR, y, "klíč serveru", "vaše směs + tajná");
+          jar(XM, y, eve); strip(XM, y + 61, [C, a, C, b]);
+          text(216, y + 37, "≠", "cmp"); text(424, y + 37, "≠", "cmp");
+          labels(XM, y, "pokus útočníka", "obě směsi slité");
+        }
+      }
+
+      // kroky, které teprve přijdou: prázdné obrysy kelímků
+      [[2, "krok 2", "tajné barvy"], [3, "krok 3", "směsi"], [4, "krok 4", "klíč"]].forEach(([step, t1, t2]) => {
+        if (k.step >= step) return;
+        const gy = ROW[step - 1];
+        [XL, XR].forEach((x) => el("rect", { x: x - 28, y: gy, width: 56, height: 56, rx: 8, class: "ghost" }, pv));
+        text(XM, gy + 26, t1, "sub ghost-t"); text(XM, gy + 43, t2, "sub ghost-t");
+      });
+
+      $("hue-sw").style.background = css(a);
+      $("next").textContent = k.step < 4 ? "Další krok" : "Znovu od začátku";
+      const done = k.step === 4;
+      $("st-keys").textContent = !done ? "zatím žádné" : caught ? "žádné" : mitm ? "každý jiný" : "stejné";
+      $("st-atk").textContent = caught && k.step >= 3 ? "odhalen" : mitm ? (done ? "čte všechno" : k.step >= 3 ? "podvrhl směsi" : "čeká") : done ? "klíč nemá" : "poslouchá";
+      $("st-conn").textContent = !done ? "domlouvá se" : caught ? "ukončeno" : mitm ? "odposlouchávané" : "bezpečné";
+
+      const S = {
+        1: "<strong>Krok 1: společná barva.</strong> Prohlížeč a server se nahlas dohodnou na jedné barvě. Slyší ji i útočník, a nevadí to.",
+        2: `<strong>Krok 2: tajné barvy.</strong> Každý si zvolí svou tajnou barvu. Nikam ji neposílá, a tak ji útočník nemá jak vidět.${mitm ? " Útočník si připravil vlastní." : ""}`,
+        3: mitm
+          ? `<strong>Krok 3: útočník směsi vyměnil.</strong> Zadržel vaši směs i směs serveru a každému z vás poslal místo ní svou vlastní. ${k.sign ? "Server ale svou směs podepsal a útočník jeho podpis vyrobit neumí. Vám tak přišla směs bez platného podpisu." : "Směs od útočníka vypadá jako každá jiná a nikdo nemá jak poznat, od koho je."}`
+          : `<strong>Krok 3: směsi.</strong> Každý smíchá svou tajnou barvu se společnou a směs pošle. Útočník vidí obě, ale rozmíchat je nedokáže.${k.sign ? " Server svou směs podepsal a váš prohlížeč si podpis ověřil." : ""}`,
+        4: caught
+          ? "<strong>Útočník je odhalen.</strong> Prohlížeč zjistil, že směs nenese podpis serveru, spojení ukončil a ukázal varování. Žádný klíč nevznikl a útočník se nic nedozvěděl."
+          : mitm
+            ? "<strong>Krok 4: dva různé klíče.</strong> Vy máte klíč společný s útočníkem, server taky, jen jiný. Útočník zná oba. Každou zprávu rozšifruje, přečte, zašifruje druhým klíčem a pošle dál. Vy ani server nic nepoznáte."
+            : `<strong>Krok 4: klíč.</strong> Každý přilil svou tajnou barvu do směsi, kterou dostal. V obou kelímcích je společná, vaše i serverova barva stejným dílem, a tak mají stejný odstín. Útočník může slít jen obě směsi. Společná barva je v nich dvakrát a vyjde jiný odstín.${k.sign ? " Podpis navíc potvrdil, že směs opravdu poslal server." : ""}`,
+      };
+      $("paint-status").innerHTML = S[k.step];
+    }
+    const setStep = radio("step-seg", (v) => { k.step = Number(v); renderPaint(); });
+    $("next").addEventListener("click", () => { k.step = k.step < 4 ? k.step + 1 : 1; setStep(k.step); renderPaint(); });
+    $("hue").addEventListener("input", (e) => { k.hue = Number(e.target.value); renderPaint(); });
+    $("srv-new").addEventListener("click", () => { k.srv = (k.srv + 60 + Math.floor(Math.random() * 240)) % 360; if (k.step < 2) { k.step = 2; setStep(2); } renderPaint(); });
+    radio("atk-seg", (v) => { k.mode = v; renderPaint(); });
+    radio("sign-seg", (v) => { k.sign = v === "1"; renderPaint(); });
+    renderPaint();
+
+    /* ---------- Obr. 2: výměna klíčů na malých číslech ---------- */
+    const P = 23n, G = 5n;
+    const pow = (base, exp) => BigInt(base) ** BigInt(exp);
+    const mod = (base, exp) => Number(pow(base, exp) % P);
+    const big = (n) => { const s = n.toString(); return s.length > 15 ? `číslo o ${s.length} číslicích` : s.replace(/\B(?=(\d{3})+$)/g, " "); };
+    const d = { a: 6, b: 15, scan: 0, found: false, timer: 0 };
+    const ch = $("chart"), X0 = 64, X1 = 612, Y0 = 282, Y1 = 46;
+    const px = (x) => X0 + ((x - 1) / 21) * (X1 - X0), py = (v) => Y0 - ((v - 1) / 21) * (Y0 - Y1);
+
+    function renderNum() {
+      const A = mod(G, d.a), B = mod(G, d.b), keyA = mod(B, d.a), keyB = mod(A, d.b);
+      ch.textContent = "";
+      el("path", { d: `M${X0 - 16} ${Y0 + 14}H${X1 + 12}M${X0 - 16} ${Y0 + 14}V${Y1 - 12}`, class: "ax", fill: "none" }, ch);
+      [1, 5, 10, 15, 20].forEach((n) => {
+        el("text", { x: px(n), y: Y0 + 32, class: "ax-t" }, ch).textContent = n;
+        el("text", { x: X0 - 24, y: py(n) + 4, class: "ax-t end" }, ch).textContent = n;
+      });
+      el("text", { x: X1 + 12, y: Y0 + 54, class: "ax-n", "text-anchor": "end" }, ch).textContent = "tajné číslo →";
+      el("text", { x: X0 - 16, y: Y1 - 24, class: "ax-n" }, ch).textContent = "↑ výsledek, který jde ven";
+      const guide = (x, v, c) => el("path", { d: `M${px(x)} ${Y0 + 14}V${py(v)}H${X0 - 16}`, class: `guide ${c}` }, ch);
+      guide(d.b, B, "srv"); guide(d.a, A, "me");
+      for (let x = 1; x <= 22; x++) {
+        const v = mod(G, x), c = x === d.a ? " me" : x === d.b ? " srv" : "";
+        el("circle", { cx: px(x), cy: py(v), r: c ? 7 : 4.5, class: `pt${c}` }, ch);
+      }
+      const tag = (x, v, c, t) => { const right = px(x) > 480; el("text", { x: px(x) + (right ? -12 : 12), y: py(v) + (py(v) < 50 ? 18 : -9), class: `pt-l ${c}`, "text-anchor": right ? "end" : "start" }, ch).textContent = t; };
+      tag(d.b, B, "srv", `server: ${d.b} → ${B}`);
+      if (d.a !== d.b) tag(d.a, A, "me", `vy: ${d.a} → ${A}`);
+      if (d.scan) el("circle", { cx: px(d.scan), cy: py(mod(G, d.scan)), r: 11, class: "scan" }, ch);
+
+      const sup = (n) => `<sup>${n}</sup>`;
+      $("calc").innerHTML = `<tbody>
+        <tr><th scope="row">Dohodnuto<span class="chip pub">veřejné</span></th><td>základ <b>5</b>, zbytek po dělení <b>23</b></td></tr>
+        <tr><th scope="row" class="me-c">Vaše tajné číslo<span class="chip priv">tajné</span></th><td><b>${d.a}</b></td></tr>
+        <tr><th scope="row" class="me-c">Vy pošlete<span class="chip pub">veřejné</span></th><td>5${sup(d.a)} = ${big(pow(G, d.a))}, zbytek <b>${A}</b></td></tr>
+        <tr><th scope="row" class="srv-c">Tajné číslo serveru<span class="chip priv">tajné</span></th><td><b>${d.b}</b></td></tr>
+        <tr><th scope="row" class="srv-c">Server pošle<span class="chip pub">veřejné</span></th><td>5${sup(d.b)} = ${big(pow(G, d.b))}, zbytek <b>${B}</b></td></tr>
+        <tr class="key"><th scope="row" class="me-c">Váš klíč<span class="chip priv">tajné</span></th><td>${B}${sup(d.a)} = ${big(pow(B, d.a))}, zbytek <b>${keyA}</b></td></tr>
+        <tr class="key"><th scope="row" class="srv-c">Klíč serveru<span class="chip priv">tajné</span></th><td>${A}${sup(d.b)} = ${big(pow(A, d.b))}, zbytek <b>${keyB}</b></td></tr>
+      </tbody>`;
+      $("sa-val").textContent = d.a; $("sb-val").textContent = d.b;
+      $("crack").disabled = !!d.timer;
+      const n = d.scan;
+      $("num-status").innerHTML = d.found
+        ? `<strong>Útočník uspěl na ${n}. pokus.</strong> Zkoušel mocniny pětky jednu po druhé, až mu vyšlo číslo ${A}, které jste poslali. Vaše tajné číslo je tedy ${d.a}. Klíč si dopočítá stejně jako vy: ${B}${sup(d.a)} dává zbytek ${keyA}. S ciferníkem o 23 dílcích nemá šifra žádnou cenu. Kdyby tajné číslo mělo 77 číslic, zkoušel by déle, než existuje vesmír.`
+        : d.timer
+          ? `<strong>Útočník zkouší.</strong> Pokus ${n}: 5${sup(n)} dává zbytek ${mod(G, n)}. Hledá číslo ${A}.`
+          : `<strong>Oba mají klíč ${keyA}.</strong> Ven šla jen čísla ${A} a ${B}. Útočník je viděl a zná i základ 5 a dělitel 23. Tajná čísla ${d.a} a ${d.b} nikudy necestovala.`;
+    }
+    function stopScan() { clearInterval(d.timer); d.timer = 0; }
+    function resetScan() { stopScan(); d.scan = 0; d.found = false; }
+    $("sa").addEventListener("input", (e) => { d.a = Number(e.target.value); resetScan(); renderNum(); });
+    $("sb").addEventListener("input", (e) => { d.b = Number(e.target.value); resetScan(); renderNum(); });
+    $("crack").addEventListener("click", () => {
+      resetScan();
+      const target = mod(G, d.a);
+      const stepScan = () => {
+        d.scan++;
+        if (mod(G, d.scan) === target) { d.found = true; stopScan(); }
+        renderNum();
+      };
+      if (calm) { while (!d.found) { d.scan++; d.found = mod(G, d.scan) === target; } renderNum(); return; }
+      d.timer = setInterval(stepScan, 260);
+      stepScan();
+    });
+    renderNum();
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>
