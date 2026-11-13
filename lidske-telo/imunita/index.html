@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3FQVWCDJ6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-3FQVWCDJ6V');
+  </script>
+  <title>Jak funguje imunita a očkování</title>
+  <meta name="description" content="Jak si tělo vyrobí protilátky na míru viru, který nikdy nepotkalo, proč druhé setkání proběhne jinak než první, co dělá očkování a kdy chrání i neočkované. Se třemi modely: hledání buňky, která na virus pasuje, tělo, které můžete očkovat a nakazit, a šíření nákazy mezi lidmi.">
+  <link rel="stylesheet" href="/style.css?v=9">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#f1f2ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101317" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jak věci fungují">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    #rep, #zoom, #course, #crowd { border: 1px solid var(--rule); background: var(--surface); }
+    .rep-stage { display: grid; gap: 0.75rem; grid-template-columns: minmax(0, 1fr); justify-items: center; }
+    #zoom { max-width: 15rem; }
+    @media (min-width: 46rem) { .rep-stage { grid-template-columns: minmax(0, 252fr) minmax(0, 381fr); } #zoom { max-width: none; } }
+    .cap { fill: var(--ink-3); font: 500 11px var(--font-mono); letter-spacing: 0.08em; }
+    .cap.mid { text-anchor: middle; }
+    .lbl { fill: var(--ink-2); font: 500 13px var(--font-mono); }
+    .lbl.mid { text-anchor: middle; }
+    .lbl.end { text-anchor: end; }
+    .lbl.good { fill: var(--ok); font-weight: 600; }
+    .lbl.bad { fill: var(--bad); font-weight: 600; }
+    .lbl.blue { fill: var(--cold); font-weight: 600; }
+    .clicky { cursor: pointer; }
+
+    /* Obr. 1: buňky s různými receptory */
+    .virus-b { fill: var(--bad); fill-opacity: 0.22; stroke: var(--bad); stroke-width: 1.5; }
+    .tooth-v { fill: var(--bad); }
+    .cell-b { fill: var(--cold); fill-opacity: 0.16; stroke: var(--cold); stroke-width: 1.5; }
+    .tooth-r { fill: var(--cold); }
+    .bc { fill: var(--surface); stroke: var(--ink-3); stroke-width: 1.2; }
+    .bc-t { fill: var(--ink-2); }
+    .bcell.tried { opacity: 0.3; }
+    .bcell.sel .bc { stroke: var(--ink); stroke-width: 2.5; }
+    .bcell.fit .bc { fill: var(--ok); stroke: var(--ok); }
+    .bcell.fit .bc-t { fill: var(--paper); }
+    .bcell.mem .bc { stroke: var(--ok); stroke-width: 2.5; stroke-dasharray: 3 3; }
+    .badge { fill: var(--ok); }
+    .badge-t { fill: var(--paper); font: 700 11px var(--font-mono); text-anchor: middle; }
+
+    /* Obr. 2: průběh v čase */
+    .grid-l { stroke: var(--grid); stroke-width: 1; }
+    .frame { fill: none; stroke: var(--rule); stroke-width: 1; }
+    .v-area { fill: var(--bad); fill-opacity: 0.3; stroke: var(--bad); stroke-width: 2; stroke-linejoin: round; }
+    .ill { fill: var(--bad); opacity: 0.12; }
+    .thr { stroke: var(--bad); stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .a-line { fill: none; stroke: var(--cold); stroke-width: 2.5; stroke-linejoin: round; }
+    .m-line { fill: none; stroke: var(--ok); stroke-width: 2.5; stroke-dasharray: 6 4; stroke-linejoin: round; }
+    .ev { stroke-width: 1.5; }
+    .ev.shot { stroke: var(--cold); }
+    .ev.inf { stroke: var(--bad); }
+    .gap { fill: var(--sunk); }
+    .gap-t { fill: var(--ink-3); font: 500 11px var(--font-mono); text-anchor: middle; }
+    .legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0.6rem 0 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-2); }
+    .legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
+    .legend i { width: 1.1rem; height: 0.3rem; }
+    .legend i.box { height: 0.75rem; width: 0.75rem; }
+
+    /* Obr. 3: lidé */
+    .p { fill: var(--sunk); stroke: var(--ink-3); stroke-width: 1; }
+    .p.vac { fill: var(--ok); stroke: var(--ok); }
+    .p.cant { fill: var(--surface); stroke: var(--ink); stroke-width: 2.5; }
+    .p.sick { fill: var(--bad); stroke: var(--bad); }
+    .p.cant.sick { stroke: var(--ink); }
+    @media (max-width: 46rem) {
+      .lbl { font-size: 16px; }
+      .cap { font-size: 14.5px; letter-spacing: 0.04em; }
+      .gap-t { font-size: 14px; }
+      .badge-t { font-size: 13px; }
+    }
+  </style>
+</head>
+<body data-cat="telo">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="../../">Jak věci fungují</a>
+      <nav class="crumbs" aria-label="Drobečková navigace"><a href="../">Lidské tělo</a><span aria-hidden="true">/</span><span>Imunita a očkování</span></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <header class="art-head">
+      <p class="eyebrow"><a href="../">Lidské tělo</a></p>
+      <h1 class="display">Jak funguje imunita a očkování</h1>
+      <p class="lede">Tělo předem neví, co ho napadne. Přesto si dokáže vyrobit zbraň přesně na míru viru, který nikdy dřív nepotkalo, a zapamatovat si ji na desítky let. Očkování té paměti využívá. Ukáže tělu nepřítele dřív, než přijde doopravdy.</p>
+    </header>
+
+    <section class="tldr" aria-labelledby="h-zkratka">
+      <h2 class="label" id="h-zkratka">Ve zkratce</h2>
+      <ul>
+        <li>Vrozená imunita zasáhne hned, ale proti všemu stejně. Získaná imunita je přesná, jenže napoprvé jí trvá týden až dva, než se rozběhne.</li>
+        <li>V těle jsou miliardy bílých krvinek a každá má jinak tvarovaný receptor. <span class="hl">Ta, která na vetřelce pasuje, se namnoží a část jejích potomků zůstane jako paměť.</span></li>
+        <li>Očkování vyrobí paměť bez nemoci. Když je očkovaných dost, nemoc se nemá jak šířit, a to chrání i ty, kdo očkovaní být nemohou.</li>
+      </ul>
+    </section>
+
+    <figure class="fig" id="obr1">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 1</b> Hledání buňky, která pasuje</p>
+        <span class="label">Klepejte na buňky a zkoušejte, která na virus pasuje</span>
+      </div>
+      <div class="fig-stage rep-stage">
+        <svg id="zoom" viewBox="0 0 252 318" role="img" aria-label="Výběžek viru a receptor vybrané buňky ve zvětšení"></svg>
+        <svg id="rep" viewBox="0 0 381 318" role="img" aria-label="54 buněk, každá s jiným receptorem"></svg>
+      </div>
+      <div class="fig-controls">
+        <button type="button" class="btn" id="auto">Najít ji za mě</button>
+        <button type="button" class="btn ghost" id="again" disabled>Stejný virus znovu</button>
+        <button type="button" class="btn ghost" id="other">Jiný virus</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="rep-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav hledání">
+          <li><span class="n">Vyzkoušeno buněk</span><span class="v" id="st-tried"></span></li>
+          <li><span class="n">Buněk, které pasují</span><span class="v" id="st-clone"></span></li>
+          <li><span class="n">Dělení od nálezu</span><span class="v" id="st-div"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">V prvním obrázku je nahoře výběžek na povrchu viru a pod ním receptor buňky, kterou jste vybrali. Pasují, když do sebe zapadnou bez mezer. V druhém jsou buňky, každá s jiným receptorem. Tři sloupky v kroužku ukazují jeho tvar. Čárkovaně orámovaná buňka je paměťová. V modelu je 27 tvarů a 54 buněk. V těle jsou tvarů miliardy a buněk s tím pravým jen hrstka.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-dve">
+      <div class="prose">
+        <h2 id="h-dve">Dvě obrany</h2>
+        <p>První překážkou je kůže a sliznice. Hlen, řasinky v nose a <a href="../kychani/">kýchnutí</a> většinu vetřelců vůbec nepustí dál. Na to, co projde, čeká vrozená imunita. Tvoří ji bílé krvinky, které pohltí všechno, co nevypadá jako vlastní buňka, a spustí zánět.</p>
+        <p>Zarudnutí, otok a horečka proto nejsou škoda, kterou napáchal mikrob. Je to práce téhle obrany. Nastupuje během minut až hodin, ale je obecná. Na každý virus reaguje stejně a nic si z toho nezapamatuje.</p>
+        <p>Když to nestačí, přichází získaná imunita. Ta umí rozpoznat jeden konkrétní virus nebo bakterii a vyrobit proti němu zbraň na míru. Platí za to časem. Napoprvé jí to trvá týden až dva.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Klepněte na pár buněk a dívejte se, jak jejich receptor k výběžku viru nepasuje. Pak nechte hledání na těle. Až se buňka namnoží, pusťte stejný virus znovu a porovnejte, kolik dělení bylo potřeba tentokrát.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-zamky">
+      <div class="prose">
+        <h2 id="h-zamky">Miliardy zámků bez klíče</h2>
+        <p>Získanou imunitu tvoří bílé krvinky zvané lymfocyty. Každý B-lymfocyt nese na povrchu receptor, bílkovinu s jedinečně tvarovaným koncem. Ten tvar vznikl náhodně, přeskládáním kousků genu, ještě než se buňka s čímkoli setkala. V těle tak kolují miliardy různých tvarů a pro každý z nich jen hrstka buněk.</p>
+        <p>Na každém viru je něco, čeho se receptor může chytit, obvykle výběžek bílkoviny na jeho povrchu. Říká se tomu antigen. Mezi miliardami náhodných tvarů se skoro vždycky najde několik, které na něj pasují.</p>
+        <p><span class="hl">Buňka, jejíž receptor pasuje, dostane signál a začne se dělit.</span> Za týden jsou z ní tisíce stejných buněk. Většina se promění v továrny na protilátky. Protilátka je tentýž receptor, jen uvolněný do krve. Jedna buňka jich vyrobí až dva tisíce za sekundu.</p>
+        <p>Protilátky samy nezabíjejí. Nalepí se na virus a ten se pak nedokáže přichytit k buňce. Zároveň ho označí pro bílé krvinky, které ho pohltí.</p>
+        <p>Stejným způsobem se vybírají i T-lymfocyty. Jedny hledají buňky, do kterých se virus už dostal, a zabíjejí je. Druhé celou odpověď řídí.</p>
+      </div>
+      <aside class="note" aria-label="Imunita v číslech">
+        <span class="label">V číslech</span>
+        <dl class="facts">
+          <div><dt>miliardy</dt><dd>různých receptorů koluje v jednom těle</dd></div>
+          <div><dt>až 2 000</dt><dd>protilátek za sekundu vyrobí jedna buňka</dd></div>
+          <div><dt>7 až 14 dní</dt><dd>trvá, než se rozběhne první odpověď</dd></div>
+          <div><dt>12 až 18</dt><dd>lidí nakazí jeden nemocný spalničkami, když kolem není nikdo chráněný</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <figure class="fig" id="obr2">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 2</b> První a druhé setkání</p>
+        <span class="label">Nakazte tělo, nebo ho nejdřív očkujte, a sledujte, co se děje</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="course" viewBox="0 0 640 340" role="img" aria-label="Dva grafy nad sebou: nahoře množství viru v těle, dole množství protilátek a paměťových buněk v čase"></svg>
+        <ul class="legend" aria-hidden="true">
+          <li><i class="box" style="background:var(--bad);opacity:.5"></i>virus v těle</li>
+          <li><i style="background:var(--cold)"></i>protilátky</li>
+          <li><i style="background:repeating-linear-gradient(90deg,var(--ok) 0 5px,transparent 5px 8px)"></i>paměťové buňky</li>
+        </ul>
+      </div>
+      <div class="fig-controls">
+        <button type="button" class="btn" id="infect">Nakazit virem</button>
+        <button type="button" class="btn" id="shot">Očkovat</button>
+        <button type="button" class="btn ghost" id="wait2">Počkat dva týdny</button>
+        <button type="button" class="btn ghost" id="wait365">Počkat rok</button>
+        <button type="button" class="btn ghost" id="fresh">Od začátku</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="course-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Stav těla">
+          <li><span class="n">Uplynulo</span><span class="v" id="st-day"></span></li>
+          <li><span class="n">Dní s příznaky</span><span class="v" id="st-ill"></span></li>
+          <li><span class="n">Teď</span><span class="v" id="st-now"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Nahoře je množství viru v těle. Nad přerušovanou čarou je ho tolik, že máte příznaky, a pozadí zčervená. Dole jsou protilátky v krvi a paměťové buňky. Svislé osy jsou stlačené: každý dílek znamená desetkrát víc. Šedý pruh je rok, během kterého se nic nedělo. Model je obecný a nepopisuje žádnou konkrétní nemoc. Skutečné doby se liší podle viru i podle člověka.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-pamet">
+      <div class="prose">
+        <h2 id="h-pamet">Paměť</h2>
+        <p>Když je virus pryč, většina namnožených buněk zanikne. Zhruba desetina zůstane jako paměťové buňky. Vydrží roky, některé celý život. Část buněk se usadí v kostní dřeni a dál pomalu vyrábí protilátky.</p>
+        <p>Při druhém setkání je všechno jinak. Buněk, které virus znají, není hrstka, ale tisíce, a rozbíhají se rychleji než ty nezkušené. Za pár dní je protilátek víc, než kolik jich napoprvé bylo za dva týdny.</p>
+        <p><span class="hl">Virus se nestihne pomnožit a vy si často ničeho nevšimnete.</span> Proto se spalničky nebo plané neštovice dostávají zpravidla jen jednou za život.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nakazte tělo a nechte nemoc proběhnout. Pak počkejte rok a nakazte ho znovu. Protilátek mezitím ubylo, paměťové buňky ale zůstaly a virus se tentokrát přes čáru příznaků nedostane.</p>
+        <span class="label">Na okraj</span>
+        <p>Spalničky umějí paměť mazat. Virus napadá i paměťové buňky a po nemoci tělu chybí desetina až tři čtvrtiny protilátek proti jiným nemocem, které už prodělalo.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-ockovani">
+      <div class="prose">
+        <h2 id="h-ockovani">Očkování: poplach nanečisto</h2>
+        <p>Vakcína dá tělu antigen bez nemoci. Může to být oslabený virus, který se množí jen málo. Tak se očkuje proti spalničkám, příušnicím a zarděnkám. Může to být usmrcený virus, samotná bílkovina z jeho povrchu jako u žloutenky typu B, nebo zneškodněný bakteriální jed jako u tetanu.</p>
+        <p>Vakcíny mRNA nesou jen návod. Buňky ve svalu podle něj pár dní vyrábějí jednu virovou bílkovinu. K <a href="../dna/">DNA</a> v jádře buňky se návod nedostane a tělo ho během několika dnů rozloží.</p>
+        <p>Imunita na antigen odpoví jako na skutečnou nákazu. Najde buňky, které pasují, namnoží je a nechá si paměť. Trvá to týden až dva, stejně jako při nemoci. Rozdíl je v tom, že se mezitím v těle nemnoží virus.</p>
+        <p>Bolavá ruka, únava nebo zvýšená teplota den po očkování jsou práce vrozené imunity. Znamenají, že si tělo antigenu všimlo. Druhá a další dávka pak dělají totéž co druhé setkání s virem: paměťových buněk přibude a protilátky vydrží déle.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Začněte od začátku, očkujte a hned potom nakazte. Nemoc proběhne, jen kratší, protože ochrana ještě nestihla vzniknout. Pak to zopakujte s dvoutýdenní přestávkou. A nakonec zkuste dvě dávky, rok čekání a nákazu.</p>
+      </aside>
+    </section>
+
+    <section class="sec" aria-labelledby="h-vydrzi">
+      <div class="prose">
+        <h2 id="h-vydrzi">Proč něco vydrží a něco ne</h2>
+        <p>Paměť funguje, dokud virus vypadá stejně. Virus spalniček se skoro nemění a dvě dávky v dětství chrání většinu lidí na celý život. Virus chřipky mění bílkoviny na svém povrchu tak rychle, že loňské protilátky na letošní virus pasují hůř. Vakcína proti chřipce se proto každý rok připravuje znovu.</p>
+        <p>Rýma se vrací z jiného důvodu. Způsobuje ji přes dvě stě různých virů a paměť na jeden z nich nepomůže proti druhému.</p>
+        <p>Někde zase paměť nestačí rychlostí. Jedu tetanu stačí k otravě tak málo, že si ho paměťové buňky včas nevšimnou. Chránit musí protilátky, které už v krvi kolují, a těch postupně ubývá. Proto se tetanus přeočkovává, v dospělosti jednou za deset až patnáct let.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Na okraj</span>
+        <p>Anglický lékař Edward Jenner v roce 1796 ověřil, že kdo prodělal neškodné kravské neštovice, pravé už nedostane. Naočkoval jimi osmiletého chlapce. Kráva je latinsky vacca, odtud slovo vakcína. Pravé neštovice jen ve 20. století zabily kolem 300 milionů lidí. V roce 1980 byly prohlášeny za vymýcené.</p>
+      </aside>
+    </section>
+
+    <figure class="fig" id="obr3">
+      <div class="fig-head">
+        <p class="fig-num"><b>Obr. 3</b> Nákaza mezi čtyřmi sty lidmi</p>
+        <span class="label">Nastavte, kolik lidí je očkovaných, a zavlečte nákazu</span>
+      </div>
+      <div class="fig-stage">
+        <svg id="crowd" viewBox="0 0 640 400" role="img" aria-label="Čtyři sta lidí jako čtverečky: očkovaní, neočkovaní, ti, kdo očkovaní být nemohou, a nakažení"></svg>
+        <ul class="legend" aria-hidden="true">
+          <li><i class="box" style="background:var(--ok)"></i>očkovaný</li>
+          <li><i class="box" style="background:var(--sunk);outline:1px solid var(--ink-3)"></i>neočkovaný</li>
+          <li><i class="box" style="background:var(--surface);outline:2px solid var(--ink)"></i>nemůže být očkovaný</li>
+          <li><i class="box" style="background:var(--bad);border-radius:50%"></i>onemocněl</li>
+        </ul>
+      </div>
+      <div class="fig-controls">
+        <div class="ctl">
+          <span class="label" id="lbl-dis">Nemoc</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-dis" id="dis-seg">
+            <button type="button" role="radio" data-v="1.5" aria-checked="false">Chřipka</button>
+            <button type="button" role="radio" data-v="3" aria-checked="false">Covid, první vlna</button>
+            <button type="button" role="radio" data-v="15" aria-checked="true">Spalničky</button>
+          </div>
+        </div>
+        <div class="ctl ctl-grow">
+          <label class="label" for="vax">Očkovaných</label>
+          <div class="ctl-row">
+            <input type="range" id="vax" min="0" max="95" step="5" value="70">
+            <output class="val" id="vax-val" for="vax"></output>
+          </div>
+        </div>
+        <button type="button" class="btn" id="spread">Zavléct nákazu</button>
+      </div>
+      <div class="fig-status split">
+        <p class="status" id="crowd-status" aria-live="polite"></p>
+        <ul class="stats" aria-label="Výsledek">
+          <li><span class="n">Hranice pro tuhle nemoc</span><span class="v" id="st-thr"></span></li>
+          <li><span class="n">Onemocnělo teď</span><span class="v" id="st-sick"></span></li>
+          <li><span class="n">V průměru z nechráněných</span><span class="v" id="st-avg"></span></li>
+        </ul>
+      </div>
+      <figcaption class="fig-caption">Každý čtvereček je jeden člověk, kolečko je ten, kdo onemocněl. Dvacet lidí s tlustým rámečkem očkovaných být nemůže, třeba kojenci nebo lidé s oslabenou imunitou. Nakažený potká náhodné lidi. Setkání, při kterých by nemoc předal nechráněnému, je u chřipky v průměru jedno až dvě, u covidu z první vlny tři, u spalniček patnáct. Když potká očkovaného, nic se nestane, v modelu jsou očkovaní chráněni úplně. Ve skutečnosti chrání dvě dávky vakcíny proti spalničkám asi 97 lidí ze sta. Jeden pokus je náhoda. Poslední číslo pod obrázkem je průměr ze tří set pokusů a ukazuje, co čekat.</figcaption>
+    </figure>
+
+    <section class="sec" aria-labelledby="h-kolektiv">
+      <div class="prose">
+        <h2 id="h-kolektiv">Kdy očkování chrání i neočkované</h2>
+        <p>Nakažený člověk nakazí v průměru určitý počet dalších. U chřipky jednoho až dva. U spalniček, pokud kolem není nikdo chráněný, dvanáct až osmnáct. Když je část lidí imunních, část těch přenosů skončí naprázdno. Jakmile nakažený předá virus v průměru méně než jednomu dalšímu, nákaza vyhasne.</p>
+        <p>Ta hranice se dá spočítat. Nemoc, kterou jeden předá třem, se zastaví, když jsou imunní dva ze tří. U spalniček musí být imunních přes devadesát lidí ze sta. Žádná vakcína navíc nechrání úplně každého, a tak se u nich míří na 95 % očkovaných.</p>
+        <p>Na téhle hranici záleží hlavně těm, kdo očkovaní být nemohou: kojencům, kteří jsou na vakcínu ještě malí, lidem po transplantaci nebo při léčbě rakoviny. <span class="hl">Chrání je jen to, že se k nim virus nemá přes koho dostat.</span></p>
+        <p>Neplatí to pro každou nemoc. Tetanus se z člověka na člověka nepřenáší, jeho bakterie žijí v půdě. Tam každého chrání jen jeho vlastní očkování.</p>
+      </div>
+      <aside class="note" aria-label="Poznámka na okraj">
+        <span class="label">Zkuste</span>
+        <p>Nechte spalničky a 70 % očkovaných a zavlečte nákazu. Onemocní skoro každý, kdo chráněný není. Pak přidávejte po pěti procentech. Na 95 % se nákaza přestane šířit a lidé s tlustým rámečkem zůstanou zdraví.</p>
+        <p>U chřipky stačí k témuž mnohem míň. Jen se proti ní musí očkovat každý rok znovu.</p>
+      </aside>
+    </section>
+
+    <footer class="art-foot">
+      <a class="next" href="../../vesmir/faze-mesice/" data-cat="vesmir">
+        <span class="label">Další článek · Vesmír</span>
+        <span class="t">Jak fungují fáze Měsíce</span>
+        <p>Proč Měsíc dorůstá a couvá a proč to není stín Země.</p>
+      </a>
+      <a class="back" href="../../">Všechna témata</a>
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const NS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs, parent) {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs || {}) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    const $ = (id) => document.getElementById(id);
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fmt0 = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+    const rand = (n) => Math.floor(Math.random() * n);
+    function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    /* ---------- Obr. 1: hledání buňky, která pasuje ---------- */
+    // tvar je trojice výšek 1 až 3; receptor pasuje na antigen, když se výšky v každém sloupku doplní do čtyř
+    const SHAPES = [];
+    for (let a = 1; a <= 3; a++) for (let b = 1; b <= 3; b++) for (let c = 1; c <= 3; c++) SHAPES.push([a, b, c]);
+    const fits = (rec, ant) => rec.every((r, i) => r + ant[i] === 4);
+    // výběžky virů mají nejnižší i nejvyšší sloupek, takže bez mezer na ně zapadne jediný tvar receptoru
+    const ANTIGENS = SHAPES.filter((s) => s.includes(1) && s.includes(3));
+    const FULL = 4096, MEMORY = 512;
+    const q = { cells: shuffle([...SHAPES, ...SHAPES].map((s) => s.slice())), ant: null, tried: new Set(), sel: -1, found: -1, phase: "search", clone: 0, div: 0, mem: {}, second: false, timer: 0 };
+    const rp = $("rep"), zp = $("zoom"), GX = 6, GY = 36, PITCH = 41;
+    const key = (s) => s.join("");
+    function newVirus() {
+      let a;
+      const free = ANTIGENS.filter((s) => !q.mem[key(s.map((x) => 4 - x))] && !(q.ant && key(s) === key(q.ant)));
+      if (!free.length) { q.mem = {}; return newVirus(); }
+      a = free[rand(free.length)];
+      q.ant = a; startRound(false);
+    }
+    function startRound(second) {
+      clearInterval(q.timer); q.timer = 0;
+      q.tried = new Set(); q.sel = -1; q.found = -1; q.phase = "search"; q.clone = 0; q.div = 0; q.second = second;
+      if (second) {
+        // paměťové buňky virus poznají hned
+        q.found = q.cells.findIndex((c) => fits(c, q.ant)); q.sel = q.found; q.clone = q.mem[key(q.cells[q.found])];
+        grow();
+      }
+      renderRep();
+    }
+    function test(i) {
+      if (q.phase !== "search") return;
+      q.sel = i; q.tried.add(i);
+      if (fits(q.cells[i], q.ant)) { q.found = i; q.clone = 1; grow(); }
+      renderRep();
+    }
+    // nalezená buňka se dělí, dokud jich není dost; pak vyrábí protilátky a nakonec zůstane paměť
+    function grow() {
+      q.phase = "clone";
+      const tick = () => {
+        if (q.clone < FULL) { q.clone *= 2; q.div++; }
+        else if (q.phase === "clone") q.phase = "antibody";
+        else { q.phase = "memory"; q.mem[key(q.cells[q.found])] = MEMORY; clearInterval(q.timer); q.timer = 0; }
+        renderRep();
+      };
+      if (calm) { while (q.phase !== "memory") tick(); return; }
+      q.timer = setInterval(tick, 420);
+    }
+    function renderRep() {
+      rp.textContent = ""; zp.textContent = "";
+      // zvětšená zkouška vlevo
+      const cx = 126, U = 15, TW = 30, x0 = cx - TW * 1.5, vy = 74;
+      el("text", { x: cx, y: 22, class: "cap mid" }, zp).textContent = "VÝBĚŽEK VIRU";
+      el("path", { d: `M${cx - 104} 34H${cx + 104}V${vy}H${cx - 104}Z`, class: "virus-b" }, zp);
+      q.ant.forEach((h, i) => el("rect", { x: x0 + i * TW, y: vy, width: TW, height: h * U, class: "tooth-v" }, zp));
+      const rec = q.sel >= 0 ? q.cells[q.sel] : null;
+      if (rec) {
+        const ok = fits(rec, q.ant), D = Math.max(...rec.map((r, i) => r + q.ant[i])) * U, top = vy + D;
+        rec.forEach((h, i) => el("rect", { x: x0 + i * TW, y: top - h * U, width: TW, height: h * U, class: "tooth-r" }, zp));
+        el("rect", { x: x0 - 8, y: top, width: TW * 3 + 16, height: 12, class: "tooth-r" }, zp);
+        el("rect", { x: cx - 9, y: top + 12, width: 18, height: 226 - top - 12, class: "tooth-r" }, zp);
+        el("path", { d: `M${cx - 104} 226H${cx + 104}V258H${cx - 104}Z`, class: "cell-b" }, zp);
+        el("text", { x: cx, y: 247, class: "lbl mid" }, zp).textContent = "buňka s receptorem";
+        el("text", { x: cx, y: 290, class: `lbl mid ${ok ? "good" : "bad"}` }, zp).textContent = ok ? "pasuje bez mezer" : "nepasuje, zůstávají mezery";
+      } else {
+        el("text", { x: cx, y: 180, class: "lbl mid" }, zp).textContent = "vyberte buňku";
+      }
+      // buňky vpravo
+      el("text", { x: GX + PITCH * 4.5, y: 22, class: "cap mid" }, rp).textContent = "BUŇKY V TĚLE";
+      q.cells.forEach((c, i) => {
+        const x = GX + (i % 9) * PITCH + PITCH / 2, y = GY + Math.floor(i / 9) * PITCH + PITCH / 2;
+        const isFit = i === q.found, isMem = !isFit && q.mem[key(c)] && q.cells.findIndex((d) => key(d) === key(c)) === i;
+        const g = el("g", { class: `bcell clicky${isFit ? " fit" : q.tried.has(i) ? " tried" : ""}${i === q.sel ? " sel" : ""}${isMem ? " mem" : ""}`, role: "button", tabindex: "0", "aria-label": `Buňka s receptorem ${key(c)}${q.tried.has(i) ? (isFit ? ", pasuje" : ", nepasuje") : ""}` }, rp);
+        el("circle", { cx: x, cy: y, r: 17, class: "bc" }, g);
+        c.forEach((h, j) => el("rect", { x: x - 10 + j * 7, y: y + 9 - h * 5.5, width: 6, height: h * 5.5, class: "bc-t" }, g));
+        g.addEventListener("click", () => test(i));
+        g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); test(i); } });
+      });
+      if (q.found >= 0 && q.clone > 1) {
+        const x = GX + (q.found % 9) * PITCH + PITCH / 2, y = GY + Math.floor(q.found / 9) * PITCH + PITCH / 2;
+        const t = `×${fmt0.format(q.clone)}`, w = t.length * 7.5 + 10, bx = Math.min(Math.max(x - w / 2, GX), GX + 9 * PITCH - w);
+        el("rect", { x: bx, y: y - 31, width: w, height: 17, rx: 8.5, class: "badge" }, rp);
+        el("text", { x: bx + w / 2, y: y - 18.5, class: "badge-t" }, rp).textContent = t;
+      }
+      el("text", { x: GX + PITCH * 4.5, y: 304, class: "lbl mid" }, rp).textContent =
+        q.phase === "search" ? "každá buňka má jiný receptor" : q.phase === "clone" ? "buňka, která pasuje, se dělí" : q.phase === "antibody" ? "tisíce buněk vyrábějí protilátky" : `zůstalo ${fmt0.format(MEMORY)} paměťových buněk`;
+
+      $("st-tried").textContent = q.second ? "0" : q.tried.size;
+      $("st-clone").textContent = q.found < 0 ? "?" : fmt0.format(q.phase === "memory" ? MEMORY : q.clone);
+      $("st-div").textContent = q.div;
+      $("auto").disabled = q.phase !== "search";
+      $("again").disabled = q.phase !== "memory";
+      $("other").disabled = q.phase === "clone" || q.phase === "antibody";
+      const n = q.tried.size;
+      $("rep-status").innerHTML = {
+        search: n === 0
+          ? "<strong>Do těla se dostal nový virus.</strong> Některá z buněk má receptor, který na jeho výběžek pasuje. Tělo neví která. Zkuste ji najít."
+          : `<strong>Nepasuje.</strong> Vyzkoušeno ${n} z 54 buněk. Receptor musí do výběžku zapadnout bez mezery ve všech třech sloupcích.`,
+        clone: q.second
+          ? `<strong>Tělo virus zná.</strong> Hledat nemuselo, zbylo mu ${fmt0.format(MEMORY)} paměťových buněk s tím pravým receptorem. Dělí se a je jich už ${fmt0.format(q.clone)}.`
+          : `<strong>Pasuje.</strong> Buňka dostala signál a začala se dělit. Po ${q.div}. dělení je jich ${fmt0.format(q.clone)}, všechny se stejným receptorem.`,
+        antibody: `<strong>Buňky vyrábějí protilátky.</strong> Protilátka je tentýž receptor, uvolněný do krve. Nalepí se na virus a ten se nedokáže přichytit k buňce. ${q.second ? `Od začátku stačila ${q.div} dělení.` : `Od nálezu k tomu bylo potřeba ${q.div} dělení.`}`,
+        memory: q.second
+          ? `<strong>Podruhé to šlo rychle.</strong> Bez hledání a na ${q.div} dělení místo dvanácti. Takový náskok obvykle stačí, aby se virus nestihl pomnožit.`
+          : `<strong>Virus je pryč a zůstala paměť.</strong> Většina buněk zanikla, ${fmt0.format(MEMORY)} jich zůstalo. Pusťte stejný virus znovu, nebo zkuste jiný, na který tahle paměť neplatí.`,
+      }[q.phase];
+    }
+    $("auto").addEventListener("click", () => {
+      if (q.phase !== "search" || q.timer) return;
+      const order = q.cells.map((_, i) => i).filter((i) => !q.tried.has(i));
+      if (calm) { test(order.find((i) => fits(q.cells[i], q.ant))); return; }
+      let k = 0;
+      q.timer = setInterval(() => {
+        const i = order[k++];
+        if (fits(q.cells[i], q.ant)) { clearInterval(q.timer); q.timer = 0; }
+        test(i);
+      }, 110);
+    });
+    $("again").addEventListener("click", () => startRound(true));
+    $("other").addEventListener("click", newVirus);
+    newVirus();
+
+    /* ---------- Obr. 2: první a druhé setkání ---------- */
+    // v: virus, g: antigen z vakcíny, b: buňky, které virus znají, m: paměťové buňky, a: protilátky, x: jak moc jsou buňky vybuzené
+    const P = { r: 1.8, h: 0.02, grow: 2, shrink: 0.25, keep: 0.1, make: 1, decay: 0.06, base: 0.05, kA: 6, kB: 24, dg: 0.5, kG: 0.1, b0: 1e-5, sick: 0.08, lag: 3, lagMin: 0.5, dose: 0.5, seed: 1e-4 };
+    const DT = 0.02, WIN = 80, GAPW = 9;
+    let c;
+    function freshBody() {
+      c = { t: 0, u: 0, v: 0, g: 0, b: P.b0, m: P.b0, a: 0, x: 0, ill: 0, todo: 0, acc: 0, n: 0, pts: [], marks: [], gaps: [], ep: null, last: null, shots: 0, infs: 0 };
+      sample();
+    }
+    function tick() {
+      const s = c.v + c.g, tau = P.lagMin + P.lag / (1 + c.m / (30 * P.b0));
+      c.x += ((s / (s + P.h)) - c.x) / tau * DT;
+      const kill = P.kA * c.a + P.kB * c.b;
+      const dv = P.r * c.v * (1 - c.v) - kill * c.v;
+      const db = P.grow * c.b * c.x * (1 - c.b) - P.shrink * (c.b - c.m) * (1 - c.x);
+      const da = P.make * Math.max(0, c.b - c.m) + P.base * c.m - P.decay * c.a;
+      c.v = Math.max(0, c.v + dv * DT); if (c.v < 1e-7) c.v = 0;
+      c.g = Math.max(0, c.g - (P.dg + P.kG * kill) * c.g * DT); if (c.g < 1e-5) c.g = 0;
+      c.b = Math.max(P.b0, c.b + db * DT);
+      c.m = Math.max(c.m, P.keep * c.b);
+      c.a = Math.max(0, c.a + da * DT);
+      c.t += DT;
+      if (c.v > P.sick) { c.ill += DT; if (c.ep) c.ep.ill += DT; }
+      if (c.ep) { c.ep.peak = Math.max(c.ep.peak, c.v); if (c.v === 0) { c.last = c.ep; c.ep = null; } }
+    }
+    function sample() { c.pts.push({ u: c.u, v: c.v, a: c.a, m: c.m }); }
+    // posune čas o daný počet dní a průběžně ukládá body grafu
+    function advance(days) {
+      c.acc += days;
+      while (c.acc >= DT) { tick(); c.acc -= DT; c.u += DT; if (++c.n % 10 === 0) sample(); }
+    }
+    function gapYear() {
+      const u0 = c.u, n = Math.round(365 / DT), per = Math.round(n / 30);
+      for (let i = 0; i < n; i++) { tick(); if (i % per === per - 1) { c.u += GAPW / 30; sample(); } }
+      c.gaps.push([u0, c.u]);
+    }
+    const cs = $("course"), CX0 = 66, CX1 = 628, T0 = 30, T1 = 138, B0 = 196, B1 = 306;
+    const lg = (val, lo, hi) => Math.min(1, Math.max(0, (Math.log10(Math.max(val, lo)) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo))));
+    function renderCourse() {
+      const from = Math.max(0, c.u - WIN + 6), X = (u) => CX0 + ((u - from) / WIN) * (CX1 - CX0);
+      const yv = (v) => T1 - lg(v, 1e-4, 1) * (T1 - T0), yb = (v) => B1 - lg(v, 1e-5, 10) * (B1 - B0);
+      cs.textContent = "";
+      el("text", { x: CX0, y: 20, class: "cap" }, cs).textContent = "VIRUS V TĚLE";
+      el("text", { x: CX0, y: 186, class: "cap" }, cs).textContent = "PROTILÁTKY A PAMĚŤOVÉ BUŇKY";
+      for (let i = 1; i < 4; i++) el("path", { d: `M${CX0} ${T1 - (i / 4) * (T1 - T0)}H${CX1}`, class: "grid-l" }, cs);
+      for (let i = 1; i < 6; i++) el("path", { d: `M${CX0} ${B1 - (i / 6) * (B1 - B0)}H${CX1}`, class: "grid-l" }, cs);
+      const clip = el("clipPath", { id: "win" }, el("defs", {}, cs));
+      el("rect", { x: CX0, y: 0, width: CX1 - CX0, height: 340 }, clip);
+      const g = el("g", { "clip-path": "url(#win)" }, cs);
+      c.gaps.forEach(([u0, u1]) => {
+        [[T0, T1], [B0, B1]].forEach(([y0, y1]) => el("rect", { x: X(u0), y: y0, width: X(u1) - X(u0), height: y1 - y0, class: "gap" }, g));
+        el("text", { x: (X(u0) + X(u1)) / 2, y: T1 + 17, class: "gap-t" }, g).textContent = "rok";
+      });
+      const pts = c.pts.filter((p) => p.u >= from - 1);
+      // období s příznaky
+      let start = null;
+      pts.forEach((p, i) => {
+        const ill = p.v > P.sick;
+        if (ill && start === null) start = p.u;
+        if ((!ill || i === pts.length - 1) && start !== null) { el("rect", { x: X(start), y: T0, width: Math.max(1, X(p.u) - X(start)), height: T1 - T0, class: "ill" }, g); start = null; }
+      });
+      if (pts.length > 1) {
+        el("path", { d: `M${X(pts[0].u)} ${T1}` + pts.map((p) => `L${X(p.u).toFixed(1)} ${yv(p.v).toFixed(1)}`).join("") + `L${X(pts[pts.length - 1].u).toFixed(1)} ${T1}Z`, class: "v-area" }, g);
+        el("path", { d: "M" + pts.map((p) => `${X(p.u).toFixed(1)} ${yb(p.m).toFixed(1)}`).join("L"), class: "m-line" }, g);
+        el("path", { d: "M" + pts.map((p) => `${X(p.u).toFixed(1)} ${yb(p.a).toFixed(1)}`).join("L"), class: "a-line" }, g);
+      }
+      c.marks.forEach((mk) => {
+        el("path", { d: `M${X(mk.u)} ${T0}V${T1}M${X(mk.u)} ${B0}V${B1}`, class: `ev ${mk.k}` }, g);
+        el("text", { x: X(mk.u) + 4, y: T0 + 14, class: `lbl ${mk.k === "shot" ? "blue" : "bad"}` }, g).textContent = mk.k === "shot" ? "očkování" : "nákaza";
+      });
+      el("path", { d: `M${CX0} ${yv(P.sick)}H${CX1}`, class: "thr" }, cs);
+      el("text", { x: CX1 - 4, y: yv(P.sick) - 5, class: "lbl end bad" }, cs).textContent = "odtud jsou příznaky";
+      el("rect", { x: CX0, y: T0, width: CX1 - CX0, height: T1 - T0, class: "frame" }, cs);
+      el("rect", { x: CX0, y: B0, width: CX1 - CX0, height: B1 - B0, class: "frame" }, cs);
+      el("text", { x: CX0 - 6, y: T0 + 10, class: "lbl end" }, cs).textContent = "hodně";
+      el("text", { x: CX0 - 6, y: T1 - 2, class: "lbl end" }, cs).textContent = "nic";
+      el("text", { x: CX0 - 6, y: B0 + 10, class: "lbl end" }, cs).textContent = "hodně";
+      el("text", { x: CX0 - 6, y: B1 - 2, class: "lbl end" }, cs).textContent = "nic";
+      el("text", { x: CX1, y: B1 + 22, class: "lbl end" }, cs).textContent = "čas →";
+      el("path", { d: `M${CX0} ${B1 + 10}h${((7 / WIN) * (CX1 - CX0)).toFixed(1)}`, style: "stroke:var(--ink-2);stroke-width:3" }, cs);
+      el("text", { x: CX0 + (7 / WIN) * (CX1 - CX0) + 8, y: B1 + 15, class: "lbl" }, cs).textContent = "týden";
+
+      const ill = c.v > P.sick, yr = Math.floor(c.t / 365), d = Math.round(c.t - yr * 365);
+      $("st-day").textContent = yr ? `${yr} r. ${d} d.` : `${d} dní`;
+      $("st-ill").textContent = fmt0.format(c.ill);
+      $("st-now").textContent = ill ? "nemoc" : c.v > 0 ? "virus v těle" : "zdraví";
+      $("wait2").disabled = $("wait365").disabled = c.todo > 0;
+      let s;
+      const known = c.m > 30 * P.b0;
+      if (ill) s = `<strong>Nemoc.</strong> Viru je v těle tolik, že máte příznaky. ${c.a > 0.05 ? "Protilátek ale rychle přibývá a virus začíná prohrávat." : "Buňky, které na něj pasují, se teprve množí a protilátek je zatím málo."}`;
+      else if (c.v > 0 && c.ep && c.ep.peak <= P.sick && c.v >= c.ep.peak * 0.999) s = known
+        ? "<strong>Virus je v těle, ale daleko se nedostane.</strong> Paměťové buňky ho poznaly a protilátek přibývá dřív, než se stihl pomnožit."
+        : "<strong>Virus se množí a vy o něm nevíte.</strong> Zatím ho brzdí jen vrozená imunita. Buňky, které na něj pasují, se teprve hledají.";
+      else if (c.v > 0) s = "<strong>Virus mizí.</strong> Protilátky se na něj lepí rychleji, než se stíhá množit.";
+      else if (c.g > 0.01) s = `<strong>Po očkování.</strong> V těle je antigen, který se nemnoží. ${known ? "Paměťové buňky ho poznaly a jejich počet rychle roste. Takhle působí druhá a další dávka." : "Buňky, které na něj pasují, se našly a dělí se. Protilátky se objeví asi za týden."}`;
+      else if (c.last && c.last.fresh) {
+        const e = c.last, days = Math.round(e.ill);
+        s = days >= 6 ? `<strong>Nemoc trvala ${days} dní.</strong> Tělo virus neznalo a než se získaná imunita rozběhla, stihl se pomnožit. Teď po něm zůstaly paměťové buňky.`
+          : days >= 1 ? `<strong>Lehčí průběh, ${days} ${days === 1 ? "den" : days < 5 ? "dny" : "dní"} s příznaky.</strong> Imunita měla náskok, jen ne dost velký. Buď od očkování uplynulo málo času, nebo po jedné dávce a dlouhé době zbylo málo protilátek.`
+          : "<strong>Nákaza bez nemoci.</strong> Virus se přes čáru příznaků nedostal. Paměťové buňky a protilátky ho zastavily dřív, než se stihl pomnožit.";
+      }
+      else if (c.shots && !c.infs) s = `<strong>Očkované tělo.</strong> ${c.shots === 1 ? "Po jedné dávce má paměťové buňky a nějaké protilátky. Druhá dávka by obojího přidala." : "Po druhé dávce je paměťových buněk i protilátek mnohem víc než po první."} Zkuste teď nákazu, hned nebo po roce.`;
+      else if (!c.shots && !c.infs) s = "<strong>Tělo, které tenhle virus nikdy nepotkalo.</strong> Nemá proti němu protilátky ani paměťové buňky. Nakazte ho, nebo ho nejdřív očkujte.";
+      else s = "<strong>Klid.</strong> Virus v těle není. Protilátek pomalu ubývá, paměťové buňky zůstávají.";
+      $("course-status").innerHTML = s;
+    }
+    function act(kind) {
+      if (kind === "inf") { c.v += P.seed; c.infs++; c.ep = { ill: 0, peak: 0, fresh: true }; if (c.last) c.last.fresh = false; }
+      else { c.g += P.dose; c.shots++; if (c.last) c.last.fresh = false; }
+      c.marks.push({ u: c.u, k: kind });
+      c.todo = Math.max(c.todo, kind === "inf" ? 24 : 18);
+      run();
+    }
+    let rafOn = false;
+    function run() {
+      if (calm) { advance(c.todo); c.todo = 0; renderCourse(); return; }
+      if (rafOn) return;
+      rafOn = true;
+      let last = 0;
+      const frame = (now) => {
+        const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+        last = now;
+        const days = Math.min(c.todo, dt * 6);
+        advance(days); c.todo -= days;
+        renderCourse();
+        if (c.todo > 1e-6) requestAnimationFrame(frame); else { c.todo = 0; rafOn = false; renderCourse(); }
+      };
+      requestAnimationFrame(frame);
+    }
+    $("infect").addEventListener("click", () => act("inf"));
+    $("shot").addEventListener("click", () => act("shot"));
+    $("wait2").addEventListener("click", () => { if (c.last) c.last.fresh = false; c.todo += 14; run(); });
+    $("wait365").addEventListener("click", () => { if (c.last) c.last.fresh = false; gapYear(); renderCourse(); });
+    $("fresh").addEventListener("click", () => { freshBody(); renderCourse(); });
+    freshBody();
+    renderCourse();
+
+    /* ---------- Obr. 3: nákaza mezi lidmi ---------- */
+    const N = 400, COLS = 25, CANT = 20;
+    const w = { r0: 15, vax: 70, sick: new Set(), wave: [], timer: 0, done: false, ran: false };
+    // pevné pořadí: prvních dvacet nemůže být očkováno, ostatní se očkují v tomhle pořadí
+    const order = shuffle([...Array(N).keys()]);
+    const cant = new Set(order.slice(0, CANT)), queue = order.slice(CANT);
+    const vaccinated = () => new Set(queue.slice(0, Math.round((w.vax / 100) * N)));
+    const cw = $("crowd"), rects = [];
+    for (let i = 0; i < N; i++) rects.push(el("rect", { x: 22 + (i % COLS) * 24, y: 10 + Math.floor(i / COLS) * 24, width: 19, height: 19, rx: 2 }, cw));
+    function poisson(lambda) { let L = Math.exp(-lambda), k = 0, pr = 1; do { k++; pr *= Math.random(); } while (pr > L); return k - 1; }
+    // jedno kolo: každý nově nakažený potká náhodné lidi a nechráněné nakazí
+    function generation(current, sick, vac) {
+      const next = [];
+      current.forEach((i) => {
+        for (let k = poisson(w.r0); k > 0; k--) {
+          let j = rand(N - 1); if (j >= i) j++;
+          if (!vac.has(j) && !sick.has(j)) { sick.add(j); next.push(j); }
+        }
+      });
+      return next;
+    }
+    function patientZero(vac) {
+      const open = queue.filter((i) => !vac.has(i));
+      return open.length ? open[rand(open.length)] : [...cant][rand(CANT)];
+    }
+    function average(vac) {
+      let total = 0, weak = 0; const RUNS = 300;
+      for (let r = 0; r < RUNS; r++) {
+        const sick = new Set([patientZero(vac)]); let cur = [...sick];
+        while (cur.length) cur = generation(cur, sick, vac);
+        total += sick.size; sick.forEach((i) => { if (cant.has(i)) weak++; });
+      }
+      return { share: total / RUNS / (N - vac.size), weak: weak / RUNS };
+    }
+    function renderCrowd(recount) {
+      const vac = vaccinated(), thr = 1 - 1 / w.r0, open = N - vac.size;
+      rects.forEach((r, i) => { r.setAttribute("class", `p${vac.has(i) ? " vac" : ""}${cant.has(i) ? " cant" : ""}${w.sick.has(i) ? " sick" : ""}`); r.setAttribute("rx", w.sick.has(i) ? 9.5 : 2); });
+      if (recount) w.avg = average(vac);
+      const weak = [...w.sick].filter((i) => cant.has(i)).length;
+      $("vax-val").textContent = `${w.vax} %`;
+      $("st-thr").textContent = `${Math.round(thr * 100)} %`;
+      $("st-sick").textContent = w.ran ? `${w.sick.size} z ${open}` : "–";
+      $("st-avg").textContent = `${Math.round(w.avg.share * 100)} %`;
+      $("spread").disabled = !!w.timer;
+      const enough = w.vax / 100 >= thr - 0.005, name = { 1.5: "chřipky", 3: "covidu z první vlny", 15: "spalniček" }[w.r0];
+      let s;
+      if (w.timer) s = `<strong>Nákaza se šíří.</strong> Zatím onemocnělo ${w.sick.size} lidí.`;
+      else if (w.ran) {
+        const big = w.sick.size > Math.max(5, open * 0.15);
+        s = `<strong>${big ? "Epidemie" : w.sick.size <= 2 ? "Nákaza se neujala" : "Nákaza brzy vyhasla"}.</strong> Onemocnělo ${w.sick.size} z ${open} nechráněných lidí. Z dvaceti, kteří očkovaní být nemohou, ${weak === 0 ? "neonemocněl nikdo" : weak === 1 ? "onemocněl jeden" : `onemocnělo ${weak}`}. `
+          + (enough ? "Nakažený potkával skoro samé chráněné a virus neměl kudy dál." : big ? `Očkovaných je ${w.vax} %, na zastavení ${name} je potřeba aspoň ${Math.round(thr * 100)} %.` : `Tentokrát to byla náhoda. Očkovaných je jen ${w.vax} % a v průměru onemocní ${Math.round(w.avg.share * 100)} % nechráněných. Zkuste to znovu.`);
+      }
+      else s = `<strong>Očkováno ${w.vax} % lidí.</strong> Aby se nákaza ${name} přestala šířit, musí být imunních aspoň ${Math.round(thr * 100)} %. ${enough ? "To je splněno." : "To splněno není."} Zavlečte nákazu a uvidíte, co to znamená pro ty, kdo chráněni nejsou.`;
+      $("crowd-status").innerHTML = s;
+    }
+    function resetCrowd() { clearInterval(w.timer); w.timer = 0; w.sick = new Set(); w.ran = false; }
+    $("dis-seg").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-v]");
+      if (!b) return;
+      $("dis-seg").querySelectorAll("button").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+      w.r0 = Number(b.dataset.v); resetCrowd(); renderCrowd(true);
+    });
+    $("vax").addEventListener("input", (e) => { w.vax = Number(e.target.value); resetCrowd(); renderCrowd(true); });
+    $("spread").addEventListener("click", () => {
+      resetCrowd();
+      const vac = vaccinated();
+      w.sick = new Set([patientZero(vac)]); w.ran = true;
+      let cur = [...w.sick];
+      if (calm) { while (cur.length) cur = generation(cur, w.sick, vac); renderCrowd(false); return; }
+      w.timer = setInterval(() => {
+        cur = generation(cur, w.sick, vac);
+        if (!cur.length) { clearInterval(w.timer); w.timer = 0; }
+        renderCrowd(false);
+      }, 450);
+      renderCrowd(false);
+    });
+    renderCrowd(true);
+  })();
+  </script>
+  <script src="/app.js" defer></script>
+  <script src="/feedback.js" defer></script>
+</body>
+</html>
